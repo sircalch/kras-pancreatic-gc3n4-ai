@@ -295,6 +295,23 @@ KRAS_VERIFIED_REFERENCES = [
     {
         "citation": "Killock, D. Pan-RAS inhibitor daraxonrasib shows promise in pancreatic cancer. Nat. Rev. Clin. Oncol. 2026, 23, 475.",
         "doi": "10.1038/s41571-026-01162-x"
+    },
+    # 69-72: Quantum Chemistry Software, Functionals, Dispersion, and Basis Sets
+    {
+        "citation": "Neese, F. Software update: The ORCA program system—Version 5.0/6.0. WIREs Comput. Mol. Sci. 2022, 12 (5), e1606.",
+        "doi": "10.1002/wcms.1606"
+    },
+    {
+        "citation": "Becke, A. D. Density-functional thermochemistry. III. The role of exact exchange. J. Chem. Phys. 1993, 98 (7), 5648–5652.",
+        "doi": "10.1063/1.464913"
+    },
+    {
+        "citation": "Grimme, S.; Ehrlich, S.; Goerigk, L. Effect of the damping function in dispersion corrected density functional theory. J. Comput. Chem. 2011, 32 (7), 1456–1465.",
+        "doi": "10.1002/jcc.21759"
+    },
+    {
+        "citation": "Weigend, F.; Ahlrichs, R. Balanced basis sets of split valence, triple zeta valence and quadruple zeta valence quality for H to Rn: Design and assessment of accuracy. Phys. Chem. Chem. Phys. 2005, 7 (18), 3297–3305.",
+        "doi": "10.1039/B508541A"
     }
 ]
 
