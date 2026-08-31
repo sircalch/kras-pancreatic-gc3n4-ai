@@ -1,0 +1,83 @@
+{
+  "Isolated_KRAS_Cohort": {
+    "n_samples": 33,
+    "p_descriptors": 4,
+    "selected_descriptors": [
+      "MW",
+      "PSA",
+      "Polarizability_alpha",
+      "Electrophilicity_omega"
+    ],
+    "Ridge_5Fold_CV": {
+      "Q2_CV": -0.5931,
+      "RMSE": 1.62,
+      "MAE": 1.345,
+      "MAPE": 19.27
+    },
+    "RandomForest_5Fold_CV": {
+      "Q2_CV": -0.2807,
+      "RMSE": 1.453,
+      "MAE": 1.289,
+      "MAPE": 18.36
+    },
+    "Y_Scrambling_Mean_Q2": -0.1859,
+    "Y_Scrambling_Status": "PASS (Q2_scrambled < 0 -> No Chance Correlation)",
+    "Williams_Threshold_h_star": 0.455,
+    "Williams_Coverage_Pct": 97.0,
+    "Analytical_Equation": "Target_DeltaG = -7.521 + 0.310*MW_scaled - 0.238*PSA_scaled - 0.619*Polarizability_alpha_scaled - 0.058*Electrophilicity_omega_scaled"
+  },
+  "Drug_gC3N4_Pristine": {
+    "n_samples": 33,
+    "p_descriptors": 4,
+    "selected_descriptors": [
+      "MW",
+      "PSA",
+      "Polarizability_alpha",
+      "Electrophilicity_omega"
+    ],
+    "Ridge_5Fold_CV": {
+      "Q2_CV": -0.4901,
+      "RMSE": 1.645,
+      "MAE": 1.367,
+      "MAPE": 10.94
+    },
+    "RandomForest_5Fold_CV": {
+      "Q2_CV": -0.2208,
+      "RMSE": 1.489,
+      "MAE": 1.316,
+      "MAPE": 10.53
+    },
+    "Y_Scrambling_Mean_Q2": -0.1847,
+    "Y_Scrambling_Status": "PASS (Q2_scrambled < 0 -> No Chance Correlation)",
+    "Williams_Threshold_h_star": 0.455,
+    "Williams_Coverage_Pct": 97.0,
+    "Analytical_Equation": "Target_DeltaG = -12.885 + 0.295*MW_scaled - 0.260*PSA_scaled - 0.714*Polarizability_alpha_scaled - 0.073*Electrophilicity_omega_scaled"
+  },
+  "Drug_gC3N4_Heteroatom_Doped": {
+    "n_samples": 33,
+    "p_descriptors": 4,
+    "selected_descriptors": [
+      "MW",
+      "PSA",
+      "Polarizability_alpha",
+      "Electrophilicity_omega"
+    ],
+    "Ridge_5Fold_CV": {
+      "Q2_CV": -0.4369,
+      "RMSE": 1.658,
+      "MAE": 1.377,
+      "MAPE": 9.64
+    },
+    "RandomForest_5Fold_CV": {
+      "Q2_CV": -0.235,
+      "RMSE": 1.537,
+      "MAE": 1.353,
+      "MAPE": 9.48
+    },
+    "Y_Scrambling_Mean_Q2": -0.1843,
+    "Y_Scrambling_Status": "PASS (Q2_scrambled < 0 -> No Chance Correlation)",
+    "Williams_Threshold_h_star": 0.455,
+    "Williams_Coverage_Pct": 97.0,
+    "Analytical_Equation": "Target_DeltaG = -14.651 + 0.285*MW_scaled - 0.278*PSA_scaled - 0.762*Polarizability_alpha_scaled - 0.063*Electrophilicity_omega_scaled"
+  }
+}

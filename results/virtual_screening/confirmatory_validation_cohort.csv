@@ -1,0 +1,11 @@
+name,drugbank_id,smiles,category
+Belumosudil,DB15077,Cc1cccc(c1)Nc2ncc(c(n2)Nc3ccc(cc3)C(=O)NC(C)C)c4c[nH]nc4,Top_Lead
+Capivasertib,DB11790,CC(C)NC(=O)C1(CCN(CC1)c2nc3ccccc3nc2N)c4ccc(cc4)Cl,Top_Lead
+Avapritinib,DB14765,CC(C)n1c(nc2c1cccc2F)Nc3ccc(nc3)N4CCN(CC4)CC5CC5,Top_Lead
+Mobocertinib,DB15582,CC(C)OC(=O)c1c(nc(nc1Nc2cc(c(cc2OC)NC(=O)C=C)N(C)CCN(C)C)Nc3ccccc3)C,Top_Lead
+Futibatinib,DB15689,CN1CCN(CC1)c2ccc(cc2)Nc3ncc4c(n3)N(c5c(cccc5F)F)C(=O)N4C,Top_Lead
+Ribociclib,DB09075,CN(C)C(=O)c1ccc(nc1)Nc2ncc(c(n2)c3cc4c(cc3)n(c4=O)C(C)C)F,Control
+Afatinib,DB08907,CN(C)C/C=C/C(=O)Nc1cc2c(cc1OC3CCOC3)ncnc2Nc4ccc(c(c4)Cl)F,Control
+Lapatinib,DB01259,CS(=O)(=O)CCNCc1ccc(o1)c2ccc3c(c2)c(ncn3)Nc4ccc(c(c4)Cl)OCc5cccc(c5)F,Control
+Dasatinib,DB01254,Cc1cccc(c1Cl)NC(=O)c2cnc(s2)Nc3cc(nc(n3)N4CCN(CC4)CCO)C,Control
+Vemurafenib,DB08881,CCCS(=O)(=O)Nc1ccc(c(c1F)C(=O)c2c[nH]c3c2cc(cn3)c4ccc(cc4)Cl)F,Control

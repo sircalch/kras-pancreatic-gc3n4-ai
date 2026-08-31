@@ -1,0 +1,34 @@
+name,group,Real_Vina_Score_kcal_mol,Ligand_Efficiency
+MRTX1133,Group A - Direct KRAS-G12D,-8.06,0.183
+BI-2865,Group A - Direct KRAS-G12D,-8.46,0.256
+RMC-6236,Group A - Direct KRAS-G12D,-3.38,0.058
+HRS-4642,Group A - Direct KRAS-G12D,-7.58,0.165
+JDQ-443,Group A - Direct KRAS-G12D,-7.68,0.202
+Sotorasib,Group B - Mutation-Selective / Pan-RAS,-5.86,0.143
+Adagrasib,Group B - Mutation-Selective / Pan-RAS,-6.9,0.161
+BI-2852,Group B - Mutation-Selective / Pan-RAS,-8.78,0.225
+MRTX1719,Group B - Mutation-Selective / Pan-RAS,-5.86,0.178
+RMC-7977,Group B - Mutation-Selective / Pan-RAS,-4.69,0.076
+Trametinib,Group C - Downstream MAPK / RTK,-5.5,0.149
+Cobimetinib,Group C - Downstream MAPK / RTK,-9.12,0.304
+Selumetinib,Group C - Downstream MAPK / RTK,-7.83,0.29
+Binimetinib,Group C - Downstream MAPK / RTK,-6.79,0.252
+Erlotinib,Group C - Downstream MAPK / RTK,-7.54,0.26
+Larotrectinib,Group C - Downstream MAPK / RTK,-8.59,0.277
+Abemaciclib,Group C - Downstream MAPK / RTK,-9.75,0.264
+Palbociclib,Group C - Downstream MAPK / RTK,-7.81,0.237
+Gemcitabine,Group D - Cytotoxic Chemotherapy,-6.93,0.385
+5-Fluorouracil,Group D - Cytotoxic Chemotherapy,-5.07,0.563
+Capecitabine,Group D - Cytotoxic Chemotherapy,-7.88,0.315
+Irinotecan,Group D - Cytotoxic Chemotherapy,-7.53,0.175
+Paclitaxel,Group D - Cytotoxic Chemotherapy,-4.9,0.079
+Methotrexate,Group D - Cytotoxic Chemotherapy,-8.12,0.246
+Etoposide,Group D - Cytotoxic Chemotherapy,-6.71,0.16
+Doxorubicin,Group D - Cytotoxic Chemotherapy,-5.87,0.15
+Topotecan,Group D - Cytotoxic Chemotherapy,-6.84,0.221
+Dacarbazine,Group D - Cytotoxic Chemotherapy,-5.51,0.424
+Hydroxyurea,Group D - Cytotoxic Chemotherapy,-2.86,0.572
+Mitomycin C,Group D - Cytotoxic Chemotherapy,-7.45,0.311
+Leucovorin,Group D - Cytotoxic Chemotherapy,-7.57,0.223
+Pemetrexed,Group D - Cytotoxic Chemotherapy,-7.77,0.251
+Trabectedin,Group D - Cytotoxic Chemotherapy,-3.05,0.057

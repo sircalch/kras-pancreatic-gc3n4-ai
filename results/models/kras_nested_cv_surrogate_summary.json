@@ -1,0 +1,89 @@
+{
+  "Isolated_KRAS_Cohort": {
+    "ExtraTrees_NestedCV": {
+      "R2": -0.1502,
+      "Q2_CV": -0.1502,
+      "RMSE": 1.377,
+      "MAE": 1.173,
+      "MAPE": 17.01
+    },
+    "XGBoost_NestedCV": {
+      "R2": -0.4586,
+      "Q2_CV": -0.4586,
+      "RMSE": 1.551,
+      "MAE": 1.301,
+      "MAPE": 18.68
+    },
+    "Ridge_NestedCV": {
+      "R2": -0.7483,
+      "Q2_CV": -0.7483,
+      "RMSE": 1.698,
+      "MAE": 1.382,
+      "MAPE": 19.29
+    },
+    "Y_Scrambling_Mean_R2": 1.0,
+    "Y_Scrambling_Pass": false,
+    "OECD_Williams_h_star": 1.909,
+    "OECD_Compounds_Inside_Pct": 100.0,
+    "Sample_Size_n": 33,
+    "Descriptors_p": 20
+  },
+  "Drug_gC3N4_Pristine": {
+    "ExtraTrees_NestedCV": {
+      "R2": -0.0837,
+      "Q2_CV": -0.0837,
+      "RMSE": 1.403,
+      "MAE": 1.174,
+      "MAPE": 9.47
+    },
+    "XGBoost_NestedCV": {
+      "R2": -0.3624,
+      "Q2_CV": -0.3624,
+      "RMSE": 1.573,
+      "MAE": 1.333,
+      "MAPE": 10.67
+    },
+    "Ridge_NestedCV": {
+      "R2": -0.5877,
+      "Q2_CV": -0.5877,
+      "RMSE": 1.698,
+      "MAE": 1.383,
+      "MAPE": 10.91
+    },
+    "Y_Scrambling_Mean_R2": 1.0,
+    "Y_Scrambling_Pass": false,
+    "OECD_Williams_h_star": 1.909,
+    "OECD_Compounds_Inside_Pct": 100.0,
+    "Sample_Size_n": 33,
+    "Descriptors_p": 20
+  },
+  "Drug_gC3N4_Heteroatom_Doped": {
+    "ExtraTrees_NestedCV": {
+      "R2": -0.0363,
+      "Q2_CV": -0.0363,
+      "RMSE": 1.408,
+      "MAE": 1.185,
+      "MAPE": 8.35
+    },
+    "XGBoost_NestedCV": {
+      "R2": -0.3686,
+      "Q2_CV": -0.3686,
+      "RMSE": 1.618,
+      "MAE": 1.337,
+      "MAPE": 9.39
+    },
+    "Ridge_NestedCV": {
+      "R2": -0.5084,
+      "Q2_CV": -0.5084,
+      "RMSE": 1.698,
+      "MAE": 1.383,
+      "MAPE": 9.57
+    },
+    "Y_Scrambling_Mean_R2": 1.0,
+    "Y_Scrambling_Pass": false,
+    "OECD_Williams_h_star": 1.909,
+    "OECD_Compounds_Inside_Pct": 100.0,
+    "Sample_Size_n": 33,
+    "Descriptors_p": 20
+  }
+}

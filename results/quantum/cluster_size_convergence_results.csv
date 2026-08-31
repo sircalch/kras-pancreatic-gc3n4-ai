@@ -1,0 +1,4 @@
+Compound,N_atoms_small_cluster,N_atoms_ext_cluster,E_ads_small_cluster_kcal_mol,E_ads_ext_cluster_kcal_mol,Finite_Size_Delta_kcal_mol
+5-Fluorouracil,48,92,-21.74,36.07,57.81
+Gemcitabine,48,92,-46.7,89.96,136.66
+MRTX1133,48,92,-85.1,-6.52,78.57

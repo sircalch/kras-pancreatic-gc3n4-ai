@@ -1,0 +1,11 @@
+Compound,Structural_Class,MW_g_mol,Heteroatoms,E_ads_GFN2_xTB_kcal_mol,E_ads_GFN1_Ref_kcal_mol,Delta_Deviation_kcal_mol,Abs_Error_kcal_mol
+5-Fluorouracil,Weak / Monocyclic / Fluorinated,130.08,"C,H,N,O,F",-4.98,-4.53,-0.45,0.45
+Hydroxyurea,Weak / Small fragment,76.05,"C,H,N,O",-7.51,-4.88,-2.63,2.63
+Gemcitabine,Weak-Medium / Nucleoside / Difluorinated,263.2,"C,H,N,O,F",-12.23,-4.31,-7.92,7.92
+Binimetinib,Intermediate / Kinase inhibitor / Fluorinated,441.23,"C,H,N,O,F,Br",-9.42,-3.41,-6.01,6.01
+Selumetinib,"Intermediate / Halogenated (Cl, F)",457.68,"C,H,N,O,F,Cl",-10.53,-4.17,-6.36,6.36
+Cobimetinib,"Intermediate / Poly-halogenated (F, I)",531.31,"C,H,N,O,F,I",-13.47,-5.12,-8.35,8.35
+Erlotinib,Intermediate / Aromatic ether / TKI,393.44,"C,H,N,O",-17.76,-7.05,-10.71,10.71
+MRTX1719,Intermediate / Sulfonamide (S-containing),472.5,"C,H,N,O,F,S",-21.06,-4.57,-16.49,16.49
+MRTX1133,Strong / KRAS-G12D Lead / Multi-ring,600.65,"C,H,N,O,F",-35.03,-1.91,-33.12,33.12
+Methotrexate,Strong / Poly-nitrogenous folate,454.44,"C,H,N,O",-39.17,-3.03,-36.14,36.14

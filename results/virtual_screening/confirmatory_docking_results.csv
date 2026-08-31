@@ -1,0 +1,11 @@
+name,drugbank_id,category,MW,N_HeavyAtoms,Real_Vina_Score_kcal_mol,Ligand_Efficiency_kcal_mol_atom
+Belumosudil,DB15077,Top_Lead,427.51,32,-8.99,0.281
+Capivasertib,DB11790,Top_Lead,423.95,30,-7.58,0.253
+Avapritinib,DB14765,Top_Lead,408.52,30,-9.43,0.314
+Mobocertinib,DB15582,Top_Lead,561.69,41,-7.26,0.177
+Futibatinib,DB15689,Top_Lead,451.48,33,-9.04,0.274
+Ribociclib,DB09075,Control,420.45,31,-8.96,0.289
+Afatinib,DB08907,Control,485.95,34,-8.07,0.237
+Lapatinib,DB01259,Control,581.07,40,-8.42,0.21
+Dasatinib,DB01254,Control,488.02,33,-9.03,0.274
+Vemurafenib,DB08881,Control,489.93,33,-9.13,0.277

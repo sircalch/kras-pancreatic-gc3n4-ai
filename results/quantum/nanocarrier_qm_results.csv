@@ -1,0 +1,5 @@
+carrier,returncode,E_total_Eh,E_total_kcal_mol,VBM_HOMO_eV,CBM_LUMO_eV,Band_Gap_Eg_eV,opt_xyz_path,q_Boron,q_Phosphorus
+pristine,0,-107.7653505323,-67623.7812298483,-10.272,-10.2689,0.003141768121,c:\Users\Andre\Proyectos doctorado\kras-pancreatic-gC3N4-ai\scratch\qm_calcs_carriers\pristine\xtbopt.xyz,,
+B_doped,0,-106.891796822202,-67075.61797800157,-10.3505,-10.3463,0.004176878314,c:\Users\Andre\Proyectos doctorado\kras-pancreatic-gC3N4-ai\scratch\qm_calcs_carriers\B_doped\xtbopt.xyz,0.3969,
+P_doped,0,-106.764636017629,-66995.82336510437,-10.2194,-10.2165,0.002849593514,c:\Users\Andre\Proyectos doctorado\kras-pancreatic-gC3N4-ai\scratch\qm_calcs_carriers\P_doped\xtbopt.xyz,,-0.2939
+BP_doped,0,-105.807086009473,-66394.9516382614,-10.2412,-10.2382,0.002985720822,c:\Users\Andre\Proyectos doctorado\kras-pancreatic-gC3N4-ai\scratch\qm_calcs_carriers\BP_doped\xtbopt.xyz,0.3494,-0.1679

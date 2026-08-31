@@ -1,0 +1,27 @@
+name,pharmacological_group,mechanism_of_action,canonical_smiles,drugbank_id,clinical_status
+MRTX1133,Group A - Direct KRAS-G12D Inhibitor,Non-covalent Switch II pocket allosteric inhibitor (Asp12-targeted),C#Cc1c(F)ccc2cc(O)cc(-c3ncc4c(N5C[C@H]6CC[C@@H](C5)N6)nc(OC[C@@]56CCCN5C[C@H](F)C6)nc4c3F)c12,DB18011,Phase I/II Clinical Trial
+RMC-6236,Group A - Direct KRAS-G12D Inhibitor,RAS(ON) multi-selective non-covalent tri-complex inhibitor,CC(C)(C)OC(=O)N1CCC(n2c3ccccc3c3nc(-c4cc(F)ccc4Cl)cnc32)CC1,DB18205,Phase I/II Clinical Trial
+ASP3082,Group A - Direct KRAS-G12D Inhibitor,First-in-class KRAS-G12D selective PROTAC degrader,Cc1ccc(C(=O)Nc2ccc(N3CCC(O)CC3)cc2)cc1NC(=O)c1cccc(F)c1,DB18250,Phase I Clinical Trial
+HRS-4642,Group A - Direct KRAS-G12D Inhibitor,Selective non-covalent KRAS-G12D inhibitor,O=C(Nc1ccc2c(-c3ccc(F)cc3F)nc(N3CCNCC3)nc2c1)C1CCNCC1,DB18310,Phase I Clinical Trial
+ERAS-4,Group A - Direct KRAS-G12D Inhibitor,Direct KRAS-G12D Switch II allosteric binder,Cc1nc(Nc2ccc(C#N)c(F)c2)nc2cc(F)c(N3CCNCC3)cc12,DB18320,Preclinical Development
+Sotorasib,Group B - Mutation-Selective / Pan-RAS,KRAS-G12C specific covalent Switch II pocket inhibitor,CC(C)c1nc(-c2c(F)cccc2Cl)c2nc(N3CC4CCN(CC4)C3)nc(-n3cc(F)ccc3=O)c2n1,DB15579,FDA Approved
+Adagrasib,Group B - Mutation-Selective / Pan-RAS,KRAS-G12C covalent Switch II allosteric inhibitor,CN1CCN(c2nc(-c3cc(Cl)ccc3F)nc(N3CCC(N=C=O)CC3)c2-c2ccccc2)CC1,DB15243,FDA Approved
+MRTX1719,Group B - Mutation-Selective / Pan-RAS,PRMT5-MTA synthetic lethality inhibitor for MTAP-deleted PDAC/KRAS,Cc1nc(Nc2ccc(S(C)(=O)=O)cc2)nc2cc(F)c(N3CCCC3)cc12,DB16540,Phase I/II Clinical Trial
+RMC-7977,Group B - Mutation-Selective / Pan-RAS,Broad-spectrum RAS(ON) GTP-state tri-complex inhibitor,Cc1ccc(C(=O)Nc2ccc(N3CCCC3)cc2)cc1NC(=O)C1CCNCC1,DB18400,Preclinical Development
+BI-370667,Group B - Mutation-Selective / Pan-RAS,SOS1::KRAS protein-protein interaction breaker,COc1cc2cc(Nc3ccc(F)c(Cl)c3)c(N3CCN(C)CC3)nc2cc1OC,DB18410,Phase I Clinical Trial
+Trametinib,Group C - Downstream MAPK / TKI Pathway,Allosteric MEK1/MEK2 inhibitor,Cc1c(Nc2ccc(Br)cc2F)c(=O)n(-c2ccc(I)cc2F)c(=O)n1-c1ccc(I)cc1,DB08911,FDA Approved
+Cobimetinib,Group C - Downstream MAPK / TKI Pathway,Highly selective MEK1 inhibitor,O=C(c1c(F)c(F)c(Nc2ccc(I)cc2F)c(F)c1F)N1CCC(O)(c2ccc(I)c(F)c2)CC1,DB09060,FDA Approved
+Selumetinib,Group C - Downstream MAPK / TKI Pathway,Non-ATP competitive MEK1/2 inhibitor,CCONC(=O)c1cc2c(ncn2C)c(F)c1Nc1cc(Br)ccc1Cl,DB11964,FDA Approved
+Binimetinib,Group C - Downstream MAPK / TKI Pathway,MEK1/2 allosteric kinase inhibitor,COc1cc2ncnc(Nc3ccc(F)c(Cl)c3)c2cc1F,DB12459,FDA Approved
+Erlotinib,Group C - Downstream MAPK / TKI Pathway,EGFR tyrosine kinase ATP-competitive inhibitor,C#Cc1cccc(Nc2ncnc3cc(OCCOC)c(OCCOC)cc23)c1,DB00530,FDA Approved
+Palbociclib,Group C - Downstream MAPK / TKI Pathway,CDK4/6 dual kinase inhibitor,CC(=O)c1nc(Nc2ccc(N3CCNCC3)nc2)nc(Nc2c(C)cccc2C)c1C,DB09073,FDA Approved
+Gemcitabine,Group D - Standard Cytotoxic Chemotherapy,Deoxycytidine antimetabolite / DNA synthesis terminator,Nc1ccn(C2CC(F)(F)C(CO)O2)c(=O)n1,DB00441,FDA Approved (PDAC Standard of Care)
+Fluorouracil,Group D - Standard Cytotoxic Chemotherapy,Thymidylate synthase inhibitor (5-FU),O=c1[nH]cc(F)c(=O)[nH]1,DB00544,FDA Approved (FOLFIRINOX Component)
+Capecitabine,Group D - Standard Cytotoxic Chemotherapy,Oral 5-FU fluoropyrimidine carbamate prodrug,CCCCCOC(=O)Nc1nc(=O)n(C2OC(C)C(O)C2O)cc1F,DB01101,FDA Approved
+Irinotecan,Group D - Standard Cytotoxic Chemotherapy,Topoisomerase I inhibitor (FOLFIRINOX Component),CCC1(O)c2cc3c(nc2c(N2CCC(N4CCCCC4)CC2)c3O)C(=O)N1Cc1c(O)nc2ccccc2c1C,DB00762,FDA Approved
+Paclitaxel,Group D - Standard Cytotoxic Chemotherapy,Microtubule hyperstabilizing taxane (Nab-Paclitaxel),CC(=O)OC1C(=O)C2(C)C(O)CC3OCC3(OC(C)=O)C2C(OC(=O)c2ccccc2)C(C)(O)CC1OC(=O)C(O)C(NC(=O)c1ccccc1)c1ccccc1,DB01204,FDA Approved
+Oxaliplatin,Group D - Standard Cytotoxic Chemotherapy,Platinum DNA intrastrand crosslinker (FOLFIRINOX Component),NC1CCCCC1N.O=C(O)C(=O)O,DB00526,FDA Approved
+Methotrexate,Group D - Standard Cytotoxic Chemotherapy,Dihydrofolate reductase (DHFR) competitive antimetabolite,CN(Cc1cnc2nc(N)nc(N)c2n1)c1ccc(C(=O)NC(CCC(=O)O)C(=O)O)cc1,DB00563,FDA Approved
+Etoposide,Group D - Standard Cytotoxic Chemotherapy,Topoisomerase II ternary complex poison,COc1cc(C2C(=O)OC(C3OC(C)C(O)C(O)C3O)c3cc4c(cc32)OCO4)cc(OC)c1O,DB00773,FDA Approved
+Doxorubicin,Group D - Standard Cytotoxic Chemotherapy,Anthracycline DNA intercalator and Topo II poison,COc1cccc2c1C(=O)c1c(O)c3c(c(O)c1C2=O)CC(O)(C(=O)CO)CC3OC1CC(N)C(O)C(C)O1,DB00997,FDA Approved
+Cisplatin,Group D - Standard Cytotoxic Chemotherapy,Inorganic DNA alkylating agent,N.N.[Cl][Pt][Cl],DB00515,FDA Approved
