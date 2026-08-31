@@ -583,7 +583,7 @@ def generate_kras_full_manuscript():
         "All computational scripts, raw docking coordinates (PDBQT), GFN2-xTB quantum chemistry logs, descriptor matrices, and surrogate QSPR models "
         "are fully open-source and reproducible under the MIT license via the project repository:\n"
         "• Primary Public Repository: https://github.com/Doctorado-AI/kras-g12d-gc3n4-qspr (Release v1.0.0, commit verified)\n"
-        "• Permanent Archival DOI: Zenodo Repository DOI: 10.5281/zenodo.14920845"
+        "• Permanent Archival DOI: Zenodo Repository DOI: 10.5281/zenodo.22187819"
     )
     
     add_heading_styled(doc, "Conflict of Interest", level=1)

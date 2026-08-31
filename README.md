@@ -1,6 +1,6 @@
 # Atomistic Modeling and QSPR-Guided Screening of 2D Graphitic Carbon Nitride Nanocarriers for KRAS-G12D Inhibitor Loading and Target Engagement
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14920845.svg)](https://doi.org/10.5281/zenodo.14920845)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22187819.svg)](https://doi.org/10.5281/zenodo.22187819)
 [![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
 [![xTB GFN2](https://img.shields.io/badge/Quantum%20Engine-GFN2--xTB-004D40.svg)](https://github.com/grimme-lab/xtb)
@@ -8,7 +8,7 @@
 
 **Authors**: Andrés Monreal Hernández, Sara Lizbeth Franco Amaya, Carlos Ivanhoe Martínez Osorio  
 **Affiliation**: Universidad Estatal de Sonora, Hermosillo, Sonora, México  
-**Permanent Archival DOI**: `10.5281/zenodo.14920845`
+**Permanent Archival DOI**: `10.5281/zenodo.22187819`
 
 ---
 
@@ -115,7 +115,7 @@ python src/visualization/generate_supporting_information.py
   author={Monreal Hern{\'a}ndez, Andr{\'e}s and Franco Amaya, Sara Lizbeth and Mart{\'i}nez Osorio, Carlos Ivanhoe},
   journal={ChemRxiv / Preprints},
   year={2026},
-  doi={10.5281/zenodo.14920845},
+  doi={10.5281/zenodo.22187819},
   url={https://github.com/sircalch/kras-pancreatic-gc3n4-ai}
 }
 ```

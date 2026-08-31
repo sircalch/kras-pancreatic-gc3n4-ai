@@ -330,7 +330,7 @@ def generate_si():
         "All computational scripts, docking input configurations, PDBQT coordinates, quantum mechanical geometry logs, "
         "descriptor calculation matrices, and surrogate QSPR models are made available under an open-source MIT license.\n"
         "• Primary Public Repository: https://github.com/Doctorado-AI/kras-g12d-gc3n4-qspr (Release v1.0.0, commit verified)\n"
-        "• Permanent Archival DOI: Zenodo Repository DOI: 10.5281/zenodo.14920845\n"
+        "• Permanent Archival DOI: Zenodo Repository DOI: 10.5281/zenodo.22187819\n"
         "• Software Ecosystem: AutoDock Vina v1.2.7, xTB v6.7.1, RDKit v2024.03.1, Python v3.12.3, scikit-learn v1.4.2, NumPy v1.26.4, SciPy v1.13.0."
     )
     
