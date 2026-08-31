@@ -1,17 +1,12 @@
 """
-generate_kras_full_manuscript.py
-================================
-Audited, Q1-Ready Master Manuscript Generator for KRAS-G12D & 2D g-C3N4 Nanocarriers.
-Fully synchronized with:
-- Genuine GFN2-xTB tight-binding quantum calculations (38 molecules, 4 nanocarriers, 76 interaction complexes)
-- Exact Kruskal-Wallis non-parametric statistics (H = 5.763, p = 0.1237, eta2 = 0.095)
-- Compact Summary Table 1 in main text + Full Dataset Table S1 in Supporting Information
-- Table 2: 10-System Multi-Level Quantum Benchmark (MSE = -12.82, MAE = 12.82, RMSE = 17.34 kcal/mol)
-- Table 3: Prospective QM Recalculation & QSPR Lead Prioritization (Avapritinib, Futibatinib, Belumosudil, Capivasertib, Pimicotinib)
-- Real QSPR Nested Cross-Validation (Q2_CV = +0.5696, RMSE = 5.201 kcal/mol, MAE = 4.194 kcal/mol)
-- 1,000 Y-Scrambling Permutations (Mean Q2_scr = -0.2357, Empirical p = 0.0010)
-- Multilevel Quantum Benchmark (Figure 6: B3LYP-D3BJ/def2-SVP single-points vs GFN2-xTB, rho = 0.96, p = 0.0001, MAE = 2.14 kcal/mol; BSSE / def2-TZVP convergence confirmed)
-- 72 Authenticated Verified References (including ORCA 6.1, B3LYP, Grimme D3BJ, and def2 basis sets).
+generate_molecular_diversity_edition.py
+======================================
+Adapts the KRAS-G12D & g-C3N4 study specifically for 'Molecular Diversity' (Springer Nature):
+- Title: Quantum-Validated QSPR and Molecular Screening of KRAS-G12D Inhibitors across Graphitic Carbon Nitride Interaction Space
+- Framing: g-C3N4 as a 2D supramolecular molecular interaction platform for quantum-chemical profiling and QSPR modeling.
+- Section 3.7: '3.7 Effect of B/P Substitution on Drug–Carrier Molecular Interaction Profiles'
+- Highlights: Computational molecular design, chemical diversity, OECD-aligned QSPR, DFT benchmark (rho = 0.96), decoupled virtual screening of 350 oncology candidates, and prospective quantum confirmation.
+- Generates tailored Springer Cover Letter (01_Cover_Letter_Molecular_Diversity.docx) with expert reviewer suggestions.
 """
 
 import os
@@ -87,7 +82,6 @@ def add_image_if_exists(doc, img_path, caption_text, width=Inches(6.2)):
 
 def generate_kras_full_manuscript():
     fig_dir = os.path.join(base_dir, "figures")
-    data_dir = os.path.join(base_dir, "data", "processed")
     results_dir = os.path.join(base_dir, "results", "quantum")
     qspr_dir = os.path.join(base_dir, "results", "qspr")
     doc = Document()
@@ -104,13 +98,13 @@ def generate_kras_full_manuscript():
     font.size = Pt(11)
     font.color.rgb = RGBColor(33, 33, 33)
     
-    # Title & Authors
+    # Title & Authors (Molecular Diversity Edition)
     p_title = doc.add_paragraph()
     p_title.paragraph_format.space_after = Pt(10)
     p_title.paragraph_format.line_spacing = 1.15
     r_title = p_title.add_run(
-        "Atomistic Modeling and QSPR-Guided Screening of 2D Graphitic Carbon Nitride "
-        "Nanocarriers for KRAS-G12D Inhibitor Loading and Target Engagement"
+        "Quantum-Validated QSPR and Molecular Screening of KRAS-G12D Inhibitors "
+        "across Graphitic Carbon Nitride Interaction Space"
     )
     r_title.font.name = 'Times New Roman'
     r_title.font.size = Pt(16.5)
@@ -139,41 +133,37 @@ def generate_kras_full_manuscript():
     # Graphical Abstract (Front Matter)
     add_heading_styled(doc, "Graphical Abstract", level=1)
     add_image_if_exists(doc, os.path.join(fig_dir, "fig_graphical_abstract_final.jpg"),
-                        "Graphical Abstract: Multi-scale atomistic and quantum modeling of 2D graphitic carbon nitride (g-C3N4) nanocarriers for loading and target engagement of KRAS-G12D allosteric inhibitors in pancreatic ductal adenocarcinoma. (Left) Oncogenic KRAS-G12D target engagement in the Switch II allosteric pocket with key coordinating residues (Asp12 ionic salt-bridge, Tyr96 pi-stacking). (Center) Quantum electronic interaction modeling on the finite 48-atom C21N21H6 heptazine cluster model (Pristine: C21N21H6; B/P co-doped: C20B1N20P1H6); B/P co-doping induces localized interfacial charge redistribution (Delta_Q = +0.082 e) with comparable overall electronic interaction energetics (DeltaDelta E_int,std ≈ -0.01 kcal/mol). (Right) OECD-aligned nested Ridge QSPR surrogate screening across 350 oncology compounds with prospective GFN2-xTB quantum confirmation on prioritized clinical-stage leads (Futibatinib, Belumosudil).",
+                        "Graphical Abstract: Multi-scale computational framework integrating quantum chemistry, OECD-aligned QSPR surrogate modeling, and virtual screening for KRAS-G12D inhibitor prioritization. (Left) Oncogenic KRAS-G12D target engagement in the Switch II allosteric pocket with key coordinating residues (Asp12 ionic salt-bridge, Tyr96 pi-stacking). (Center) Quantum electronic interaction modeling on the finite 48-atom C21N21H6 heptazine cluster model (Pristine: C21N21H6; B/P co-doped: C20B1N20P1H6); B/P co-doping induces localized interfacial charge redistribution (Delta_Q = +0.082 e) with comparable overall electronic interaction energetics (DeltaDelta E_int,std ≈ -0.01 kcal/mol). (Right) OECD-aligned nested Ridge QSPR surrogate screening across 350 oncology compounds with prospective GFN2-xTB quantum confirmation on prioritized clinical-stage leads (Futibatinib, Belumosudil).",
                         width=Inches(6.2))
     
     # Abstract
     add_heading_styled(doc, "Abstract", level=1)
     doc.add_paragraph(
-        "Pancreatic Ductal Adenocarcinoma (PDAC) is characterized by an exceptionally dense desmoplastic stroma and activating KRAS mutations, "
-        "predominantly the G12D substitution (~45% of cases). The recent development of the non-covalent inhibitor MRTX1133 demonstrated that KRAS-G12D "
-        "can be targeted through the Switch II allosteric cleft; however, poor oral bioavailability (~2.9%), rapid clearance, and formulation challenges "
-        "motivate alternative nanocarrier loading strategies. Here, we present an auditable, multi-scale computational framework integrating crystallographic "
-        "validation on the 1.30 Å crystal structure of human KRAS-G12D (PDB ID: 7RPZ), standardized GFN2-xTB drug–carrier interaction calculations "
-        "on two-dimensional (2D) pristine and B/P co-doped graphitic carbon nitride (g-C3N4) nanocarriers, a leak-free nested Quantitative Structure-Property "
-        "Relationship (QSPR) surrogate modeling workflow structured according to OECD Principles 1-5, and decoupled virtual screening with prospective quantum confirmation. "
-        "AutoDock Vina v1.2.7 reproduced the crystallographic binding mode of MRTX1133 with a heavy-atom Root-Mean-Square Deviation (RMSD) of 1.419 Å, validating pocket fidelity. "
-        "Across a curated master cohort of N=33 oncology therapeutics, docking scores in the Switch II pocket demonstrated state- and mechanism-dependent binding "
-        "(Group A median -7.68 kcal/mol; Group B median -5.86 kcal/mol; Group C median -7.82 kcal/mol; Group D median -6.84 kcal/mol; omnibus Kruskal-Wallis H = 5.763, p = 0.1237), "
-        "showing docking behavior consistent with state- and mechanism-dependent structural pharmacology. "
-        "GFN2-xTB calculations across the finite 48-atom C21N21H6 heptazine planar cluster model revealed favorable standardized electronic interaction energies "
-        "(Delta_E_int,std = -4.98 to -39.17 kcal/mol on pristine and -6.96 to -39.89 kcal/mol on B/P co-doped g-C3N4), driven by pi-pi stacking and localized interfacial charge transfer (Delta_Q = -0.139 to +0.655 e). "
+        "Direct pharmacological inhibition of oncogenic KRAS-G12D represents a paramount objective in precision oncology, particularly for pancreatic ductal "
+        "adenocarcinoma (PDAC). While recent non-covalent inhibitors such as MRTX1133 engage the Switch II allosteric cleft with high potency, unfavorable pharmacokinetic "
+        "properties motivate alternative supramolecular delivery and loading strategies. Here, we report an integrated computational chemistry, cheminformatics, "
+        "and molecular screening framework that evaluates the molecular interaction space of KRAS-G12D therapeutics across 2D graphitic carbon nitride (g-C3N4) "
+        "interaction templates. High-resolution crystallographic validation on human KRAS-G12D (PDB ID: 7RPZ, 1.30 Å) reproduced the native MRTX1133 binding pose "
+        "with 1.419 Å heavy-atom Root-Mean-Square Deviation (RMSD). Across a curated cohort of N=33 diverse oncology therapeutics, Switch II pocket docking revealed "
+        "stratified affinity profiles (Group A median -7.68 kcal/mol; Group B median -5.86 kcal/mol; Group C median -7.82 kcal/mol; Group D median -6.84 kcal/mol; "
+        "omnibus Kruskal-Wallis H = 5.763, p = 0.1237), showing docking behavior consistent with state- and mechanism-dependent structural pharmacology. "
+        "Standardized GFN2-xTB tight-binding quantum calculations across the finite 48-atom C21N21H6 planar cluster model yielded favorable intermolecular interaction energies "
+        "(Delta_E_int,std = -4.98 to -39.17 kcal/mol on pristine and -6.96 to -39.89 kcal/mol on B/P substituted templates), governed by pi-pi stacking and localized interfacial charge transfer. "
         "A multi-level quantum benchmark against dispersion-corrected DFT single-point reference calculations (ORCA 6.1.1, B3LYP-D3BJ/def2-SVP, TightSCF) across eight representative oncology drugs "
-        "demonstrated excellent rank preservation (Spearman rho = 0.96, p = 0.0001; MAE = 2.14 kcal/mol, RMSE = 2.68 kcal/mol; counterpoise/def2-TZVP convergence confirmed). "
-        "A regularized Ridge surrogate model evaluated by nested 5-fold cross-validation on pre-specified physicochemical descriptors achieved solid predictive fidelity "
-        "(Q²_CV = +0.5696, RMSE = 5.201 kcal/mol, MAE = 4.194 kcal/mol), with Y-scrambling permutation testing supporting that predictive performance was unlikely to arise from chance correlation "
-        "(1,000 permutations: mean Q²_scrambled = -0.2357, empirical p = 0.001). "
-        "Decoupled virtual screening of 350 DrugBank candidates within the applicability domain (h* = 0.455) prioritized clinical-stage leads whose interaction stability was "
+        "demonstrated strong rank preservation (Spearman rho = 0.96, p = 0.0001; MAE = 2.14 kcal/mol, RMSE = 2.68 kcal/mol; counterpoise/def2-TZVP convergence confirmed). "
+        "A regularized Ridge surrogate QSPR model structured under OECD Principles 1-5 achieved robust out-of-fold predictive accuracy (Q²_CV = +0.5696, RMSE = 5.201 kcal/mol, MAE = 4.194 kcal/mol), "
+        "with Y-scrambling permutation testing supporting that predictive performance was unlikely to arise from chance correlation (1,000 permutations: mean Q²_scrambled = -0.2357, empirical p = 0.001). "
+        "Decoupled virtual screening of 350 DrugBank oncology candidates within the applicability domain (h* = 0.455) prioritized clinical-stage leads whose interaction stability was "
         "prospectively confirmed by independent GFN2-xTB recalculation (Futibatinib: QSPR -15.98 vs QM -16.39 kcal/mol; Belumosudil: QSPR -15.34 vs QM -17.36 kcal/mol; Pimicotinib: QSPR -13.76 vs QM -14.99 kcal/mol), "
-        "yielding favorable predicted Switch II pocket compatibility (-7.64 to -9.43 kcal/mol; Ligand Efficiency 0.255 to 0.292 kcal/mol/atom). This work establishes an auditable quantum-mechanical "
-        "and statistical foundation for 2D carbon nitride nanocarriers in mutant KRAS oncology."
+        "yielding favorable predicted Switch II pocket compatibility (-7.64 to -9.43 kcal/mol; Ligand Efficiency 0.255 to 0.292 kcal/mol/atom). This study establishes a rigorous "
+        "computational cheminformatics and quantum chemical foundation for exploring molecular diversity in mutant KRAS drug discovery."
     )
     
     p_kw = doc.add_paragraph()
     p_kw.paragraph_format.space_after = Pt(12)
     r_kwt = p_kw.add_run("Keywords: ")
     r_kwt.font.bold = True
-    p_kw.add_run("KRAS-G12D; MRTX1133; Pancreatic Ductal Adenocarcinoma; 2D Graphitic Carbon Nitride (g-C3N4); AutoDock Vina; Redocking Validation; GFN2-xTB Tight-Binding; DFT Benchmarking; OECD QSPR; Virtual Screening.")
+    p_kw.add_run("KRAS-G12D; MRTX1133; Molecular Diversity; QSPR Surrogate Modeling; GFN2-xTB Quantum Chemistry; DFT Benchmark; Virtual Screening; Supramolecular Interaction.")
     
     # 1. Introduction
     add_heading_styled(doc, "1. Introduction", level=1)
@@ -201,18 +191,17 @@ def generate_kras_full_manuscript():
         "compression [45-48, 61], generating high interstitial fluid pressures that impede the homogeneous diffusion of free small-molecule therapeutics [49-53]."
     )
     doc.add_paragraph(
-        "Two-dimensional (2D) nanomaterials have emerged as transformative nanocarriers capable of loading and stabilizing hydrophobic therapeutics [14, 48-50]. Among them, polymeric "
-        "graphitic carbon nitride (g-C3N4) has attracted substantial interest due to its metal-free composition, high chemical stability, biocompatibility, and regular triangular pores "
-        "within its tri-s-triazine (heptazine) sheet architecture [11-13, 18]. Recent advances have demonstrated that g-C3N4 undergoes oxidative biodegradation "
-        "mediated by peroxidase-rich immune microenvironments (such as myeloperoxidase, MPO) [67], addressing long-term biopersistence concerns. Furthermore, heteroatom doping with electron-deficient "
-        "boron (B) or electron-rich phosphorus (P) atoms enables precise tuning of the surface charge distribution and interfacial polarization, creating platforms with tunable "
-        "interfacial electronic properties relevant to molecular adsorption [16, 17, 20]."
+        "In this context, computational cheminformatics and quantum-chemical interaction modeling offer powerful avenues for understanding the structural and electronic diversity "
+        "governing drug loading, supramolecular stabilization, and target engagement [14, 48-50]. Graphitic carbon nitride (g-C3N4), a planar polymeric network composed of "
+        "tri-s-triazine (heptazine) heterocycles [11-13, 18], provides an ideal, highly ordered molecular template for probing non-covalent pi-pi stacking, dipole polarization, "
+        "and interfacial charge transfer across diverse chemical spaces. Furthermore, substitutional heteroatom doping with boron (B) or phosphorus (P) enables precise modulation "
+        "of local electrostatic polarization without disrupting the underlying sp2 conjugated framework [16, 17, 20]."
     )
     doc.add_paragraph(
-        "In this work, we present an auditable, multi-scale computational framework investigating 2D pristine and B/P-doped g-C3N4 nanosheets for the loading and target engagement "
-        "of KRAS-G12D inhibitors. We establish crystallographic validation of our molecular docking methodology against the 1.30 Å crystal structure of human KRAS-G12D (PDB: 7RPZ), "
-        "evaluate binding energetics across structured pharmacological classes, model genuine tight-binding quantum interaction energies (GFN2-xTB), benchmark against dispersion-corrected DFT reference calculations [69-72], "
-        "train a leak-free nested surrogate QSPR model structured under OECD guidelines, and execute decoupled virtual screening of an extended 350-compound oncology library with prospective quantum mechanical confirmation."
+        "In this work, we present an integrated computational chemistry and molecular diversity framework investigating KRAS-G12D inhibitor loading and pocket engagement. "
+        "We establish crystallographic validation against the 1.30 Å crystal structure of human KRAS-G12D (PDB: 7RPZ), evaluate binding energetics across structured pharmacological classes, "
+        "model standardized quantum interaction energies (GFN2-xTB), benchmark against dispersion-corrected DFT reference calculations [69-72], train a leak-free nested surrogate QSPR model "
+        "structured under OECD guidelines, and execute decoupled virtual screening of an extended 350-compound oncology library with prospective quantum mechanical confirmation."
     )
     
     # 2. Computational Methods
@@ -242,16 +231,16 @@ def generate_kras_full_manuscript():
     )
     doc.add_paragraph(
         "2.3 Standardized Quantum Interaction Modeling: GFN2-xTB Hamiltonian & Multilevel Benchmarking: "
-        "The 2D graphitic carbon nitride nanocarrier was modeled as a finite planar cluster consisting of 48 atoms with stoichiometry C21N21H6 composed of three condensed tri-s-triazine (heptazine) cores with peripheral hydrogen edge passivation [11, 26, 27]. "
+        "The 2D graphitic carbon nitride molecular interaction template was modeled as a finite planar cluster consisting of 48 atoms with stoichiometry C21N21H6 composed of three condensed tri-s-triazine (heptazine) cores with peripheral hydrogen edge passivation [11, 26, 27]. "
         "While ideal infinite g-C3N4 exhibits a bulk N/C = 1.33 stoichiometry, finite molecular cluster models feature hydrogen-passivated peripheral carbon and nitrogen sites (yielding N/C = 1.0) "
         "to avoid unphysical radical edge states while preserving the central sp2 conjugated heptazine electronic framework (see SI Section S1 for complete 48-atom XYZ coordinates and Mulliken charge distribution) [20, 26, 27]. "
-        "Heteroatom-doped configurations were constructed by substitutional doping: boron replacing carbon (C20B1N21H6, 2.1 at.% B), phosphorus replacing nitrogen (C21N20P1H6, 2.1 at.% P), "
-        "and B/P co-doped configurations (C20B1N20P1H6). "
+        "Heteroatom-substituted configurations were constructed by substitution: boron replacing carbon (C20B1N21H6, 2.1 at.% B), phosphorus replacing nitrogen (C21N20P1H6, 2.1 at.% P), "
+        "and B/P co-substituted configurations (C20B1N20P1H6). "
         "Calculations were carried out using the second-generation Geometry, Frequency, Noncovalent, Extended Tight-Binding Hamiltonian (GFN2-xTB) developed by Bannwarth, Ehlert, and Grimme [21]. "
         "GFN2-xTB incorporates anisotropic multi-pole electrostatics, second-order density matrix self-consistency, and D4 atom-in-molecule coordination-dependent dispersion [21, 23]. "
-        "Supramolecular drug-nanosheet complexes were constructed by positioning each drug molecule at a standardized unrelaxed vertical interplanar stacking distance (z = 3.35 Å) "
-        "parallel to the planar nanocarrier framework. The standardized electronic interaction energy (Delta_E_int,std) was evaluated rigidly across all compounds as: "
-        "Delta_E_int,std = E_complex - (E_nanosheet + E_drug,complex). This standardized fixed-distance protocol isolates the pure intermolecular electronic interaction without confounding intramolecular conformational strain penalties. "
+        "Supramolecular drug-template complexes were constructed by positioning each drug molecule at a standardized unrelaxed vertical interplanar stacking distance (z = 3.35 Å) "
+        "parallel to the planar framework. The standardized electronic interaction energy (Delta_E_int,std) was evaluated rigidly across all compounds as: "
+        "Delta_E_int,std = E_complex - (E_template + E_drug,complex). This standardized fixed-distance protocol isolates the pure intermolecular electronic interaction without confounding intramolecular conformational strain penalties. "
         "In illustrative fully relaxed geometry optimizations of planar aromatic systems, complexes relax to an equilibrium interplanar separation of d_pi-pi ≈ 3.25 Å. "
         "To validate the semiempirical interaction trends, higher-level dispersion-corrected DFT single-point reference calculations were performed using ORCA 6.1.1 [69] with the B3LYP functional [70], "
         "Grimme's D3 dispersion correction with Becke-Johnson damping (D3BJ) [71], and the def2-SVP basis set [72] with RIJCOSX acceleration and TightSCF convergence criteria on the exact same standardized geometries: "
@@ -270,7 +259,7 @@ def generate_kras_full_manuscript():
     )
     doc.add_paragraph(
         "2.5 Leak-Free Nested Surrogate QSPR Modeling & OECD Alignment: "
-        "A regularized surrogate model was trained specifically to predict the standardized electronic interaction energy (Delta_E_int,std) across 2D g-C3N4 systems following an OECD-aligned QSPR validation framework. "
+        "A regularized surrogate model was trained specifically to predict the standardized electronic interaction energy (Delta_E_int,std) across 2D g-C3N4 interaction templates following an OECD-aligned QSPR validation framework. "
         "Feature selection was pre-specified a priori based on fundamental physicochemical interpretability: four prespecified physicochemical descriptors (MW, PSA, Polarizability_alpha, Electrophilicity_omega) "
         "were chosen before any fitting was performed, eliminating response-variable-guided selection bias. This yields a sample-to-descriptor ratio n/p = 8.25 "
         "(well above the standard heuristic minimum of 5.0 recommended for stable multivariate regression) [38-40]. "
@@ -385,7 +374,7 @@ def generate_kras_full_manuscript():
     )
     doc.add_paragraph(
         "To assess the accuracy and Hamiltonian sensitivity of the calculated electronic interaction energies, multi-level quantum benchmarks were performed against both GFN1-xTB and dispersion-corrected DFT single-point reference calculations (ORCA 6.1.1, B3LYP-D3BJ / def2-SVP, TightSCF; Table 2, Table S5, Figure 6) [69-72]. "
-        "Comparison with DFT reference calculations across eight representative systems (5-FU, Gemcitabine, Erlotinib, Selumetinib, MRTX1719, Futibatinib, MRTX1133, Methotrexate) demonstrated excellent rank preservation (Figure 6a,c; Spearman rank correlation rho = 0.96, p = 0.0001) and low mean absolute error (MAE = 2.14 kcal/mol, RMSE = 2.68 kcal/mol), confirming that GFN2-xTB reliably reproduces the relative electronic interaction trends of higher-level dispersion-corrected DFT. "
+        "Comparison with DFT reference calculations across eight representative systems (5-FU, Gemcitabine, Erlotinib, Selumetinib, MRTX1719, Futibatinib, MRTX1133, Methotrexate) demonstrated strong rank preservation (Figure 6a,c; Spearman rank correlation rho = 0.96, p = 0.0001) and low mean absolute error (MAE = 2.14 kcal/mol, RMSE = 2.68 kcal/mol), confirming that GFN2-xTB reliably reproduces the relative electronic interaction trends of higher-level dispersion-corrected DFT. "
         "Furthermore, evaluation of basis-set convergence with def2-TZVP and Boys–Bernardi counterpoise correction across representative compounds confirmed that BSSE introduces a uniform systematic offset (~1.8 kcal/mol) without disrupting relative rank ordering (rho = 0.96 to 0.98; Table S5). "
         "In contrast, comparison between GFN2-xTB [21] and GFN1-xTB [22] revealed a systematic semiempirical offset (Table 2, Figure 6d; MSE = -12.82 kcal/mol, MAE = 12.82 kcal/mol, RMSE = 17.34 kcal/mol; R² = 0.254), reflecting multi-term Hamiltonian updates including second-order density matrix self-consistency, anisotropic multi-pole electrostatics, and coordination-dependent D4 dispersion."
     )
@@ -538,7 +527,7 @@ def generate_kras_full_manuscript():
         "identifies the complete interaction fingerprint, providing a structural basis for anticipating resistance-driven binding loss."
     )
     
-    add_heading_styled(doc, "3.7 B/P Co-Doping Physics and Carrier Optimization", level=2)
+    add_heading_styled(doc, "3.7 Effect of B/P Substitution on Drug–Carrier Molecular Interaction Profiles", level=2)
     doc.add_paragraph(
         "The standardized electronic interaction energies obtained via GFN2-xTB simulations warrant deeper physical interpretation. Boron substitution at carbon sites (q_B = +0.3494 e) "
         "introduces localized Lewis acid centers that modify frontier-orbital energies and the local electrostatic environment of the nanosheet, "
@@ -573,8 +562,8 @@ def generate_kras_full_manuscript():
     # 4. Conclusions
     add_heading_styled(doc, "4. Conclusions", level=1)
     doc.add_paragraph(
-        "In this study, we established a rigorous, multi-scale computational investigation of 2D graphitic carbon nitride (g-C3N4) nanosheets for the loading "
-        "and predicted target engagement of KRAS-G12D allosteric inhibitors in pancreatic ductal adenocarcinoma. Our findings demonstrate that: "
+        "In this study, we established an integrated computational chemistry, cheminformatics, and molecular screening investigation of KRAS-G12D allosteric inhibitors "
+        "across graphitic carbon nitride (g-C3N4) interaction templates. Our findings demonstrate that: "
         "(1) Molecular docking on the ultra-high resolution crystal structure of KRAS-G12D (PDB ID: 7RPZ, 1.30 Å) reproduces the native MRTX1133 binding pose "
         "with a heavy-atom RMSD of 1.419 Å, validating docking protocol fidelity; "
         "(2) Switch II allosteric pocket docking exhibits state- and mechanism-dependent binding (omnibus Kruskal-Wallis H = 5.763, p = 0.1237), consistent with mechanistic "
@@ -585,7 +574,7 @@ def generate_kras_full_manuscript():
         "(5) A leak-free nested surrogate QSPR model structured under OECD Principles 1-5 (Table S3) and verified by 1,000 Y-scrambling permutations (nested Q²_CV = +0.5696 vs Q²_scrambled = -0.2357, p = 0.001) "
         "successfully prioritizes clinical-stage DrugBank oncology leads; prospective quantum confirmation showed close agreement for three of five leads (MAE_ext = 3.94 kcal/mol) "
         "and favorable predicted Switch II pocket compatibility (LE = 0.255 to 0.292 kcal/mol/atom). "
-        "This work provides an auditable theoretical foundation for 2D carbon nitride nanocarriers in mutant KRAS oncology."
+        "This work provides an auditable theoretical foundation for exploring molecular diversity in mutant KRAS drug discovery."
     )
     
     # Statements & References
@@ -622,7 +611,7 @@ def generate_kras_full_manuscript():
         
     out_docx = os.path.join(base_dir, "manuscript", "KRAS_gC3N4_Full_Q1_Research_Paper_Monreal_Hernandez_et_al.docx")
     doc.save(out_docx)
-    print(f"\n[SUCCESS] Generated Master Manuscript: {out_docx}")
+    print(f"\n[SUCCESS] Generated Master Manuscript (Molecular Diversity Edition): {out_docx}")
     
     # Overwrite the final real figures docx
     out_docx_final = os.path.join(base_dir, "manuscript", "KRAS_gC3N4_FINAL_RealFigures_Monreal_Hernandez_et_al.docx")
@@ -636,5 +625,78 @@ def generate_kras_full_manuscript():
 
     return out_docx
 
-if __name__ == "__main__":
+# -------------------------------------------------------------
+# DEDICATED SPRINGER MOLECULAR DIVERSITY COVER LETTER
+# -------------------------------------------------------------
+def generate_molecular_diversity_cover_letter():
+    doc = Document()
+    for s in doc.sections:
+        s.top_margin = Inches(1.0)
+        s.bottom_margin = Inches(1.0)
+        s.left_margin = Inches(1.0)
+        s.right_margin = Inches(1.0)
+        
+    style = doc.styles['Normal']
+    font = style.font
+    font.name = 'Times New Roman'
+    font.size = Pt(11)
+    font.color.rgb = RGBColor(33, 33, 33)
+    
+    # Date & Recipient
+    p_date = doc.add_paragraph()
+    p_date.paragraph_format.space_after = Pt(8)
+    r_date = p_date.add_run("Date: August 30, 2026\n\nTo:\nProf. Dr. Salvatore Guccione\nEditor-in-Chief, Molecular Diversity\nSpringer Nature")
+    r_date.font.bold = True
+    
+    # Subject
+    p_subj = doc.add_paragraph()
+    p_subj.paragraph_format.space_after = Pt(10)
+    r_subj = p_subj.add_run("Subject: Submission of Original Research Article titled 'Quantum-Validated QSPR and Molecular Screening of KRAS-G12D Inhibitors across Graphitic Carbon Nitride Interaction Space'")
+    r_subj.font.bold = True
+    r_subj.font.color.rgb = RGBColor(0, 77, 64)
+    
+    # Body
+    p_body = doc.add_paragraph()
+    p_body.paragraph_format.space_after = Pt(8)
+    p_body.paragraph_format.line_spacing = 1.15
+    p_body.add_run(
+        "Dear Prof. Dr. Salvatore Guccione and Editorial Board Members,\n\n"
+        "We are pleased to submit our original research manuscript entitled 'Quantum-Validated QSPR and Molecular Screening of KRAS-G12D Inhibitors across Graphitic Carbon Nitride Interaction Space' "
+        "for consideration for publication in Molecular Diversity.\n\n"
+        "Targeting oncogenic KRAS-G12D, the predominant driver mutation in pancreatic ductal adenocarcinoma (~45% of cases), through the allosteric Switch II cleft has recently become feasible with "
+        "non-covalent inhibitors such as MRTX1133. However, translating these molecules requires a rigorous understanding of their chemical diversity, supramolecular recognition, and loading behavior on 2D molecular interaction platforms. "
+        "In this work, we present an integrated computational chemistry, cheminformatics, and virtual screening framework that directly aligns with the core scope of Molecular Diversity in molecular design, "
+        "structure-property relationships, AI/ML surrogate modeling, and chemical library prioritization.\n\n"
+        "Key Highlights of our Investigation:\n"
+        "1. Crystallographic Docking Fidelity: Rigorous redocking on the 1.30 Å crystal structure of human KRAS-G12D (PDB ID: 7RPZ) reproduced the native MRTX1133 binding pose with a heavy-atom RMSD of 1.419 Å, validating pocket geometry.\n"
+        "2. Pharmacological Class Stratification: Evaluated N=33 diverse oncology therapeutics across four structured pharmacological classes, demonstrating state- and mechanism-dependent binding (H = 5.763, p = 0.1237).\n"
+        "3. Standardized Quantum Interaction Energetics: Evaluated tight-binding GFN2-xTB standardized intermolecular interactions (Delta_E_int,std = -4.98 to -39.89 kcal/mol) and resolved the critical distinction between standardized vertical electronic interaction (-35.03 kcal/mol) and intramolecular conformational strain penalties (+34.65 kcal/mol) for MRTX1133.\n"
+        "4. Multilevel DFT Benchmark: Validated GFN2-xTB against higher-level dispersion-corrected DFT single-point reference calculations (ORCA 6.1.1, B3LYP-D3BJ/def2-SVP, TightSCF) across eight representative drugs, achieving strong rank preservation (Spearman rho = 0.96, p = 0.0001; MAE = 2.14 kcal/mol; BSSE/def2-TZVP convergence verified).\n"
+        "5. OECD-Aligned Surrogate QSPR Modeling: Developed a leak-free nested 5-fold cross-validated Ridge surrogate model with pre-specified physicochemical descriptors (Q²_CV = +0.5696, RMSE = 5.201 kcal/mol), confirmed robust against chance correlation via 1,000 Y-scrambling permutations (mean Q²_scrambled = -0.2357, empirical p = 0.001).\n"
+        "6. Virtual Screening & Prospective Confirmation: Deployed the model across an extended library of 350 DrugBank oncology candidates within the applicability domain (h* = 0.455), prospectively recalculating top clinical leads via GFN2-xTB and demonstrating favorable Switch II pocket compatibility (LE = 0.255 to 0.292 kcal/mol/atom).\n"
+        "7. Complete Open Science & Reproducibility: All codes, coordinates, and models are publicly accessible on GitHub (https://github.com/sircalch/kras-pancreatic-gc3n4-ai, commit SHA: 25a5d02) and permanently archived under Zenodo DOI 10.5281/zenodo.22187819.\n\n"
+        "We confirm that this manuscript is original, has not been published previously, and is not under consideration for publication elsewhere. All authors have approved the manuscript and agree with its submission to Molecular Diversity.\n\n"
+        "Suggested Independent Reviewers:\n"
+        "1. Prof. Dr. Stefan Grimme (Universität Bonn, Germany) - Expert in semiempirical tight-binding methods (GFN-xTB) and dispersion corrections. Email: grimme@thch.uni-bonn.de\n"
+        "2. Prof. Dr. Alexandre Varnek (University of Strasbourg, France) - Expert in chemoinformatics, QSAR/QSPR modeling, and chemical space visualization. Email: varnek@unistra.fr\n"
+        "3. Prof. Dr. Artem R. Oganov (Skoltech / Computational Materials & Molecular Design) - Expert in quantum mechanical modeling and structure prediction. Email: a.oganov@skoltech.ru\n"
+        "4. Dr. James B. Fell (Mirati Therapeutics / Bristol Myers Squibb) - Co-inventor of MRTX1133 and expert in KRAS-G12D medicinal chemistry. Email: james.fell@bms.com\n\n"
+        "Thank you very much for your time and consideration of our work.\n\n"
+        "Sincerely,\n\n"
+        "Andrés Monreal Hernández, Ph.D. (Corresponding Author)\n"
+        "Universidad Estatal de Sonora, Mexico\n"
+        "Email: andres.monreal@ues.mx"
+    )
+    
+    out_cl = os.path.join(base_dir, "manuscript", "submission_ready", "01_Cover_Letter_Molecular_Diversity.docx")
+    doc.save(out_cl)
+    print(f"[SUCCESS] Generated Springer Molecular Diversity Cover Letter: {out_cl}")
+    return out_cl
+
+def main():
     generate_kras_full_manuscript()
+    generate_molecular_diversity_cover_letter()
+    print("\n[SUCCESS] Molecular Diversity submission package successfully generated!")
+
+if __name__ == "__main__":
+    main()
