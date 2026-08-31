@@ -155,8 +155,8 @@ def generate_kras_full_manuscript():
         "AutoDock Vina v1.2.7 reproduced the crystallographic binding mode of MRTX1133 with a heavy-atom Root-Mean-Square Deviation (RMSD) of 1.419 Å, validating pocket fidelity. "
         "Across a curated master cohort of N=33 oncology therapeutics, docking scores in the Switch II pocket demonstrated state- and mechanism-dependent binding "
         "(Group A median -7.68 kcal/mol; Group B median -5.86 kcal/mol; Group C median -7.82 kcal/mol; Group D median -6.84 kcal/mol; omnibus Kruskal-Wallis H = 5.763, p = 0.1237), "
-        "confirming that small-molecule docking against an isolated inactive Switch II cleft is consistent with state- and mechanism-dependent structural pharmacology. "
-        "GFN2-xTB calculations across the finite 48-atom C21N21H6 heptazine monolayer cluster revealed favorable standardized electronic interaction energies "
+        "showing docking behavior consistent with state- and mechanism-dependent structural pharmacology. "
+        "GFN2-xTB calculations across the finite 48-atom C21N21H6 heptazine planar cluster model revealed favorable standardized electronic interaction energies "
         "(Delta_E_int,std = -4.98 to -39.17 kcal/mol on pristine and -6.96 to -39.89 kcal/mol on B/P co-doped g-C3N4), driven by pi-pi stacking and localized interfacial charge transfer (Delta_Q = -0.139 to +0.655 e). "
         "A multi-level quantum benchmark against dispersion-corrected DFT single-point reference calculations (ORCA 6.1.1, B3LYP-D3BJ/def2-SVP, TightSCF) across eight representative oncology drugs "
         "demonstrated excellent rank preservation (Spearman rho = 0.96, p = 0.0001; MAE = 2.14 kcal/mol, RMSE = 2.68 kcal/mol; counterpoise/def2-TZVP convergence confirmed). "
@@ -442,7 +442,7 @@ def generate_kras_full_manuscript():
 
     # Figure 6: Multilevel Quantum Benchmark (NEW MAIN FIGURE)
     add_image_if_exists(doc, os.path.join(fig_dir, "fig6_multilevel_quantum_benchmark.jpg"),
-                        "Figure 6: Dedicated Multilevel Quantum Chemistry Benchmark: (a) Parity correlation between standardized GFN2-xTB interaction energies and dispersion-corrected DFT single-point reference calculations (ORCA 6.1.1, B3LYP-D3BJ/def2-SVP, TightSCF) across eight representative oncology therapeutics, demonstrating near-perfect rank preservation (Spearman rank correlation rho = 0.96, p = 0.0001; MAE = 2.14 kcal/mol, RMSE = 2.68 kcal/mol); (b) Residual signed error distribution across diverse chemical scaffolds (antimetabolites, TKIs, sulfonamides, and folate antagonists); (c) Spearman rank ordering preservation comparison between DFT reference and GFN2-xTB; (d) Semiempirical Hamiltonian sensitivity comparison between GFN2-xTB and GFN1-xTB (MSE = -12.82 kcal/mol, MAE = 12.82 kcal/mol, RMSE = 17.34 kcal/mol; R2 = 0.254), illustrating multi-term Hamiltonian refinements.")
+                        "Figure 6: Dedicated Multilevel Quantum Chemistry Benchmark: (a) Parity correlation between standardized GFN2-xTB interaction energies and dispersion-corrected DFT single-point reference calculations (ORCA 6.1.1, B3LYP-D3BJ/def2-SVP, TightSCF) across eight representative oncology therapeutics, demonstrating strong rank preservation (Spearman rank correlation rho = 0.96, p = 0.0001; MAE = 2.14 kcal/mol, RMSE = 2.68 kcal/mol); (b) Residual signed error distribution across diverse chemical scaffolds (antimetabolites, TKIs, sulfonamides, and folate antagonists); (c) Spearman rank ordering preservation comparison between DFT reference and GFN2-xTB; (d) Semiempirical Hamiltonian sensitivity comparison between GFN2-xTB and GFN1-xTB (MSE = -12.82 kcal/mol, MAE = 12.82 kcal/mol, RMSE = 17.34 kcal/mol; R2 = 0.254), illustrating multi-term Hamiltonian refinements.")
                 
     add_heading_styled(doc, "3.4 Leak-Free Nested Surrogate QSPR Modeling & OECD Validation", level=2)
     doc.add_paragraph(
@@ -520,11 +520,11 @@ def generate_kras_full_manuscript():
                     
     # Virtual Screening Figure 4
     add_image_if_exists(doc, os.path.join(fig_dir, "fig9_kras_virtual_screening_distribution.png"),
-                        "Figure 4: Multi-Objective Virtual Screening and Prioritization across 350 Clinical-Stage Oncology Candidates: (a) AutoDock Vina binding scores on PDB 7RPZ comparing prioritized leads against benchmark controls; (b) Size-normalized ligand-efficiency comparison across prioritized leads and controls.")
+                        "Figure 4: Multi-Objective Evaluation of Prioritized Leads and Benchmark Controls from the 350-Compound Virtual Screen: (a) AutoDock Vina binding scores on PDB 7RPZ comparing prioritized leads against benchmark controls; (b) Size-normalized ligand-efficiency comparison across prioritized leads and controls.")
     
     # Figure 5: Multi-Scale Structural Architecture (EXACT 4 PANELS)
     add_image_if_exists(doc, os.path.join(fig_dir, "fig10_atomistic_multiscale_final.jpg"),
-                        "Figure 5: Multi-Scale Atomistic Structural Architecture and 2D g-C3N4 Carrier Surface: (a) KRAS-G12D Switch II allosteric pocket with docked MRTX1133 (-9.16 kcal/mol); (b) Direct residue coordination network between MRTX1133 and surrounding residues with measured contact distances (ionic salt-bridge with mutant Asp12, H-bond with Arg68, and aromatic stacking with Tyr96); (c) Pristine 2D g-C3N4 finite monolayer cluster model (C21N21H6, 48 atoms) with MRTX1133 in standardized parallel stacking at z = 3.35 Angstroms (Delta_E_int,std = -35.03 kcal/mol); (d) B/P co-doped g-C3N4 monolayer cluster (C20B1N20P1H6) displaying localized electrostatic charge polarization (Delta_Q = +0.082 e for MRTX1133) and heteroatom dopant sites.")
+                        "Figure 5: Multi-Scale Atomistic Structural Architecture and 2D g-C3N4 Carrier Surface: (a) KRAS-G12D Switch II allosteric pocket with docked MRTX1133 (-9.16 kcal/mol); (b) Direct residue coordination network between MRTX1133 and surrounding residues with measured contact distances (ionic salt-bridge with mutant Asp12, H-bond with Arg68, and aromatic stacking with Tyr96); (c) Pristine 2D g-C3N4 finite planar cluster model (C21N21H6, 48 atoms) with MRTX1133 in standardized parallel stacking at z = 3.35 Angstroms (Delta_E_int,std = -35.03 kcal/mol); (d) B/P co-doped g-C3N4 planar cluster model (C20B1N20P1H6) displaying localized electrostatic charge polarization (Delta_Q = +0.082 e for MRTX1133) and heteroatom dopant sites.")
     
     add_heading_styled(doc, "3.6 Structural Biology of KRAS-G12D and Drug Resistance Context", level=2)
     doc.add_paragraph(
@@ -575,13 +575,13 @@ def generate_kras_full_manuscript():
     doc.add_paragraph(
         "In this study, we established a rigorous, multi-scale computational investigation of 2D graphitic carbon nitride (g-C3N4) nanosheets for the loading "
         "and predicted target engagement of KRAS-G12D allosteric inhibitors in pancreatic ductal adenocarcinoma. Our findings demonstrate that: "
-        "(1) Physical molecular docking on the ultra-high resolution crystal structure of KRAS-G12D (PDB ID: 7RPZ, 1.30 Å) reproduces the native MRTX1133 binding pose "
+        "(1) Molecular docking on the ultra-high resolution crystal structure of KRAS-G12D (PDB ID: 7RPZ, 1.30 Å) reproduces the native MRTX1133 binding pose "
         "with a heavy-atom RMSD of 1.419 Å, validating docking protocol fidelity; "
         "(2) Switch II allosteric pocket docking exhibits state- and mechanism-dependent binding (omnibus Kruskal-Wallis H = 5.763, p = 0.1237), consistent with mechanistic "
         "heterogeneity across pharmacological classes, where tri-complex active-state inhibitors (RMC-6236) and covalent G12C compounds require distinct multi-protein contexts; "
-        "(3) Genuine GFN2-xTB tight-binding quantum calculations across 38 molecules and 4 nanocarriers confirm favorable non-covalent interaction (Delta_E_int,std = -4.98 to -39.89 kcal/mol at standardized z = 3.35 Å), "
+        "(3) GFN2-xTB calculations across 38 molecules and 4 nanocarriers confirm favorable non-covalent interaction (Delta_E_int,std = -4.98 to -39.89 kcal/mol at standardized z = 3.35 Å), "
         "with B/P co-doping (C20B1N20P1H6) primarily modifying interfacial charge polarization (Delta_Q = +0.082 e for MRTX1133) rather than substantially altering interaction energetics; "
-        "(4) Higher-level dispersion-corrected DFT single-point reference calculations (ORCA 6.1.1, B3LYP-D3BJ/def2-SVP) across eight representative oncology therapeutics confirm near-perfect rank preservation (Spearman rho = 0.96, p = 0.0001; MAE = 2.14 kcal/mol; BSSE/def2-TZVP convergence verified); "
+        "(4) Higher-level dispersion-corrected DFT single-point reference calculations (ORCA 6.1.1, B3LYP-D3BJ/def2-SVP) across eight representative oncology therapeutics confirm strong rank preservation (Spearman rho = 0.96, p = 0.0001; MAE = 2.14 kcal/mol; BSSE/def2-TZVP convergence verified); "
         "(5) A leak-free nested surrogate QSPR model structured under OECD Principles 1-5 (Table S3) and verified by 1,000 Y-scrambling permutations (nested Q²_CV = +0.5696 vs Q²_scrambled = -0.2357, p = 0.001) "
         "successfully prioritizes clinical-stage DrugBank oncology leads; prospective quantum confirmation showed close agreement for three of five leads (MAE_ext = 3.94 kcal/mol) "
         "and favorable predicted Switch II pocket compatibility (LE = 0.255 to 0.292 kcal/mol/atom). "
@@ -593,7 +593,7 @@ def generate_kras_full_manuscript():
     doc.add_paragraph(
         "All computational scripts, raw docking coordinates (PDBQT), GFN2-xTB quantum chemistry logs, descriptor matrices, and surrogate QSPR models "
         "are fully open-source and reproducible under the MIT license via the project repository:\n"
-        "• Primary Public Repository: https://github.com/sircalch/kras-pancreatic-gc3n4-ai (Release v1.0.0, commit verified)\n"
+        "• Primary Public Repository: https://github.com/sircalch/kras-pancreatic-gc3n4-ai (Release v1.0.0, Git commit SHA: 25a5d0272016d423205075d11ac1bedb6b99c702)\n"
         "• Permanent Archival DOI: Zenodo Repository DOI: 10.5281/zenodo.22187819"
     )
     
@@ -608,10 +608,17 @@ def generate_kras_full_manuscript():
         r_num = p_ref.add_run(f"{idx}. ")
         r_num.font.bold = True
         p_ref.add_run(ref['citation'] + " ")
-        r_doi = p_ref.add_run(f"doi:{ref['doi']}")
-        r_doi.font.italic = True
-        r_doi.font.size = Pt(9.0)
-        r_doi.font.color.rgb = RGBColor(0, 77, 64)
+        doi_val = ref.get('doi', '')
+        if doi_val.startswith('PMID:'):
+            r_doi = p_ref.add_run(doi_val)
+        elif doi_val:
+            r_doi = p_ref.add_run(f"doi:{doi_val}")
+        else:
+            r_doi = None
+        if r_doi:
+            r_doi.font.italic = True
+            r_doi.font.size = Pt(9.0)
+            r_doi.font.color.rgb = RGBColor(0, 77, 64)
         
     out_docx = os.path.join(base_dir, "manuscript", "KRAS_gC3N4_Full_Q1_Research_Paper_Monreal_Hernandez_et_al.docx")
     doc.save(out_docx)

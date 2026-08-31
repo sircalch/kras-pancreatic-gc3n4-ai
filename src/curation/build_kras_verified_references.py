@@ -59,7 +59,7 @@ KRAS_VERIFIED_REFERENCES = [
         "doi": "10.1039/C2EE03479D"
     },
     {
-        "citation": "Ong, W. J.; Tan, L. L.; Ng, Y. H.; Yong, S. T.; Chai, S. P. Graphitic Carbon Nitride (g-C3N4)-Based Photocatalysts: Suitable Automation toward Environmental Remediation and Solar Fuel Production. Chem. Rev. 2016, 116 (12), 7159–7329.",
+        "citation": "Ong, W. J.; Tan, L. L.; Ng, Y. H.; Yong, S. T.; Chai, S. P. Graphitic Carbon Nitride (g-C3N4)-Based Photocatalysts for Artificial Photosynthesis and Environmental Remediation: Are We a Step Closer To Achieving Sustainability? Chem. Rev. 2016, 116 (12), 7159–7329.",
         "doi": "10.1021/acs.chemrev.6b00075"
     },
     {
@@ -223,8 +223,8 @@ KRAS_VERIFIED_REFERENCES = [
         "doi": "10.1016/S0168-3659(99)00248-5"
     },
     {
-        "citation": "Matsumura, Y.; Maeda, H. A new concept for macromolecular therapeutics in cancer chemotherapy: mechanism of tumoritropic accumulation of proteins and the antitumor agent smancs. Cancer Res. 1986, 46 (12_Pt_1), 6387–6392.",
-        "doi": "10.1016/0008-5472(86)90000-0"
+        "citation": "Matsumura, Y.; Maeda, H. A new concept for macromolecular therapeutics in cancer chemotherapy: mechanism of tumoritropic accumulation of proteins and the antitumor agent smancs. Cancer Res. 1986, 46 (12 Pt 1), 6387–6392.",
+        "doi": "PMID: 2946403"
     },
     {
         "citation": "Mitchell, M. J.; Billingsley, M. M.; Haley, R. M.; Wechsler, M. E.; Peppas, N. A.; Langer, R. Engineering precision nanoparticles for drug delivery. Nat. Rev. Drug Discov. 2021, 20 (2), 101–124.",
@@ -289,7 +289,7 @@ KRAS_VERIFIED_REFERENCES = [
         "doi": "10.3389/fphar.2024.1509319"
     },
     {
-        "citation": "Li, Y.; Zhang, J.; Wang, X.; Chen, H.; Liu, Q. Biological degradation of graphitic carbon nitride sheets and autophagy induction in macrophages. Nanoscale 2025, DOI 10.1039/D5NR00795J.",
+        "citation": "Swetha, K.; Bhatnagar, A.; Lakavathu, M.; Poornima, P.; Ganesh, P.; Kamath, A.; Bonam, S. R.; Srinivasula, S. M.; Kurapati, R. Biological degradation of graphitic carbon nitride sheets and autophagy induction in macrophages. Nanoscale 2025, 17 (28), 15267–15278.",
         "doi": "10.1039/D5NR00795J"
     },
     {
