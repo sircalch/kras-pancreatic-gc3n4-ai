@@ -585,7 +585,7 @@ def generate_kras_full_manuscript():
     doc.add_paragraph(
         "All computational scripts, raw docking coordinates (PDBQT), GFN2-xTB quantum chemistry logs, descriptor matrices, and surrogate QSPR models "
         "are fully open-source and reproducible under the MIT license via the project repository:\n"
-        "• Primary Public Repository: https://github.com/sircalch/kras-pancreatic-gc3n4-ai (Release v1.0.0, Git commit SHA: b9e37c1)\n"
+        "• Primary Public Repository: https://github.com/sircalch/kras-pancreatic-gc3n4-ai (Release v1.0.0, Git commit SHA: 940cba4)\n"
         "• Permanent Archival DOI: Zenodo Repository DOI: 10.5281/zenodo.22187819"
     )
     
