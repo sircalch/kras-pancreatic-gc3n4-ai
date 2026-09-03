@@ -14,8 +14,8 @@
 
 ### 📁 `02_Figure8_QSPR_Validation/`
 - `oof_observed_vs_predicted_qspr.csv` -> Out-of-fold observed (GFN2-xTB QM) vs predicted (Ridge QSPR) Delta_E_ads for all 33 compounds, with residuals, standardized residuals, and hat-matrix leverages (hi).
-  * Metrics: Q2_CV = +0.5696, RMSE = 5.201 kcal/mol, MAE = 4.194 kcal/mol.
-- `yscrambling_1000_permutations.csv` -> 1,000 Y-scrambling permutation iterations (mean Q2_scr = -0.2357, empirical p-value = 0.0010).
+  * Metrics (leak-free nested 5x5 CV): Q2_CV = +0.584, RMSE = 5.114 kcal/mol, MAE = 4.333 kcal/mol.
+- `yscrambling_1000_permutations.csv` -> 1,000 Y-scrambling permutation iterations (mean Q2_scr = -0.120, empirical p-value = 0.0010).
 - `table3_external_qm_validation_leads.csv` -> Table 3 data with external QM recalculations for 5 screening leads (Avapritinib, Futibatinib, Belumosudil, Capivasertib, Pimicotinib).
 - `qspr_model_summary.json` -> Complete machine learning statistics, metrics, and analytical equation.
 

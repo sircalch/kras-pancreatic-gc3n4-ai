@@ -10,8 +10,31 @@ import os
 import hashlib
 from pathlib import Path
 
-base_dir = Path(r"c:\Users\Andre\Proyectos doctorado\kras-pancreatic-gC3N4-ai")
 
+def _project_root(marker="MANIFEST_SHA256.txt"):
+    from pathlib import Path as _P
+    here = _P(__file__).resolve()
+    for anc in [here.parent, *here.parents]:
+        if (anc / marker).exists() or ((anc / "data").is_dir() and (anc / "README.md").exists()):
+            return anc
+    return here.parent
+
+
+def _find_xtb():
+    import shutil
+    from pathlib import Path as _P
+    w = shutil.which("xtb") or shutil.which("xtb.exe")
+    if w:
+        return _P(w)
+    for anc in [_P(__file__).resolve().parent, *_P(__file__).resolve().parents]:
+        hits = list(anc.glob("**/xtb-*/bin/xtb.exe")) or list(anc.glob("**/xtb-*/bin/xtb"))
+        if hits:
+            return hits[0]
+    return _P("xtb")
+
+
+
+base_dir = _project_root()
 def hash_file(filepath):
     h = hashlib.sha256()
     with open(filepath, "rb") as f:

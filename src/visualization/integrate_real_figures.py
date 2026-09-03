@@ -20,6 +20,30 @@ import shutil
 import os
 import copy
 from pathlib import Path
+
+
+def _project_root(marker="MANIFEST_SHA256.txt"):
+    from pathlib import Path as _P
+    here = _P(__file__).resolve()
+    for anc in [here.parent, *here.parents]:
+        if (anc / marker).exists() or ((anc / "data").is_dir() and (anc / "README.md").exists()):
+            return anc
+    return here.parent
+
+
+def _find_xtb():
+    import shutil
+    from pathlib import Path as _P
+    w = shutil.which("xtb") or shutil.which("xtb.exe")
+    if w:
+        return _P(w)
+    for anc in [_P(__file__).resolve().parent, *_P(__file__).resolve().parents]:
+        hits = list(anc.glob("**/xtb-*/bin/xtb.exe")) or list(anc.glob("**/xtb-*/bin/xtb"))
+        if hits:
+            return hits[0]
+    return _P("xtb")
+
+
 from docx import Document
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -29,7 +53,7 @@ import zipfile
 import io
 
 # ── PATHS ─────────────────────────────────────────────────────────────────────
-BASE_DIR = Path(r"c:\Users\Andre\Proyectos doctorado\kras-pancreatic-gC3N4-ai")
+BASE_DIR = _project_root()
 UPLOAD_DIR = Path(r"C:\Users\Andre\.gemini\antigravity\brain\93c3b72a-7190-407d-8ac2-98ee7c61aaf9\.user_uploaded")
 MANUSCRIPT_IN  = BASE_DIR / "manuscript" / "Beilstein_Manuscript_KRAS_gC3N4_Monreal_Hernandez_et_al.docx"
 MANUSCRIPT_OUT = BASE_DIR / "manuscript" / "KRAS_gC3N4_FINAL_RealFigures_Monreal_Hernandez_et_al.docx"
@@ -69,16 +93,16 @@ CAPTIONS = {
         "Figure 8. QSPR model validation for adsorption energy (\u0394E\u2090\u1d48\u02e2) on "
         "B/P co-doped g-C\u2083N\u2084. (A) Out-of-fold (OOF) predicted vs. observed GFN2-xTB "
         "adsorption energies for the 33-compound training set (N = 33; "
-        "Q\u00b2\u1d04\u1d20 = +0.5696, RMSE = 5.201 kcal mol\u207b\u00b9, "
-        "MAE = 4.194 kcal mol\u207b\u00b9). Color coding: Group A \u2013 direct KRAS-G12D "
+        "leak-free nested 5\u00d75 CV Q\u00b2\u1d04\u1d20 = +0.584, RMSE = 5.11 kcal mol\u207b\u00b9, "
+        "MAE = 4.33 kcal mol\u207b\u00b9). Color coding: Group A \u2013 direct KRAS-G12D "
         "inhibitors (blue circles); Group B \u2013 mutation-selective/Pan-RAS (orange squares); "
         "Group C \u2013 downstream MAPK/RTK (green triangles); Group D \u2013 cytotoxic "
         "chemotherapy (red diamonds). (B) Williams plot (standardized residuals vs. hat leverage "
         "h\u1d62): warning leverage h* = 0.455 (dashed vertical line) and \u00b13\u03c3 residual "
         "limits (dashed horizontal lines); Methotrexate is the sole structural outlier (h\u1d62 > "
         "h*). (C) Y-scrambling validation (1,000 permutations): scrambled models yield "
-        "\u1e41Q\u00b2 = \u22120.2357 (orange dashed line), empirical p-value = 0.001 (p < 0.001); "
-        "the observed Q\u00b2\u1d04\u1d20 = +0.5696 (red line) exceeds all scrambled values, "
+        "\u1e41Q\u00b2 = \u22120.12 (orange dashed line), empirical p-value = 0.001 (p < 0.001); "
+        "the observed Q\u00b2\u1d04\u1d20 = +0.584 (green line) exceeds all scrambled values, "
         "confirming non-chance correlation. (D) External quantum validation for the five "
         "prioritized leads: QSPR-predicted vs. GFN2-xTB-computed \u0394E\u2090\u1d48\u02e2 with "
         "leverage (h\u1d62), AutoDock Vina score, and ligand efficiency (LE). All leads fall "

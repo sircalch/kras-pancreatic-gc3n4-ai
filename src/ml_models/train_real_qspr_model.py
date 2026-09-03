@@ -3,7 +3,9 @@ train_real_qspr_model.py
 Synchronizes Master Curated Database with genuine quantum observables.
 Trains a leak-free Ridge QSPR surrogate model (n=33, p=4, n/p = 8.25) on genuine GFN2-xTB Delta_E_ads:
 - Pre-specified orthogonal descriptors: MW, PSA, Polarizability_alpha, Quantum_omega
-- Nested 5-fold cross-validation (Q2_CV, RMSE, MAE)
+- Fully leak-free nested 5x5 cross-validation: StandardScaler is fit inside the
+  pipeline on outer-training folds only, and the Ridge alpha is tuned by an inner
+  RidgeCV on each outer split (Q2_CV, RMSE, MAE)
 - 1,000 Y-scrambling permutations with exact empirical p-value
 - Out-of-fold (OOF) observed vs predicted data generation
 - Williams applicability domain leverage analysis (h* = 0.455)
@@ -14,9 +16,10 @@ import os
 import json
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import KFold, cross_val_predict
-from sklearn.linear_model import Ridge
+from sklearn.model_selection import KFold, cross_val_predict, GridSearchCV
+from sklearn.linear_model import Ridge, RidgeCV
 from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -72,39 +75,81 @@ def train_and_validate_qspr():
     print(f"TRAINING REGULARIZED QSPR SURROGATE ON GENUINE QUANTUM ADSORPTION (n={n}, p={p}, n/p={n/p:.2f})")
     print("=" * 85)
     
-    # 1. Nested 5-fold Cross-Validation
-    cv = KFold(n_splits=5, shuffle=True, random_state=42)
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-    
-    ridge = Ridge(alpha=1.0)
-    y_oof = cross_val_predict(ridge, X_scaled, y, cv=cv)
-    
+    # 1. Fully leak-free nested 5-fold cross-validation.
+    #    - Outer 5-fold CV produces the out-of-fold predictions used for Q2_CV.
+    #    - Inner 5-fold CV (RidgeCV) tunes the Ridge alpha on each outer split.
+    #    - StandardScaler lives INSIDE the pipeline, so it is refit on each
+    #      outer-training split only (no test-fold statistics leak into scaling).
+    outer_cv = KFold(n_splits=5, shuffle=True, random_state=42)
+    inner_cv = KFold(n_splits=5, shuffle=True, random_state=42)
+    alpha_grid = np.array([0.001, 0.01, 0.1, 0.3, 1.0, 3.0, 10.0, 30.0, 100.0, 300.0, 1000.0])
+
+    def make_pipe():
+        # RidgeCV performs the inner alpha search efficiently; StandardScaler is
+        # inside the pipeline so it is refit on outer-training folds only.
+        return Pipeline([
+            ("scaler", StandardScaler()),
+            ("ridge", RidgeCV(alphas=alpha_grid, cv=inner_cv)),
+        ])
+
+    def nested_estimator():
+        return make_pipe()
+
+    y_oof = cross_val_predict(nested_estimator(), X, y, cv=outer_cv)
+
     press = np.sum((y - y_oof) ** 2)
     tss = np.sum((y - np.mean(y)) ** 2)
     q2_cv = 1.0 - (press / tss)
     rmse = np.sqrt(mean_squared_error(y, y_oof))
     mae = mean_absolute_error(y, y_oof)
-    
-    print(f"  • Nested 5-Fold CV: Q2_CV = {q2_cv:+.4f}, RMSE = {rmse:.3f} kcal/mol, MAE = {mae:.3f} kcal/mol")
-    
-    # 2. 1,000 Y-Scrambling Permutations
-    print("  • Running 1,000 Y-scrambling permutations ...", end="", flush=True)
-    np.random.seed(42)
+
+    # Per-fold pooled Q2 (each outer test fold scored against the global mean)
+    fold_q2 = []
+    for _, test_idx in outer_cv.split(X):
+        yt, yp = y[test_idx], y_oof[test_idx]
+        fold_q2.append(float(1.0 - np.sum((yt - yp) ** 2) / np.sum((yt - np.mean(y)) ** 2)))
+    fold_q2_mean = float(np.mean(fold_q2))
+    fold_q2_sd = float(np.std(fold_q2, ddof=1))
+
+    # Non-parametric bootstrap CIs (resample OOF residual pairs)
+    _bs = np.random.default_rng(2024)
+    bs_rmse, bs_mae = [], []
+    idx_all = np.arange(len(y))
+    for _ in range(5000):
+        bi = _bs.choice(idx_all, size=len(y), replace=True)
+        bs_rmse.append(np.sqrt(np.mean((y[bi] - y_oof[bi]) ** 2)))
+        bs_mae.append(np.mean(np.abs(y[bi] - y_oof[bi])))
+    rmse_ci = [float(np.percentile(bs_rmse, 2.5)), float(np.percentile(bs_rmse, 97.5))]
+    mae_ci = [float(np.percentile(bs_mae, 2.5)), float(np.percentile(bs_mae, 97.5))]
+
+    print(f"  • Leak-free Nested 5-Fold CV: Q2_CV = {q2_cv:+.4f}, RMSE = {rmse:.3f} kcal/mol, MAE = {mae:.3f} kcal/mol")
+    print(f"    per-fold Q2 = {[round(v, 3) for v in fold_q2]} (mean {fold_q2_mean:.3f} +/- {fold_q2_sd:.3f})")
+    print(f"    RMSE 95% CI {rmse_ci[0]:.2f}-{rmse_ci[1]:.2f} | MAE 95% CI {mae_ci[0]:.2f}-{mae_ci[1]:.2f}")
+
+    # 2. 1,000 Y-Scrambling Permutations (identical nested procedure on permuted y)
+    print("  • Running 1,000 Y-scrambling permutations (nested) ...", end="", flush=True)
+    rng = np.random.default_rng(42)
     q2_scrambled = []
     for _ in range(1000):
-        y_scr = np.random.permutation(y)
-        y_scr_pred = cross_val_predict(ridge, X_scaled, y_scr, cv=cv)
+        y_scr = rng.permutation(y)
+        y_scr_pred = cross_val_predict(nested_estimator(), X, y_scr, cv=outer_cv, n_jobs=-1)
         press_scr = np.sum((y_scr - y_scr_pred) ** 2)
         tss_scr = np.sum((y_scr - np.mean(y_scr)) ** 2)
         q2_scrambled.append(1.0 - (press_scr / tss_scr))
-        
+
     mean_scr_q2 = float(np.mean(q2_scrambled))
     p_perm = (np.sum(np.array(q2_scrambled) >= q2_cv) + 1.0) / 1001.0
     print(f" DONE | Mean Q2_scr = {mean_scr_q2:+.4f} | Empirical p-value = {p_perm:.4f}")
-    
-    # 3. Fit Final Model for Analytical Equation
-    ridge.fit(X_scaled, y)
+
+    # 3. Fit final deployment model (alpha re-selected on the full set) for the
+    #    analytical equation and external lead predictions.
+    final_pipe = make_pipe()
+    final_pipe.fit(X, y)
+    scaler = final_pipe.named_steps["scaler"]
+    ridge = final_pipe.named_steps["ridge"]
+    best_alpha = float(ridge.alpha_)
+    X_scaled = scaler.transform(X)
+    print(f"  • Final model alpha (selected on full set): {best_alpha}")
     coefs = ridge.coef_
     intercept = ridge.intercept_
     eq_str = f"Delta_E_ads = {intercept:.3f}"
@@ -195,8 +240,15 @@ def train_and_validate_qspr():
         "n_samples": n,
         "p_descriptors": p,
         "selected_descriptors": selected_features,
+        "cv_scheme": "leak-free nested 5x5 CV (StandardScaler inside pipeline; inner RidgeCV over Ridge alpha)",
+        "final_alpha": float(best_alpha),
         "Q2_CV": round(float(q2_cv), 4),
+        "fold_Q2": [round(v, 4) for v in fold_q2],
+        "fold_Q2_mean": round(fold_q2_mean, 4),
+        "fold_Q2_sd": round(fold_q2_sd, 4),
         "RMSE_kcal_mol": round(float(rmse), 3),
+        "RMSE_95CI_kcal_mol": [round(rmse_ci[0], 2), round(rmse_ci[1], 2)],
+        "MAE_95CI_kcal_mol": [round(mae_ci[0], 2), round(mae_ci[1], 2)],
         "MAE_kcal_mol": round(float(mae), 3),
         "Y_Scrambling_Mean_Q2": round(float(mean_scr_q2), 4),
         "Y_Scrambling_Empirical_P": round(float(p_perm), 4),

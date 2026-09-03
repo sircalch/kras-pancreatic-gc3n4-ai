@@ -39,7 +39,7 @@ Todos los datos numéricos y estructuras calculadas se encuentran en:
 - **Contenido Requerido**: Diagrama de flujo científico estructurado en 4 fases metodológicas:
   1. **Fase 1 (Validación Cristalográfica)**: PDB 7RPZ (1.30 Å), extracción de ligando 6IC, AutoDock Vina v1.2.7 (RMSD = 1.419 Å).
   2. **Fase 2 (Modelado Cuántico GFN2-xTB)**: Monocapas $C_{18}N_{24}H_6$ (prístina y B/P co-dopada), optimización geométrica, corrección D4, cálculo de $\Delta E_{\text{ads}}$ y $\Delta Q$.
-  3. **Fase 3 (Modelo Subrogado QSPR Anidado)**: $n=33$, $p=4$ descriptores a priori ($MW, PSA, \alpha, \omega$), $n/p = 8.25$, validación cruzada anidada 5-fold ($Q^2_{\text{CV}} = +0.5696$), 1,000 permutaciones Y-scrambling ($p = 0.0010$), Dominio de Williams ($h^* = 0.455$).
+  3. **Fase 3 (Modelo Subrogado QSPR Anidado)**: $n=33$, $p=4$ descriptores a priori ($MW, PSA, \alpha, \omega$), $n/p = 8.25$, validación cruzada anidada 5×5 sin fuga de datos (StandardScaler dentro del pipeline; $\alpha$ de Ridge ajustado en CV interno) ($Q^2_{\text{CV}} = +0.584$), 1,000 permutaciones Y-scrambling ($p = 0.0010$), Dominio de Williams ($h^* = 0.455$).
   4. **Fase 4 (Screening Desacoplado con Validación QM Externa)**: 350 candidatos DrugBank $\to$ 328 en dominio AD (93.7%) $\to$ Recálculo QM GFN2-xTB de *leads* $\to$ Confirmación Vina y Ligand Efficiency.
 - **Fuente de Datos**: `src/visualization/generate_kras_full_manuscript.py`.
 
@@ -107,19 +107,24 @@ Todos los datos numéricos y estructuras calculadas se encuentran en:
 
 ---
 
-### 🖼️ Figura 8: Statistical Validation of the QSPR Surrogate Model (3 Paneles)
+### 🖼️ Figura 8: Statistical Validation of the QSPR Surrogate Model (4 Paneles)
+- **Metodología**: validación cruzada anidada 5×5 **sin fuga de datos** — `StandardScaler` dentro del `Pipeline` (se reajusta solo en el train de cada fold externo); $\alpha$ de Ridge seleccionada por `RidgeCV` en el bucle interno de cada fold ($\alpha_{\text{final}} = 3.0$).
 - **Contenido Requerido**:
-  - **Panel (a)**: Parity plot Out-of-Fold (OOF): $\Delta E_{\text{ads}}$ observado cuántico (GFN2-xTB) vs $\Delta E_{\text{ads}}$ predicho por QSPR (Ridge $\alpha=1.0$).
+  - **Panel (a)**: Parity plot Out-of-Fold (OOF): $\Delta E_{\text{ads}}$ observado cuántico (GFN2-xTB) vs $\Delta E_{\text{ads}}$ predicho OOF por la QSPR.
     - Línea de paridad ideal $y = x$.
-    - Métricas anotadas: **$Q^2_{\text{CV}} = +0.5696$**, **$\text{RMSE} = 5.201\text{ kcal/mol}$**, **$\text{MAE} = 4.194\text{ kcal/mol}$**.
-  - **Panel (b)**: Gráfico de residuales ($\text{Residual} = y_{\text{obs}} - y_{\text{pred}}$) vs valores predichos, con línea central en $0.0$.
-  - **Panel (c)**: Histograma de 1,000 permutaciones $Y$-scrambling:
-    - Distribución centrada en $\overline{Q^2_{\text{scrambled}}} = -0.2357$.
-    - Línea vertical discontinua roja en el valor real $Q^2_{\text{CV}} = +0.5696$.
-    - Anotación: **Empirical $p\text{-value} = 0.0010$ ($p < 0.001$)**, confirmando ausencia de correlación por azar.
+    - Métricas anotadas: **$Q^2_{\text{CV}} = +0.584$**, **$\text{RMSE} = 5.114\text{ kcal/mol}$**, **$\text{MAE} = 4.333\text{ kcal/mol}$** ($n=33$, $p=4$).
+  - **Panel (b)**: Williams plot OECD — *hat-matrix leverage* ($h_i$) vs residuales estandarizados OOF ($\delta_i$); líneas en $h^* = 0.455$ y $\pm 3\sigma$; **32/33** dentro del dominio.
+  - **Panel (c)**: Histograma de 1,000 permutaciones $Y$-scrambling (mismo procedimiento anidado):
+    - Distribución centrada en $\overline{Q^2_{\text{scrambled}}} = -0.120$.
+    - Línea vertical discontinua verde en el valor real $Q^2_{\text{CV}} = +0.584$.
+    - Anotación: **Empirical $p\text{-value} = 0.0010$**, confirmando ausencia de correlación por azar.
+  - **Panel (d)**: Confirmación prospectiva sobre 5 *leads* priorizados (Tabla 3): $\Delta E_{\text{ads}}$ recalculado GFN2-xTB vs predicho QSPR; $\text{MAE}_{\text{ext}} = 3.82$, $\text{RMSE}_{\text{ext}} = 5.16\text{ kcal/mol}$, $r^2 = 0.669$.
 - **Archivos Fuente**:
   - Paneles a y b: `results/qspr/oof_observed_vs_predicted_qspr.csv`
   - Panel c: `results/qspr/yscrambling_1000_permutations.csv`
+  - Panel d: `results/qspr/table3_external_qm_validation_leads.csv`
+  - Métricas: `results/qspr/qspr_model_summary.json`
+- **Generación**: `python src/visualization/generate_kras_all_figures_audited.py` → `figures/fig8_qspr_validation_final.jpg` (estrictamente de los CSV/JSON anteriores; sin datos simulados).
 
 ---
 

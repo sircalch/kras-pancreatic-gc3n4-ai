@@ -1,9 +1,10 @@
 """
 generate_kras_q1_rigorous_figures.py
 Master Scientific Evidence & Validation Figure Suite (Figures 1-9 at 300+ DPI)
-Updated with live Kruskal-Wallis omnibus statistics across the 33 curated master compounds,
-exact positive Q2 (+0.9987), Williams leverage boundary analysis (h*=0.455),
-and confirmatory lead screening with authentic Ligand Efficiency metrics.
+Updated with live Kruskal-Wallis omnibus statistics across the 33 curated master compounds.
+Figures 7 and 8 are rendered strictly from the real leak-free nested 5x5 CV artifacts
+produced by train_real_qspr_model.py (results/qspr/*.csv + qspr_model_summary.json);
+no simulated or hardcoded QSPR metrics.
 """
 
 import os
@@ -124,89 +125,100 @@ def make_fig4_group_discrimination(base_dir, fig_dir):
     plt.close()
     print(f"Generated Figure 4: {out_p}")
 
+def _load_qspr_artifacts(base_dir):
+    qdir = os.path.join(base_dir, "results", "qspr")
+    oof = pd.read_csv(os.path.join(qdir, "oof_observed_vs_predicted_qspr.csv"))
+    scr = pd.read_csv(os.path.join(qdir, "yscrambling_1000_permutations.csv"))
+    with open(os.path.join(qdir, "qspr_model_summary.json")) as fh:
+        summ = json.load(fh)
+    return oof, scr, summ
+
 def make_fig7_williams_regularized(base_dir, fig_dir):
-    data_path = os.path.join(base_dir, "data", "processed", "MASTER_COMPOUNDS_CURATED.csv")
-    df = pd.read_csv(data_path)
-    
-    selected_features = ["MW", "PSA", "Polarizability_alpha", "Electrophilicity_omega"]
-    X = df[selected_features].values
-    y = df['Delta_E_ads_Doped_kcal_mol'].values
-    n, p = X.shape
-    
-    from sklearn.preprocessing import StandardScaler
-    from sklearn.linear_model import Ridge
-    
-    X_scaled = StandardScaler().fit_transform(X)
-    ridge = Ridge(alpha=1.0)
-    ridge.fit(X_scaled, y)
-    y_pred = ridge.predict(X_scaled)
-    
-    H = X_scaled @ np.linalg.pinv(X_scaled.T @ X_scaled) @ X_scaled.T
-    leverages = np.diag(H)
-    h_star = 3.0 * (p + 1) / n
-    residuals = y - y_pred
-    std_residuals = residuals / np.std(residuals)
-    
+    # Real out-of-fold leverages / standardized residuals (leak-free nested 5x5 CV).
+    oof, _, summ = _load_qspr_artifacts(base_dir)
+    n = int(summ["n_samples"])
+    p = int(summ["p_descriptors"])
+    h_star = float(summ["Williams_h_star"])
+    leverages = oof["Hat_Leverage_hi"].values
+    std_residuals = oof["Std_Residual"].values
+    names = oof["Compound"].astype(str).values
+    inside = int(np.sum((leverages <= h_star) & (np.abs(std_residuals) <= 3.0)))
+
     fig, ax = plt.subplots(figsize=(10, 5.8), dpi=300)
-    
-    ax.scatter(leverages, std_residuals, color='#00695C', s=65, edgecolor='k', alpha=0.85, label=f'Curated Compounds (n={n})')
-    
-    # Highlight Cobimetinib
-    cobi_idx = df[df['name'] == 'Cobimetinib'].index
-    if len(cobi_idx) > 0:
-        c_i = cobi_idx[0]
-        ax.scatter([leverages[c_i]], [std_residuals[c_i]], color='#D84315', s=110, edgecolor='k', zorder=5, label='Cobimetinib (h=0.571, boundary influence)')
-        ax.annotate(f"Cobimetinib\n(hi={leverages[c_i]:.3f}, |δ|<1.0σ)", (leverages[c_i], std_residuals[c_i]), 
-                    xytext=(leverages[c_i]-0.12, std_residuals[c_i]+0.6),
-                    arrowprops=dict(arrowstyle="->", color='#D84315', lw=1.2), fontsize=9.0, fontweight='bold', color='#D84315')
-    
+    ax.scatter(leverages, std_residuals, color='#00695C', s=65, edgecolor='k', alpha=0.85,
+               label=f'Curated Compounds (n={n})')
+
+    # Highlight the highest-leverage compound (data-driven, not hardcoded)
+    hi_i = int(np.argmax(leverages))
+    ax.scatter([leverages[hi_i]], [std_residuals[hi_i]], color='#D84315', s=110, edgecolor='k', zorder=5,
+               label=f'{names[hi_i]} (highest leverage, hi={leverages[hi_i]:.3f})')
+    ax.annotate(f"{names[hi_i]}\n(hi={leverages[hi_i]:.3f})", (leverages[hi_i], std_residuals[hi_i]),
+                xytext=(leverages[hi_i] - 0.10, std_residuals[hi_i] + 0.6),
+                arrowprops=dict(arrowstyle="->", color='#D84315', lw=1.2),
+                fontsize=9.0, fontweight='bold', color='#D84315')
+
     ax.axvline(h_star, color='red', linestyle='--', lw=2.0, label=f'Warning Leverage h* = {h_star:.3f}')
     ax.axhline(3.0, color='blue', linestyle=':', lw=1.5, label='±3σ Standardized Residual Limit')
     ax.axhline(-3.0, color='blue', linestyle=':', lw=1.5)
     ax.axhline(0.0, color='gray', linestyle='-', lw=0.8, alpha=0.7)
-    
+
     ax.set_xlabel("Hat-Matrix Leverage ($h_i$)", fontsize=11, fontweight='bold')
-    ax.set_ylabel("Standardized Residuals ($\delta_i$)", fontsize=11, fontweight='bold')
-    ax.set_title(f"Figure 7: OECD Principle 3 Williams Plot for E_ads Surrogate Model (p={p}, n={n}, h*={h_star:.3f})", fontsize=12.5, fontweight='bold', pad=12)
+    ax.set_ylabel("OOF Standardized Residuals ($\\delta_i$)", fontsize=11, fontweight='bold')
+    ax.set_title(f"Figure 7: OECD Principle 3 Williams Plot, E_ads Surrogate (leak-free nested CV; p={p}, n={n}, "
+                 f"h*={h_star:.3f}; {inside}/{n} inside AD)", fontsize=11.5, fontweight='bold', pad=12)
     ax.grid(True, linestyle=':', alpha=0.6)
-    ax.legend(loc='lower left', frameon=True, fontsize=9.5)
+    ax.legend(loc='lower left', frameon=True, fontsize=9.0)
     ax.set_ylim(-3.8, 3.8)
-    
+
     out_p = os.path.join(fig_dir, "fig7_kras_williams_applicability_domain.png")
     plt.savefig(out_p, bbox_inches='tight')
     plt.close()
     print(f"Generated Figure 7: {out_p}")
 
 def make_fig8_yscrambling(base_dir, fig_dir):
+    # Real 1,000-permutation Y-scrambling distribution from the leak-free nested CV.
+    _, scr, summ = _load_qspr_artifacts(base_dir)
+    q2_scrambled = scr["Q2_Scrambled"].values
+    q2_cv = float(summ["Q2_CV"])
+    scr_mean = float(summ["Y_Scrambling_Mean_Q2"])
+    p_perm = float(summ["Y_Scrambling_Empirical_P"])
+    n_perm = len(q2_scrambled)
+
     fig, ax = plt.subplots(figsize=(10, 5.5), dpi=300)
-    
-    np.random.seed(42)
-    q2_scrambled = np.random.normal(loc=-0.2485, scale=0.08, size=100)
-    
-    sns.histplot(q2_scrambled, kde=True, color='#D84315', ax=ax, bins=15, edgecolor='k', alpha=0.7, label='Y-Scrambled Permutations (n=100, mean = -0.2485)')
+    sns.histplot(q2_scrambled, kde=True, color='#D84315', ax=ax, bins=25, edgecolor='k', alpha=0.7,
+                 label=f'Y-Scrambled Permutations (n={n_perm:,}, mean = {scr_mean:+.3f})')
     ax.axvline(0.0, color='black', linestyle='-', lw=1.2, label='Chance Correlation Threshold (Q² = 0.0)')
-    ax.axvline(0.9987, color='#00695C', linestyle='--', lw=2.5, label='Original E_ads Surrogate Model (Q²_CV = +0.9987)')
-    
+    ax.axvline(q2_cv, color='#00695C', linestyle='--', lw=2.5,
+               label=f'Leak-Free Nested CV Model (Q²_CV = {q2_cv:+.3f})')
+
     ax.set_xlabel("Cross-Validated $Q^2$ Metric", fontsize=11, fontweight='bold')
     ax.set_ylabel("Permutation Frequency", fontsize=11, fontweight='bold')
-    ax.set_title("Figure 8: Y-Scrambling Permutation Test (n=100): Validating Non-Chance Physics of E_ads Surrogate", fontsize=12.5, fontweight='bold', pad=12)
+    ax.set_title(f"Figure 8: Y-Scrambling Permutation Test (n={n_perm:,}, empirical p = {p_perm:.3f}): "
+                 f"Non-Chance Physics of the E_ads Surrogate", fontsize=11.5, fontweight='bold', pad=12)
     ax.grid(True, linestyle=':', alpha=0.6)
-    ax.legend(loc='upper right', frameon=True)
-    ax.set_xlim(-0.6, 1.1)
-    
+    ax.legend(loc='upper center', frameon=True, fontsize=9.0)
+    ax.set_xlim(min(-0.6, float(q2_scrambled.min()) - 0.1), max(1.0, q2_cv + 0.15))
+
     out_p = os.path.join(fig_dir, "fig8_kras_yscrambling_validation.png")
     plt.savefig(out_p, bbox_inches='tight')
     plt.close()
     print(f"Generated Figure 8: {out_p}")
 
 def make_fig9_virtual_screening(base_dir, fig_dir):
-    # Confirmatory candidates with true MW and real heavy atom counts
-    conf_data = [
-        {"name": "Avapritinib", "category": "Top_Lead", "MW": 498.57, "heavy_atoms": 37, "Real_Vina_Score_kcal_mol": -9.43, "LE": 0.255},
-        {"name": "Futibatinib", "category": "Top_Lead", "MW": 418.46, "heavy_atoms": 31, "Real_Vina_Score_kcal_mol": -9.04, "LE": 0.292},
-        {"name": "Belumosudil", "category": "Top_Lead", "MW": 452.52, "heavy_atoms": 34, "Real_Vina_Score_kcal_mol": -8.99, "LE": 0.264},
-        {"name": "Capivasertib", "category": "Top_Lead", "MW": 428.92, "heavy_atoms": 30, "Real_Vina_Score_kcal_mol": -8.45, "LE": 0.282},
-        {"name": "Pimicotinib", "category": "Top_Lead", "MW": 476.54, "heavy_atoms": 35, "Real_Vina_Score_kcal_mol": -8.21, "LE": 0.235},
+    # Top-lead rows come straight from Table 3 (results/qspr/table3_external_qm_validation_leads.csv);
+    # controls are the standard-of-care reference set with published heavy-atom counts.
+    t3 = pd.read_csv(os.path.join(base_dir, "results", "qspr", "table3_external_qm_validation_leads.csv"))
+    _mw = {"Avapritinib": 498.57, "Futibatinib": 418.46, "Belumosudil": 452.52,
+           "Capivasertib": 428.92, "Pimicotinib": 476.54}
+    conf_data = []
+    for _, r in t3.iterrows():
+        nm = r["Lead_Compound"]
+        vina = float(r["AutoDock_Vina_Score_kcal_mol"])
+        le = float(r["Ligand_Efficiency_kcal_mol_atom"])
+        heavy = int(round(abs(vina) / le)) if le else 0
+        conf_data.append({"name": nm, "category": "Top_Lead", "MW": _mw.get(nm, float("nan")),
+                          "heavy_atoms": heavy, "Real_Vina_Score_kcal_mol": vina, "LE": le})
+    conf_data += [
         {"name": "Gemcitabine", "category": "Control", "MW": 263.20, "heavy_atoms": 18, "Real_Vina_Score_kcal_mol": -6.93, "LE": 0.385},
         {"name": "5-Fluorouracil", "category": "Control", "MW": 130.08, "heavy_atoms": 9, "Real_Vina_Score_kcal_mol": -5.07, "LE": 0.563},
         {"name": "Capecitabine", "category": "Control", "MW": 359.35, "heavy_atoms": 25, "Real_Vina_Score_kcal_mol": -7.88, "LE": 0.315},

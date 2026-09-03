@@ -7,6 +7,8 @@ Regenerates all publication figures for KRAS-G12D & g-C3N4 Manuscript at 300+ DP
 - Accurate Delta_Q = +0.082 e for MRTX1133 in Fig 5E.
 - Exact live Kruskal-Wallis omnibus statistics (H = 5.763, p = 0.1237, eta2 = 0.095).
 - Williams leverage analysis (h* = 0.455) and 1,000 Y-scrambling permutations.
+- Figure 8 (QSPR suite) is rendered strictly from results/qspr/*.csv + qspr_model_summary.json
+  (leak-free nested 5x5 CV; no simulated data).
 """
 
 import os
@@ -72,7 +74,7 @@ def make_fig_graphical_abstract():
     ax.add_patch(p3)
     ax.text(0.815, 0.77, "3. Surrogate ML & Screening", ha='center', va='center', fontsize=11, fontweight='bold', color='#004D40')
     ax.text(0.815, 0.70, "OECD QSPR & Screening\n(Nested CV & Williams AD)", ha='center', va='center', fontsize=9.5, fontweight='bold', color='#00695C')
-    ax.text(0.815, 0.58, "• Nested CV Q²_CV = +0.5696\n• Y-Scrambling Q² = -0.2357 (p=0.001)\n• Williams AD (h* = 0.455)\n• 350 DrugBank Candidates\n• Confirmed High LE Leads",
+    ax.text(0.815, 0.58, "• Leak-free nested 5×5 CV Q²_CV = +0.584\n• Y-Scrambling Q² = -0.120 (p=0.001)\n• Williams AD (h* = 0.455)\n• 350 DrugBank Candidates\n• Confirmed High LE Leads",
             ha='center', va='center', fontsize=8.8, color='#333333', linespacing=1.4)
     ax.text(0.815, 0.22, "Prioritized Clinical Leads:\nFutibatinib / Belumosudil", ha='center', va='center', fontsize=9, fontweight='bold', color='#0277BD',
             bbox=dict(boxstyle="round,pad=0.3", facecolor="#E1F5FE", edgecolor="#0277BD"))
@@ -177,81 +179,112 @@ def make_fig2_mechanism_discrimination():
 # FIGURE 3 (QSPR 4-Panel)
 # -------------------------------------------------------------
 def make_fig3_qspr_validation():
+    """Figure 8 — QSPR validation suite, rendered strictly from the real
+    leak-free nested-CV artifacts produced by train_real_qspr_model.py:
+      results/qspr/oof_observed_vs_predicted_qspr.csv
+      results/qspr/yscrambling_1000_permutations.csv
+      results/qspr/qspr_model_summary.json
+      results/qspr/table3_external_qm_validation_leads.csv
+    No simulated or hardcoded metrics.
+    """
+    import json
+
+    qspr_dir = os.path.join(base_dir, "results", "qspr")
+    oof = pd.read_csv(os.path.join(qspr_dir, "oof_observed_vs_predicted_qspr.csv"))
+    scr = pd.read_csv(os.path.join(qspr_dir, "yscrambling_1000_permutations.csv"))
+    leads_df = pd.read_csv(os.path.join(qspr_dir, "table3_external_qm_validation_leads.csv"))
+    with open(os.path.join(qspr_dir, "qspr_model_summary.json")) as fh:
+        summ = json.load(fh)
+
+    q2_cv = float(summ["Q2_CV"])
+    rmse = float(summ["RMSE_kcal_mol"])
+    mae = float(summ["MAE_kcal_mol"])
+    h_star = float(summ["Williams_h_star"])
+    scr_mean = float(summ["Y_Scrambling_Mean_Q2"])
+    p_perm = float(summ["Y_Scrambling_Empirical_P"])
+
+    y_true = oof["Observed_QM_Delta_E_ads"].values
+    y_pred = oof["OOF_Predicted_QSPR_Delta_E_ads"].values
+    leverages = oof["Hat_Leverage_hi"].values
+    std_residuals = oof["Std_Residual"].values
+    q2_scrambled = scr["Q2_Scrambled"].values
+
     fig, axes = plt.subplots(2, 2, figsize=(13, 10.5), dpi=300)
     plt.subplots_adjust(wspace=0.25, hspace=0.28, top=0.92, bottom=0.08)
-    
-    # (a) Parity Plot
-    ax0 = axes[0, 0]
-    # Simulated/actual CV values
-    y_true = np.array([-35.03, -39.17, -12.23, -4.98, -10.53, -13.47, -17.76, -21.06, -8.46, -7.68, -5.86, -6.90, -8.78, -5.86, -4.69, -5.50, -9.12, -7.83, -6.79, -7.54, -8.59, -9.75, -7.81, -7.88, -7.53, -4.90, -6.71, -5.87, -6.84, -5.51, -2.86, -7.45, -7.57])
-    y_pred = y_true + np.random.normal(0, 3.2, len(y_true))
-    ax0.scatter(y_true, y_pred, color='#00695C', s=65, edgecolor='k', alpha=0.85)
-    lims = [-45, 0]
-    ax0.plot(lims, lims, color='gray', linestyle='--', lw=1.5)
-    ax0.set_xlabel("GFN2-xTB Calculated ΔE_int,std (kcal/mol)", fontsize=10.5, fontweight='bold')
-    ax0.set_ylabel("Nested CV Predicted ΔE_int,std (kcal/mol)", fontsize=10.5, fontweight='bold')
-    ax0.set_title("(a) Nested 5-Fold Cross-Validation Parity", fontsize=11, fontweight='bold')
-    ax0.grid(True, linestyle=':', alpha=0.6)
-    ax0.text(0.05, 0.85, "Q²_CV = +0.5696\nRMSE = 5.201 kcal/mol\nMAE = 4.194 kcal/mol", transform=ax0.transAxes,
-             fontsize=9, fontweight='bold', color='#004D40', bbox=dict(boxstyle="round,pad=0.2", facecolor="#E0F2F1", edgecolor="#004D40"))
 
-    # (b) Williams Plot
+    # (a) Out-of-fold parity plot (real leak-free nested CV)
+    ax0 = axes[0, 0]
+    ax0.scatter(y_true, y_pred, color='#00695C', s=65, edgecolor='k', alpha=0.85)
+    lo = float(min(y_true.min(), y_pred.min())) - 2.0
+    hi = float(max(y_true.max(), y_pred.max())) + 2.0
+    ax0.plot([lo, hi], [lo, hi], color='gray', linestyle='--', lw=1.5)
+    ax0.set_xlim(lo, hi); ax0.set_ylim(lo, hi)
+    ax0.set_xlabel("GFN2-xTB Calculated ΔE_ads (kcal/mol)", fontsize=10.5, fontweight='bold')
+    ax0.set_ylabel("Out-of-Fold Predicted ΔE_ads (kcal/mol)", fontsize=10.5, fontweight='bold')
+    ax0.set_title("(a) Leak-Free Nested 5×5 CV Parity", fontsize=11, fontweight='bold')
+    ax0.grid(True, linestyle=':', alpha=0.6)
+    ax0.text(0.05, 0.82, f"Q²_CV = {q2_cv:+.3f}\nRMSE = {rmse:.2f} kcal/mol\nMAE = {mae:.2f} kcal/mol\nn = {len(y_true)}, p = {summ['p_descriptors']}",
+             transform=ax0.transAxes, fontsize=9, fontweight='bold', color='#004D40',
+             bbox=dict(boxstyle="round,pad=0.25", facecolor="#E0F2F1", edgecolor="#004D40"))
+
+    # (b) Williams plot (real leverages + OOF standardized residuals)
     ax1 = axes[0, 1]
-    features = ['MW', 'PSA', 'Polarizability_alpha', 'Electrophilicity_omega']
-    X = df_master[features].values
-    n, p = X.shape
-    X_s = StandardScaler().fit_transform(X)
-    H = X_s @ np.linalg.pinv(X_s.T @ X_s) @ X_s.T
-    leverages = np.diag(H)
-    h_star = 3.0 * (p + 1) / n
-    residuals = y_true - y_pred
-    std_residuals = residuals / np.std(residuals)
-    
+    n = len(y_true)
+    inside = int(np.sum((leverages <= h_star) & (np.abs(std_residuals) <= 3.0)))
     ax1.scatter(leverages, std_residuals, color='#00695C', s=65, edgecolor='k', alpha=0.85)
     ax1.axvline(h_star, color='red', linestyle='--', lw=1.8, label=f'Warning h* = {h_star:.3f}')
     ax1.axhline(3.0, color='blue', linestyle=':', lw=1.5, label='±3σ Residual Limit')
     ax1.axhline(-3.0, color='blue', linestyle=':', lw=1.5)
     ax1.set_xlabel("Hat-Matrix Leverage ($h_i$)", fontsize=10.5, fontweight='bold')
-    ax1.set_ylabel("Standardized Residuals ($\delta_i$)", fontsize=10.5, fontweight='bold')
-    ax1.set_title("(b) OECD Principle 3 Williams Plot (AD)", fontsize=11, fontweight='bold')
+    ax1.set_ylabel("OOF Standardized Residuals ($\\delta_i$)", fontsize=10.5, fontweight='bold')
+    ax1.set_title(f"(b) OECD Principle 3 Williams Plot — {inside}/{n} inside AD", fontsize=11, fontweight='bold')
     ax1.grid(True, linestyle=':', alpha=0.6)
     ax1.legend(loc='lower left', fontsize=8.5)
     ax1.set_ylim(-3.8, 3.8)
 
-    # (c) Y-Scrambling
+    # (c) Real 1,000-permutation Y-scrambling distribution
     ax2 = axes[1, 0]
-    np.random.seed(42)
-    q2_scrambled = np.random.normal(loc=-0.2357, scale=0.08, size=1000)
     sns.histplot(q2_scrambled, kde=True, color='#D84315', ax=ax2, bins=25, edgecolor='k', alpha=0.7)
     ax2.axvline(0.0, color='black', linestyle='-', lw=1.2, label='Chance Threshold (Q² = 0)')
-    ax2.axvline(0.5696, color='#00695C', linestyle='--', lw=2.5, label='True Model (Q²_CV = +0.5696)')
+    ax2.axvline(q2_cv, color='#00695C', linestyle='--', lw=2.5, label=f'True Model (Q²_CV = {q2_cv:+.3f})')
     ax2.set_xlabel("Cross-Validated $Q^2$ Metric", fontsize=10.5, fontweight='bold')
     ax2.set_ylabel("Permutation Frequency", fontsize=10.5, fontweight='bold')
-    ax2.set_title("(c) 1,000 Y-Scrambling Permutations (p=0.001)", fontsize=11, fontweight='bold')
+    ax2.set_title(f"(c) {len(q2_scrambled):,} Y-Scrambling Permutations (mean {scr_mean:+.3f}, p = {p_perm:.3f})",
+                  fontsize=11, fontweight='bold')
     ax2.grid(True, linestyle=':', alpha=0.6)
     ax2.legend(loc='upper right', fontsize=8.5)
 
-    # (d) Prospective Confirmation on Leads
+    # (d) Prospective confirmation on prioritized leads (Table 3)
     ax3 = axes[1, 1]
-    leads = ['Futibatinib', 'Belumosudil', 'Pimicotinib', 'Avapritinib', 'Capivasertib']
-    qspr_e = [-15.98, -15.34, -13.76, -17.84, -14.22]
-    qm_e = [-16.39, -17.36, -14.99, -24.20, -23.88]
+    qm_e = leads_df["Recalculated_E_ads_QM_kcal_mol"].values
+    qspr_e = leads_df["Predicted_E_ads_QSPR_kcal_mol"].values
+    names = leads_df["Lead_Compound"].values
+    ext_mae = float(np.mean(np.abs(qspr_e - qm_e)))
+    ext_rmse = float(np.sqrt(np.mean((qspr_e - qm_e) ** 2)))
+    if len(qm_e) > 1 and np.std(qm_e) > 0 and np.std(qspr_e) > 0:
+        ext_r2 = float(np.corrcoef(qm_e, qspr_e)[0, 1] ** 2)
+    else:
+        ext_r2 = float('nan')
     ax3.scatter(qm_e, qspr_e, color='#0277BD', s=90, edgecolor='k', zorder=5)
-    lims2 = [-28, -10]
-    ax3.plot(lims2, lims2, color='gray', linestyle='--', lw=1.5)
-    for name, x, y in zip(leads, qm_e, qspr_e):
-        ax3.annotate(name, (x, y), xytext=(x+0.5, y-0.8), fontsize=8.5, fontweight='bold')
-    ax3.set_xlabel("GFN2-xTB Recalculated ΔE_int,std (kcal/mol)", fontsize=10.5, fontweight='bold')
-    ax3.set_ylabel("QSPR Predicted ΔE_int,std (kcal/mol)", fontsize=10.5, fontweight='bold')
+    lo2 = float(min(qm_e.min(), qspr_e.min())) - 2.0
+    hi2 = float(max(qm_e.max(), qspr_e.max())) + 2.0
+    ax3.plot([lo2, hi2], [lo2, hi2], color='gray', linestyle='--', lw=1.5)
+    ax3.set_xlim(lo2, hi2); ax3.set_ylim(lo2, hi2)
+    for name, x, y in zip(names, qm_e, qspr_e):
+        ax3.annotate(name, (x, y), xytext=(x + 0.35, y + 0.55), fontsize=8.0,
+                     fontweight='bold', ha='left')
+    ax3.set_xlabel("GFN2-xTB Recalculated ΔE_ads (kcal/mol)", fontsize=10.5, fontweight='bold')
+    ax3.set_ylabel("QSPR Predicted ΔE_ads (kcal/mol)", fontsize=10.5, fontweight='bold')
     ax3.set_title("(d) Prospective Confirmation on Prioritized Leads", fontsize=11, fontweight='bold')
     ax3.grid(True, linestyle=':', alpha=0.6)
-    ax3.text(0.05, 0.85, "MAE_ext = 3.94 kcal/mol\nRMSE_ext = 5.28 kcal/mol\nr² = 0.6558", transform=ax3.transAxes,
-             fontsize=9, fontweight='bold', color='#01579B', bbox=dict(boxstyle="round,pad=0.2", facecolor="#E1F5FE", edgecolor="#01579B"))
+    ax3.text(0.04, 0.28, f"MAE_ext = {ext_mae:.2f} kcal/mol\nRMSE_ext = {ext_rmse:.2f} kcal/mol\nr² = {ext_r2:.3f}\nn = {len(qm_e)} leads",
+             transform=ax3.transAxes, fontsize=9, fontweight='bold', color='#01579B', va='center',
+             bbox=dict(boxstyle="round,pad=0.25", facecolor="#E1F5FE", edgecolor="#01579B"))
 
     out_p = os.path.join(fig_dir, "fig8_qspr_validation_final.jpg")
     plt.savefig(out_p, bbox_inches='tight')
     plt.close()
-    print(f"Generated Figure 3 (QSPR Suite): {out_p}")
+    print(f"Generated Figure 8 (QSPR Suite): {out_p}")
 
 # -------------------------------------------------------------
 # FIGURE 4 (Virtual Screening & Ligand Efficiency)

@@ -7,11 +7,30 @@
     "Polarizability_alpha",
     "Electrophilicity_omega"
   ],
-  "Q2_CV": 0.5696,
-  "RMSE_kcal_mol": 5.201,
-  "MAE_kcal_mol": 4.194,
-  "Y_Scrambling_Mean_Q2": -0.2357,
+  "cv_scheme": "leak-free nested 5x5 CV (StandardScaler inside pipeline; inner RidgeCV over Ridge alpha)",
+  "final_alpha": 3.0,
+  "Q2_CV": 0.584,
+  "fold_Q2": [
+    0.7842,
+    0.3584,
+    0.0522,
+    0.6715,
+    0.7071
+  ],
+  "fold_Q2_mean": 0.5147,
+  "fold_Q2_sd": 0.3052,
+  "RMSE_kcal_mol": 5.114,
+  "RMSE_95CI_kcal_mol": [
+    4.19,
+    5.99
+  ],
+  "MAE_95CI_kcal_mol": [
+    3.42,
+    5.28
+  ],
+  "MAE_kcal_mol": 4.333,
+  "Y_Scrambling_Mean_Q2": -0.1198,
   "Y_Scrambling_Empirical_P": 0.001,
   "Williams_h_star": 0.455,
-  "Equation": "Delta_E_ads = -19.706 - 2.425*MW_scaled - 1.744*PSA_scaled - 1.577*Polarizability_alpha_scaled - 3.380*Electrophilicity_omega_scaled"
+  "Equation": "Delta_E_ads = -19.706 - 2.101*MW_scaled - 1.716*PSA_scaled - 1.803*Polarizability_alpha_scaled - 3.201*Electrophilicity_omega_scaled"
 }

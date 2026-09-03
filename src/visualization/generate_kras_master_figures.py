@@ -134,9 +134,9 @@ def make_fig3_docking_profiles(base_dir, fig_dir):
     plt.subplots_adjust(top=0.86, wspace=0.30, bottom=0.15)
     
     ax0 = axes[0]
-    sns.histplot(df['Real_Vina_Docking_Score_kcal_mol'], kde=True, color='#00695C', bins=12, ax=ax0, edgecolor='k')
-    ax0.axvline(df['Real_Vina_Docking_Score_kcal_mol'].mean(), color='r', linestyle='--', lw=2.0, 
-                label=f"Mean Delta_G = {df['Real_Vina_Docking_Score_kcal_mol'].mean():.2f} kcal/mol")
+    sns.histplot(df['Real_Vina_Score_kcal_mol'], kde=True, color='#00695C', bins=12, ax=ax0, edgecolor='k')
+    ax0.axvline(df['Real_Vina_Score_kcal_mol'].mean(), color='r', linestyle='--', lw=2.0, 
+                label=f"Mean Delta_G = {df['Real_Vina_Score_kcal_mol'].mean():.2f} kcal/mol")
     ax0.set_xlabel("AutoDock Vina Real Binding Energy (kcal/mol)", fontsize=10.5, fontweight='bold')
     ax0.set_ylabel("Therapeutic Compound Count", fontsize=10.5, fontweight='bold')
     ax0.set_title("(a) Binding Affinity Distribution on KRAS-G12D (PDB: 7RPZ)", fontsize=11.5, fontweight='bold', pad=10)
@@ -144,9 +144,9 @@ def make_fig3_docking_profiles(base_dir, fig_dir):
     ax0.grid(True, linestyle=':', alpha=0.6)
     
     ax1 = axes[1]
-    df_sorted = df.sort_values(by='Real_Vina_Docking_Score_kcal_mol', ascending=True).head(10)
+    df_sorted = df.sort_values(by='Real_Vina_Score_kcal_mol', ascending=True).head(10)
     colors = sns.color_palette("mako", n_colors=10)
-    bars = ax1.barh(df_sorted['name'], df_sorted['Real_Vina_Docking_Score_kcal_mol'], color=colors, edgecolor='k')
+    bars = ax1.barh(df_sorted['name'], df_sorted['Real_Vina_Score_kcal_mol'], color=colors, edgecolor='k')
     ax1.set_xlabel("Real AutoDock Vina Score (kcal/mol)", fontsize=10.5, fontweight='bold')
     ax1.set_ylabel("Pancreatic / KRAS Therapeutic", fontsize=10.5, fontweight='bold')
     ax1.set_title("(b) Top 10 High-Affinity KRAS-G12D Inhibitors", fontsize=11.5, fontweight='bold', pad=10)

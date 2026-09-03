@@ -1,9 +1,10 @@
 """
 generate_kras_full_q1_manuscript.py
-Comprehensive Q1 Full Research Paper (5,000+ narrative words) for KRAS-G12D and 2D g-C3N4 Nanocarriers.
-Includes all 10 verified figures, 3 structured tables, exact supercell chemistry,
-Kruskal-Wallis omnibus statistics, verified positive Q2 (0.9987), confirmatory DrugBank lead recalculations,
-and 65 real, 100% verified peer-reviewed references with exact 1-to-1 citation mapping.
+DEPRECATED / SUPERSEDED early draft — kept only for provenance. Do not run: it uses an
+obsolete descriptor set, an obsolete doping model, and a non-leak-free in-sample
+Q2_CV = +0.9987 (RMSE 0.42) that does not reproduce. The canonical generator is
+src/visualization/generate_kras_full_manuscript.py (leak-free nested 5x5 CV, Q2_CV = +0.584).
+The __main__ guard below raises SystemExit to prevent accidental overwrite of the manuscript.
 """
 
 import os
@@ -420,4 +421,11 @@ def generate_kras_full_manuscript():
     return out_docx
 
 if __name__ == "__main__":
-    generate_kras_full_manuscript()
+    raise SystemExit(
+        "DEPRECATED: this is a superseded early draft (obsolete descriptor set "
+        "[Aromatic Ring Count/HBA/HBD], DFTB3-D4 doping model, and a non-leak-free "
+        "in-sample Q2_CV = +0.9987 / RMSE 0.42). It writes to the same path as the "
+        "canonical generator and would overwrite the current manuscript with wrong "
+        "numbers. Use src/visualization/generate_kras_full_manuscript.py instead "
+        "(leak-free nested 5x5 CV, Q2_CV = +0.584)."
+    )

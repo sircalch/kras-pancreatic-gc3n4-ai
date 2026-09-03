@@ -10,9 +10,33 @@ Saves results to results/quantum/dft_benchmark_b3lyp_d3bj.csv
 
 import os, sys, subprocess, re, time
 from pathlib import Path
+
+
+def _project_root(marker="MANIFEST_SHA256.txt"):
+    from pathlib import Path as _P
+    here = _P(__file__).resolve()
+    for anc in [here.parent, *here.parents]:
+        if (anc / marker).exists() or ((anc / "data").is_dir() and (anc / "README.md").exists()):
+            return anc
+    return here.parent
+
+
+def _find_xtb():
+    import shutil
+    from pathlib import Path as _P
+    w = shutil.which("xtb") or shutil.which("xtb.exe")
+    if w:
+        return _P(w)
+    for anc in [_P(__file__).resolve().parent, *_P(__file__).resolve().parents]:
+        hits = list(anc.glob("**/xtb-*/bin/xtb.exe")) or list(anc.glob("**/xtb-*/bin/xtb"))
+        if hits:
+            return hits[0]
+    return _P("xtb")
+
+
 import pandas as pd
 
-BASE = Path(r"c:\Users\Andre\Proyectos doctorado\kras-pancreatic-gC3N4-ai")
+BASE = _project_root()
 ORCA_EXE = Path(r"C:\ORCA_6.1.1\orca.EXE")
 SCRATCH_ADC = BASE / "scratch" / "qm_calcs_adsorption"
 SCRATCH_MOL = BASE / "scratch" / "qm_calcs_molecules"

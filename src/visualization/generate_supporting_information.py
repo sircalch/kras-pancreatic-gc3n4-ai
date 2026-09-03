@@ -197,7 +197,7 @@ def generate_supporting_information():
         ("Principle 1", "Defined Endpoint", "Standardized electronic interaction energy (Delta_E_int,std, kcal/mol) on 2D g-C3N4 at z=3.35 A", "COMPLIANT"),
         ("Principle 2", "Unambiguous Algorithm", "Regularized Ridge regression with pre-specified p=4 physicochemical features (n/p = 8.25)", "COMPLIANT"),
         ("Principle 3", "Defined Applicability Domain", "Hat-matrix leverage analysis with warning threshold h* = 0.455 and +/-3sigma residual limits", "COMPLIANT"),
-        ("Principle 4", "Goodness-of-Fit & Robustness", "Nested 5-fold CV (Q2_CV = +0.5696) + 1,000 Y-scrambling permutations (mean Q2 = -0.2357, p = 0.001)", "COMPLIANT"),
+        ("Principle 4", "Goodness-of-Fit & Robustness", "Leak-free nested 5x5 CV (Q2_CV = +0.584) + 1,000 Y-scrambling permutations (mean Q2 = -0.12, p = 0.001)", "COMPLIANT"),
         ("Principle 5", "Mechanistic Interpretation", "Interpreted via polarizability (alpha), electrophilicity (omega), size (MW), and polar area (PSA)", "COMPLIANT"),
     ]
     for vals in s3_data:

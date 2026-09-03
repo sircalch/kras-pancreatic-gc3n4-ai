@@ -18,7 +18,7 @@ KRAS-G12D is the dominant oncogenic driver in pancreatic ductal adenocarcinoma (
 1. **Crystallographic Redocking Validation**: AutoDock Vina v1.2.7 achieves $1.419\ \text{Å}$ heavy-atom RMSD on the ultra-high resolution ($1.30\ \text{Å}$) human KRAS-G12D crystal structure (PDB ID: 7RPZ, co-crystallized with MRTX1133).
 2. **Mechanistic Cohort Profiling**: Binding score distributions across $N=33$ curated clinical therapeutics stratified across 4 pharmacological classes in the Switch II allosteric pocket.
 3. **Tight-Binding Quantum Chemistry (GFN2-xTB)**: Rigorous quantum mechanical adsorption simulation on pristine ($C_{21}N_{21}H_6$) and heteroatom B/P co-doped 2D nanosheets ($E_{\text{int,std}} = -4.98$ to $-39.89\ \text{kcal/mol}$).
-4. **OECD-Compliant Surrogate QSPR Modeling**: Leak-free nested 5-fold cross-validation ($Q^2_{\text{CV}} = +0.5696$, $\text{RMSE} = 5.201\ \text{kcal/mol}$, $1,000$ Y-scrambling iterations $p=0.001$, warning leverage threshold $h^* = 0.455$).
+4. **OECD-Compliant Surrogate QSPR Modeling**: Fully leak-free nested 5×5 cross-validation (StandardScaler fit inside the pipeline on outer-training folds only; Ridge $\alpha$ tuned by inner CV) — $Q^2_{\text{CV}} = +0.584$, $\text{RMSE} = 5.114\ \text{kcal/mol}$, $\text{MAE} = 4.333\ \text{kcal/mol}$, $1,000$ Y-scrambling iterations $p=0.001$ (mean $Q^2 = -0.120$), warning leverage threshold $h^* = 0.455$.
 5. **Decoupled Virtual Screening**: Screening of 350 DrugBank oncology candidates with prospective quantum confirmation on top clinical leads (Futibatinib, Belumosudil, Pimicotinib, Avapritinib, Capivasertib).
 
 ---
@@ -99,9 +99,9 @@ python src/visualization/generate_supporting_information.py
 |---|---|---|---|
 | **Crystallographic Redocking** | PDB 7RPZ (MRTX1133) Heavy-Atom RMSD | **1.419 Å** ($\le 2.0\ \text{Å}$) | **Passed** |
 | **Docking Score Recovery** | MRTX1133 Redocked Vina Affinity | **-9.16 kcal/mol** | **Passed** |
-| **QSPR Outer Nested CV** | $Q^2_{\text{CV}}$ ($n=33, p=4$) | **+0.5696** ($> 0.50$) | **Passed** |
-| **QSPR Model Error** | Nested Cross-Validated RMSE / MAE | **5.20 / 4.19 kcal/mol** | **Passed** |
-| **Y-Scrambling Permutations** | 1,000 Scrambled Iterations Empirical $p$ | **p = 0.001** (mean $Q^2 = -0.2357$) | **Passed** |
+| **QSPR Leak-Free Nested 5×5 CV** | $Q^2_{\text{CV}}$ ($n=33, p=4$) | **+0.584** ($> 0.50$) | **Passed** |
+| **QSPR Model Error** | Nested Cross-Validated RMSE / MAE | **5.11 / 4.33 kcal/mol** | **Passed** |
+| **Y-Scrambling Permutations** | 1,000 Scrambled Iterations Empirical $p$ | **p = 0.001** (mean $Q^2 = -0.120$) | **Passed** |
 | **OECD Applicability Domain** | Training Cohort within Warning $h^* = 0.455$ | **32/33 (97.0%)** | **Passed** |
 | **Prospective Lead Confirmation** | GFN2-xTB Recalculation on Top Leads | **MAE = 3.94 kcal/mol** | **Passed** |
 
