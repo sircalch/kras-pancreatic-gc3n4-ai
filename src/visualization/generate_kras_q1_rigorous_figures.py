@@ -89,7 +89,42 @@ def make_fig4_group_discrimination(base_dir, fig_dir):
     n_tot = len(df)
     k = 4
     eta_sq = (kw_stat - k + 1) / (n_tot - k)
-    
+
+    # Real Dunn's post-hoc test (pairwise rank z-test with tie correction) +
+    # Benjamini-Hochberg FDR across all 6 pairs -- replaces a previously
+    # hardcoded "p_adj = 0.0245" annotation that did not come from any
+    # computation.
+    groups = {"A": grp_a, "B": grp_b, "C": grp_c, "D": grp_d}
+    all_vals = np.concatenate(list(groups.values()))
+    all_ranks = stats.rankdata(all_vals)
+    ranks_by_group, offset = {}, 0
+    for name, vals in groups.items():
+        ranks_by_group[name] = all_ranks[offset:offset + len(vals)]
+        offset += len(vals)
+    _, tie_counts = np.unique(all_vals, return_counts=True)
+    tie_correction = 1.0 - np.sum(tie_counts ** 3 - tie_counts) / (n_tot ** 3 - n_tot)
+
+    pairs = [("A", "B"), ("A", "C"), ("A", "D"), ("B", "C"), ("B", "D"), ("C", "D")]
+    dunn_p = {}
+    for gi, gj in pairs:
+        ni, nj = len(groups[gi]), len(groups[gj])
+        rbar_i, rbar_j = ranks_by_group[gi].mean(), ranks_by_group[gj].mean()
+        se = np.sqrt(tie_correction * (n_tot * (n_tot + 1) / 12.0) * (1.0 / ni + 1.0 / nj))
+        z = (rbar_i - rbar_j) / se
+        dunn_p[(gi, gj)] = 2.0 * stats.norm.sf(abs(z))
+
+    # Benjamini-Hochberg FDR correction across the 6 pairwise p-values
+    labels_sorted = sorted(dunn_p, key=lambda k: dunn_p[k])
+    m = len(labels_sorted)
+    p_adj = {}
+    prev = 1.0
+    for rank, lbl in enumerate(reversed(labels_sorted), start=1):
+        i = m - rank + 1
+        val = min(prev, dunn_p[lbl] * m / i)
+        p_adj[lbl] = val
+        prev = val
+    best_pair, best_p_adj = min(p_adj.items(), key=lambda kv: kv[1])
+
     group_labels = {
         'Group A - Direct KRAS-G12D': f'Group A:\nDirect G12D\n(n={len(grp_a)})',
         'Group B - Mutation-Selective / Pan-RAS': f'Group B:\nPan-RAS/G12C\n(n={len(grp_b)})',
@@ -100,7 +135,8 @@ def make_fig4_group_discrimination(base_dir, fig_dir):
     order = [group_labels['Group A - Direct KRAS-G12D'], group_labels['Group B - Mutation-Selective / Pan-RAS'],
              group_labels['Group C - Downstream MAPK / RTK'], group_labels['Group D - Cytotoxic Chemotherapy']]
     
-    fig, ax = plt.subplots(figsize=(10, 5.8), dpi=300)
+    fig, ax = plt.subplots(figsize=(10, 6.6), dpi=300)
+    plt.subplots_adjust(bottom=0.22)
     palette = ["#004D40", "#00897B", "#0277BD", "#D84315"]
     
     sns.boxplot(x='Group_Short', y='Real_Vina_Score_kcal_mol', data=df, order=order, palette=palette, ax=ax, width=0.45, boxprops=dict(alpha=0.85, edgecolor='k'))
@@ -116,9 +152,20 @@ def make_fig4_group_discrimination(base_dir, fig_dir):
             ha='center', va='center', fontsize=10.5, fontweight='bold', color='#004D40', transform=ax.transAxes,
             bbox=dict(boxstyle="round,pad=0.3", facecolor="#E0F2F1", edgecolor="#004D40", lw=1.2))
     
-    # Pairwise significance bar (Group A vs Group D)
-    ax.plot([0, 0, 3, 3], [-10.2, -10.5, -10.5, -10.2], lw=1.5, color='black')
-    ax.text(1.5, -10.7, "* p_adj = 0.0245 (Dunn-FDR post-hoc vs Group D)", ha='center', va='bottom', fontsize=9.5, fontweight='bold')
+    # Post-hoc pairwise comparison bar: the strongest pair after BH-FDR
+    # correction, shown as exploratory since the omnibus is not significant
+    # (p = {kw_p:.4f} > 0.05) -- no comparison is claimed as confirmed.
+    order_idx = {"A": 0, "B": 1, "C": 2, "D": 3}
+    i0, i1 = sorted(order_idx[g] for g in best_pair)
+    sig_flag = "*" if best_p_adj < 0.05 else "n.s."
+    ymin = df['Real_Vina_Score_kcal_mol'].min()
+    ax.set_ylim(ymin - 2.4, df['Real_Vina_Score_kcal_mol'].max() + 0.8)
+    y0 = ymin - 0.9
+    ax.plot([i0, i0, i1, i1], [y0, y0 - 0.3, y0 - 0.3, y0], lw=1.5, color='black')
+    ax.text((i0 + i1) / 2, y0 - 0.5,
+            f"{sig_flag} Group {best_pair[0]} vs {best_pair[1]}: Dunn p_adj (BH-FDR) = {best_p_adj:.4f}"
+            f"\n(exploratory pairwise test; omnibus Kruskal-Wallis p = {kw_p:.4f} n.s.)",
+            ha='center', va='top', fontsize=8.5, fontweight='bold')
     
     out_p = os.path.join(fig_dir, "fig4_kras_group_discrimination.png")
     plt.savefig(out_p, bbox_inches='tight')
