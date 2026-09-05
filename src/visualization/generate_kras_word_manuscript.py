@@ -137,7 +137,8 @@ def generate_kras_word_manuscript():
         "Quantum adsorption modeling revealed favorable, non-covalent chemisorption (Delta_E_ads = -18.5 to -65.2 kcal/mol) on tri-s-triazine polymeric frameworks. "
         "Physical docking against the crystal structure of human oncogenic KRAS-G12D demonstrated robust macromolecular stabilization (-5.09 to -9.94 kcal/mol) "
         "and critical contact engagements with the Switch II allosteric pocket (Asp12, Gly13, Gln61, Glu62, Tyr96). Machine Learning models (ExtraTrees and XGBoost) "
-        "yielded high predictive accuracy (test MAPE = 6.40%, R2 > 0.88), corroborated by SHAP feature rankings and OECD Principle 3 Williams leverage validation. "
+        "yielded modest, non-overfit predictive accuracy on the real GFN2-xTB adsorption energies via leak-free nested 5x5 cross-validation "
+        "(Q2_CV = 0.552 pristine, 0.513 B/P-doped; n=33, p=4), corroborated by exploratory feature-importance rankings and OECD Principle 3 Williams leverage validation (31/33 compounds within the applicability domain). "
         "This study establishes a foundational computational framework for 2D polymeric nanocarriers overcoming stroma-mediated resistance in KRAS-driven pancreatic oncology."
     )
     

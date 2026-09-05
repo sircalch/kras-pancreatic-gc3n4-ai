@@ -35,7 +35,7 @@ def make_graphical_abstract(base_dir, fig_dir):
     panels = [
         ("A. 2D Polymeric g-C3N4\n(Pristine & B/P-Doped Nanolayers)\n- Metal-free high biocompatibility\n- Deep pancreatic stroma penetration\n- pH-responsive tumor drug release", 0.04, 0.12, 0.28, 0.70, "#E0F2F1", "#00695C"),
         ("B. Physical Docking (AutoDock Vina)\nHuman KRAS-G12D (PDB: 7RPZ, 1.45 Å)\n- 33 PDAC & KRAS Drugs Screened\n- MRTX1133 Delta_G = -9.16 kcal/mol\n- BI-2865 Delta_G = -9.94 kcal/mol", 0.36, 0.12, 0.28, 0.70, "#E8F5E9", "#2E7D32"),
-        ("C. Explainable AI & OECD QSAR\nExtraTrees + XGBoost + SHAP\n- Test MAPE = 6.40% (R2 > 0.88)\n- Top feature: Electrophilicity omega\n- 100% inside Williams Domain (h*)", 0.68, 0.12, 0.28, 0.70, "#FBE9E7", "#D84315")
+        ("C. Explainable AI & OECD QSAR\nLeak-free nested 5x5 Ridge CV\n- Q2_CV = 0.55 (pristine), 0.51 (doped)\n- Top feature: HBA / Electrophilicity omega\n- 31/33 inside Williams Domain (h*)", 0.68, 0.12, 0.28, 0.70, "#FBE9E7", "#D84315")
     ]
     
     for text, x, y, w, h, bg_c, border_c in panels:
@@ -191,71 +191,101 @@ def make_fig4_residues(base_dir, fig_dir):
     print(f"Generated Figure 4: {out_p}")
 
 def make_fig5_parity(base_dir, fig_dir):
-    files = {
-        "Isolated KRAS Drugs": os.path.join(base_dir, "data", "processed", "dataset_isolated_kras_drugs.csv"),
-        "g-C3N4 Pristine": os.path.join(base_dir, "data", "processed", "dataset_drug_gC3N4_pristine.csv"),
-        "B/P-Doped g-C3N4": os.path.join(base_dir, "data", "processed", "dataset_drug_gC3N4_doped.csv")
-    }
-    feature_cols = [
-        "MW", "LogP", "LogS", "WS_mg_mL", "HBA", "HBD", "PSA", "RBC", "NOR",
-        "AromRings", "Polarizability_alpha", "Fraction_Csp3",
-        "E_HOMO", "E_LUMO", "Gap_eV", "Hardness_eta", "Softness_S",
-        "Electronegativity_chi", "Chemical_Potential_mu", "Electrophilicity_omega"
+    # Was training ExtraTrees (single 75/25 split) on `Target_DeltaG_bind` from
+    # dataset_drug_gC3N4_pristine.csv / _doped.csv, whose Delta_E_ads_kcal_mol and
+    # Target_DeltaG_bind were FABRICATED by train_kras_qsar_models.py from an
+    # empirical formula over RDKit descriptors ("Delta_E_ads_kcal_mol = -20.5 -
+    # 1.65*AromRings - ..."), never any real xTB/DFT calculation, despite being
+    # printed as "100% REAL". Real GFN2-xTB adsorption energies for ALL 33
+    # compounds already exist in MASTER_COMPOUNDS_CURATED.csv
+    # (Delta_E_ads_Pristine_kcal_mol / Delta_E_ads_Doped_kcal_mol -- the same
+    # columns used by the leak-free QSPR in train_real_qspr_model.py), so no new
+    # quantum computation is needed here, only using the real data.
+    from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.linear_model import RidgeCV
+    from sklearn.model_selection import KFold, cross_val_predict
+    from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+
+    master_csv = os.path.join(base_dir, "data", "processed", "MASTER_COMPOUNDS_CURATED.csv")
+    df_m = pd.read_csv(master_csv)
+    desc_cols = ["MW", "LogP", "Polarizability_alpha", "Electrophilicity_omega"]
+    alpha_grid = np.array([0.001, 0.01, 0.1, 0.3, 1.0, 3.0, 10.0, 30.0, 100.0, 300.0, 1000.0])
+
+    systems = [
+        ("Isolated KRAS Drugs", "Real_Vina_Score_kcal_mol"),
+        ("g-C3N4 Pristine", "Delta_E_ads_Pristine_kcal_mol"),
+        ("B/P-Doped g-C3N4", "Delta_E_ads_Doped_kcal_mol"),
     ]
-    
+
     fig, axes = plt.subplots(1, 3, figsize=(18, 5.5), dpi=300)
     plt.subplots_adjust(top=0.82, wspace=0.25, bottom=0.15)
     colors = ["#00695C", "#0277BD", "#D84315"]
-    
-    for ax_idx, (sys_name, f_path) in enumerate(files.items()):
-        if not os.path.exists(f_path):
+
+    for ax_idx, (sys_name, target_col) in enumerate(systems):
+        if target_col not in df_m.columns:
             continue
-        df = pd.read_csv(f_path)
-        X = df[feature_cols]
-        y = df['Target_DeltaG_bind']
-        
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
-        model = ExtraTreesRegressor(n_estimators=100, random_state=42)
-        model.fit(X_train, y_train)
-        
-        y_pred_tr = model.predict(X_train)
-        y_pred_te = model.predict(X_test)
-        
+        df = df_m.dropna(subset=desc_cols + [target_col])
+        X = df[desc_cols].values
+        y = df[target_col].values
+        n, p = X.shape
+
+        outer_cv = KFold(n_splits=5, shuffle=True, random_state=42)
+        inner_cv = KFold(n_splits=5, shuffle=True, random_state=42)
+        pipe = Pipeline([("scaler", StandardScaler()), ("ridge", RidgeCV(alphas=alpha_grid, cv=inner_cv))])
+        y_pred = cross_val_predict(pipe, X, y, cv=outer_cv)
+        rmse = mean_squared_error(y, y_pred) ** 0.5
+        mae = mean_absolute_error(y, y_pred)
+        r2 = r2_score(y, y_pred)
+
         ax = axes[ax_idx]
-        ax.scatter(y_train, y_pred_tr, color=colors[ax_idx], alpha=0.65, label='Training Set', s=55, edgecolor='k')
-        ax.scatter(y_test, y_pred_te, color='#FF6F00', alpha=0.95, label='Test Set (25%)', s=75, marker='^', edgecolor='k')
-        
-        min_v = min(min(y), min(y_pred_tr)) - 0.5
-        max_v = max(max(y), max(y_pred_tr)) + 0.5
+        ax.scatter(y, y_pred, color=colors[ax_idx], alpha=0.85, s=70, edgecolor='k', label=f'Out-of-Fold (n={n})')
+
+        min_v = min(y.min(), y_pred.min()) - 0.5
+        max_v = max(y.max(), y_pred.max()) + 0.5
         ax.plot([min_v, max_v], [min_v, max_v], 'r--', lw=2.0, label='Ideal 1:1 Parity')
-        
+
+        stats_txt = f"Leak-free nested 5x5 CV (n={n}, p={p})\nRMSE = {rmse:.2f} kcal/mol\nMAE = {mae:.2f} kcal/mol\n$Q^2_{{CV}}$ = {r2:.3f}"
+        ax.text(0.05, 0.95, stats_txt, transform=ax.transAxes, fontsize=8.5, va='top',
+                bbox=dict(boxstyle='round', facecolor='white', alpha=0.85, edgecolor='#B0BEC5'))
+
         ax.set_title(f"({chr(97+ax_idx)}) {sys_name}", fontsize=11.5, fontweight='bold', pad=10)
-        ax.set_xlabel("Observed Target Delta_G (kcal/mol)", fontsize=10.5)
+        ax.set_xlabel("Real GFN2-xTB / Vina Observed (kcal/mol)", fontsize=10.5)
         if ax_idx == 0:
-            ax.set_ylabel("Predicted Delta_G (kcal/mol)", fontsize=10.5)
+            ax.set_ylabel("Out-of-Fold Predicted (kcal/mol)", fontsize=10.5)
         ax.grid(True, linestyle=':', alpha=0.6)
-        ax.legend(loc='upper left', fontsize=8.5, frameon=True)
-        
-    plt.suptitle("Figure 5: Parity Plots (Predicted vs Observed Delta_G) for Machine Learning Nano-QSAR on g-C3N4", fontsize=13, fontweight='bold', y=0.96)
+        ax.legend(loc='lower right', fontsize=8.5, frameon=True)
+
+    plt.suptitle("Figure 5: Leak-Free Nested CV Parity (Predicted vs Observed) for Nano-QSAR on g-C3N4", fontsize=13, fontweight='bold', y=0.96)
     out_p = os.path.join(fig_dir, "fig5_kras_parity_models_evaluation.png")
     plt.savefig(out_p, bbox_inches='tight')
     plt.close()
     print(f"Generated Figure 5: {out_p}")
 
 def make_fig6_shap(base_dir, fig_dir):
-    f_path = os.path.join(base_dir, "data", "processed", "dataset_drug_gC3N4_doped.csv")
+    # Was fit on `Target_DeltaG_bind` from dataset_drug_gC3N4_doped.csv, a
+    # FABRICATED linear combination of AromRings/HBA/HBD/Polarizability_alpha
+    # (see make_fig5_parity) -- so the "top feature" this reported was
+    # circular (whatever the formula weighted most heavily came out on top).
+    # Now fit on the real GFN2-xTB Delta_E_ads_Doped_kcal_mol from
+    # MASTER_COMPOUNDS_CURATED.csv (same real data as Figure 5 / the leak-free
+    # QSPR); ExtraTrees importances here are descriptive/exploratory over all
+    # 20 candidate descriptors, not a claim of leak-free predictive accuracy
+    # (that claim belongs to the 4-descriptor Ridge surrogate, Figure 5/8).
+    f_path = os.path.join(base_dir, "data", "processed", "MASTER_COMPOUNDS_CURATED.csv")
     if not os.path.exists(f_path):
         return
     df = pd.read_csv(f_path)
     feature_cols = [
-        "MW", "LogP", "LogS", "WS_mg_mL", "HBA", "HBD", "PSA", "RBC", "NOR",
+        "MW", "LogP", "HBA", "HBD", "PSA", "RBC", "NOR",
         "AromRings", "Polarizability_alpha", "Fraction_Csp3",
         "E_HOMO", "E_LUMO", "Gap_eV", "Hardness_eta", "Softness_S",
         "Electronegativity_chi", "Chemical_Potential_mu", "Electrophilicity_omega"
     ]
+    df = df.dropna(subset=feature_cols + ["Delta_E_ads_Doped_kcal_mol"])
     X = df[feature_cols]
-    y = df['Target_DeltaG_bind']
-    
+    y = df['Delta_E_ads_Doped_kcal_mol']
+
     model = ExtraTreesRegressor(n_estimators=100, random_state=42)
     model.fit(X, y)
     
@@ -271,7 +301,7 @@ def make_fig6_shap(base_dir, fig_dir):
     
     ax.set_xlabel("Mean Absolute SHAP Value / Gini Feature Importance", fontsize=11, fontweight='bold')
     ax.set_ylabel("Molecular / Quantum CDFT Descriptor", fontsize=11, fontweight='bold')
-    ax.set_title("Figure 6: Explainable AI (SHAP) Feature Importance Rankings for 2D g-C3N4 Delivery", fontsize=12.5, fontweight='bold', pad=12)
+    ax.set_title("Figure 6: Exploratory Feature Importance Rankings for 2D g-C3N4 Delivery (real Delta_E_ads_Doped)", fontsize=11.5, fontweight='bold', pad=12)
     ax.grid(True, linestyle=':', alpha=0.6)
     
     for bar in bars:

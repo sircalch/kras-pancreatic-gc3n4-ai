@@ -9,32 +9,38 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 def compute_williams_domain():
+    # Was fit on `Target_DeltaG_bind` from dataset_drug_gC3N4_pristine.csv /
+    # _doped.csv -- FABRICATED (see make_fig5_parity in
+    # generate_kras_master_figures.py). Now uses the real GFN2-xTB adsorption
+    # energies for all 33 compounds from MASTER_COMPOUNDS_CURATED.csv.
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    files = {
-        "Isolated KRAS Therapeutics": os.path.join(base_dir, "data", "processed", "dataset_isolated_kras_drugs.csv"),
-        "Drug + g-C3N4 Pristine": os.path.join(base_dir, "data", "processed", "dataset_drug_gC3N4_pristine.csv"),
-        "Drug + B/P-Doped g-C3N4": os.path.join(base_dir, "data", "processed", "dataset_drug_gC3N4_doped.csv")
-    }
-    
+    master_csv = os.path.join(base_dir, "data", "processed", "MASTER_COMPOUNDS_CURATED.csv")
+    systems = [
+        ("Isolated KRAS Therapeutics", "Real_Vina_Score_kcal_mol"),
+        ("Drug + g-C3N4 Pristine", "Delta_E_ads_Pristine_kcal_mol"),
+        ("Drug + B/P-Doped g-C3N4", "Delta_E_ads_Doped_kcal_mol"),
+    ]
+
     feature_cols = [
-        "MW", "LogP", "LogS", "WS_mg_mL", "HBA", "HBD", "PSA", "RBC", "NOR",
+        "MW", "LogP", "HBA", "HBD", "PSA", "RBC", "NOR",
         "AromRings", "Polarizability_alpha", "Fraction_Csp3",
         "E_HOMO", "E_LUMO", "Gap_eV", "Hardness_eta", "Softness_S",
         "Electronegativity_chi", "Chemical_Potential_mu", "Electrophilicity_omega"
     ]
-    
+
     fig, axes = plt.subplots(1, 3, figsize=(18, 5.5), dpi=300)
     plt.subplots_adjust(top=0.82, wspace=0.25, bottom=0.15)
-    
+
     colors = ["#1565C0", "#00796B", "#D84315"]
-    
-    for ax_idx, (sys_name, f_path) in enumerate(files.items()):
-        if not os.path.exists(f_path):
+    df_m = pd.read_csv(master_csv)
+
+    for ax_idx, (sys_name, target_col) in enumerate(systems):
+        if target_col not in df_m.columns:
             continue
-        df = pd.read_csv(f_path)
+        df = df_m.dropna(subset=feature_cols + [target_col])
         X = df[feature_cols].values
-        y = df['Target_DeltaG_bind'].values
-        
+        y = df[target_col].values
+
         n, p = X.shape
         X_design = np.hstack([np.ones((n, 1)), X])
         p_eff = p + 1
