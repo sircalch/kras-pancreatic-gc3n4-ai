@@ -26,14 +26,12 @@ KRAS_VERIFIED_REFERENCES = [
         "doi": "10.1038/s41586-019-1694-1",
     },
     {
-        "citation": "Janotta, F.; Hentschel, M.; Hofmann, M. H.; Gerlach, D.; Kidger, A. M.; Savarese, F.; Kraut, N.; Treu, M.; Koegl, M.; Gmachl, M. BI-2865 Is a Potent, Selective, and Orally Bioavailable Pan-KRAS Inhibitor. Cancer Res. 2023, 83 (7_Suppl), ND11.",
-        "doi": "",
-        "needs_review": True,
+        "citation": "Punekar, S. R.; Velcheti, V.; Neel, B. G.; Wong, K. K. The current state of the art and future trends in RAS-targeted cancer therapies. Nature Reviews Clinical Oncology 2022, 19 (10), 637-655.",
+        "doi": "10.1038/s41571-022-00671-9",
     },
     {
-        "citation": "Kolodziejczyk, A. S.; Zheng, D.; Shibolet, O.; Elinav, E. The role of the microbiome in pancreatic ductal adenocarcinoma. Nat. Rev. Gastroenterol. Hepatol. 2019, 16 (4), 213–226.",
-        "doi": "",
-        "needs_review": True,
+        "citation": "Pushalkar, S.; Hundeyin, M.; Daley, D.; Zambirinis, C. P.; Kurz, E.; Mishra, A.; Mohan, N.; Aykut, B.; Usyk, M.; Torres, L. E.; et al. The Pancreatic Cancer Microbiome Promotes Oncogenesis by Induction of Innate and Adaptive Immune Suppression. Cancer Discovery 2018, 8 (4), 403-416.",
+        "doi": "10.1158/2159-8290.cd-17-1134",
     },
     {
         "citation": "Maitra, A.; Hruban, R. H. Pancreatic Cancer. Annual Review of Pathology: Mechanisms of Disease 2008, 3 (1), 157-188.",
@@ -68,33 +66,28 @@ KRAS_VERIFIED_REFERENCES = [
         "doi": "10.1002/adma.201704639",
     },
     {
-        "citation": "Li, Y.; Dong, H.; Li, Y.; Shi, D. Graphene-like graphitic carbon nitride (g-C3N4) nanosheets for drug delivery and bioimaging applications. Chem. Mater. 2014, 26 (16), 4700–4708.",
-        "doi": "",
-        "needs_review": True,
+        "citation": "Feng, L.; He, F.; Yang, G.; Gai, S.; Dai, Y.; Li, C.; Yang, P. NIR-driven graphitic-phase carbon nitride nanosheets for efficient bioimaging and photodynamic therapy. Journal of Materials Chemistry B 2016, 4 (48), 8000-8008.",
+        "doi": "10.1039/c6tb02232d",
     },
     {
-        "citation": "Sajjad, S.; Leghari, S. A. K.; Iqbal, A. Boron and phosphorus co-doped graphitic carbon nitride for highly efficient visible light photocatalytic applications. Appl. Catal. B Environ. 2018, 238, 578–585.",
-        "doi": "",
-        "needs_review": True,
+        "citation": "Babu Ganganboina, A.; Dung Nguyen, M.; Hien Luong Nguyen, T.; Prasetyo Kuncoro, E.; Doong, R. A. Boron and phosphorus co-doped one-dimensional graphitic carbon nitride for enhanced visible-light-driven photodegradation of diclofenac. Chemical Engineering Journal 2021, 425, 131520.",
+        "doi": "10.1016/j.cej.2021.131520",
     },
     {
-        "citation": "Zhang, J.; Zhang, G.; Chen, X.; Lin, S.; Möhlmann, L.; Dołecki, G.; Lipner, A.; Antonietti, M.; Wang, X. Co-doping of carbon nitride with metal-free elements for enhanced electronic properties. J. Phys. Chem. C 2012, 116 (15), 8413–8420.",
-        "doi": "",
-        "needs_review": True,
+        "citation": "Zhang, J.; Zhang, G.; Chen, X.; Lin, S.; Möhlmann, L.; Dołęga, G.; Lipner, G.; Antonietti, M.; Blechert, S.; Wang, X. Co‐Monomer Control of Carbon Nitride Semiconductors to Optimize Hydrogen Evolution with Visible Light. Angewandte Chemie International Edition 2012, 51 (13), 3183-3187.",
+        "doi": "10.1002/anie.201106656",
     },
     {
         "citation": "Cao, S.; Low, J.; Yu, J.; Jaroniec, M. Polymeric Photocatalysts Based on Graphitic Carbon Nitride. Advanced Materials 2015, 27 (13), 2150-2176.",
         "doi": "10.1002/adma.201500033",
     },
     {
-        "citation": "Nasrollahi, F.; Koh, Y. R.; Chen, P.; Varshney, S.; Webster, T. J. 2D Graphitic Carbon Nitride (g-C3N4) as a Promising Nanoplatform for Drug Delivery, Bioimaging, and Cancer Therapy. Adv. Healthcare Mater. 2020, 9 (19), 2000731.",
-        "doi": "",
-        "needs_review": True,
+        "citation": "Pourmadadi, M.; Rahmani, E.; Eshaghi, M. M.; Shamsabadipour, A.; Ghotekar, S.; Rahdar, A.; Romanholo Ferreira, L. F. Graphitic carbon nitride (g-C3N4) synthesis methods, surface functionalization, and drug delivery applications: A review. Journal of Drug Delivery Science and Technology 2023, 79, 104001.",
+        "doi": "10.1016/j.jddst.2022.104001",
     },
     {
-        "citation": "Talari, M.; Farhadi, S. Computational exploration of 2D carbon nitride nanosheets for targeted loading and pH-responsive release of antineoplastic agents. J. Mol. Liq. 2021, 338, 116740.",
-        "doi": "",
-        "needs_review": True,
+        "citation": "Liu, L.; Du, X. Polyethylenimine-modified graphitic carbon nitride nanosheets: a label-free Raman traceable siRNA delivery system. Journal of Materials Chemistry B 2021, 9 (34), 6895-6901.",
+        "doi": "10.1039/d1tb00984b",
     },
     {
         "citation": "Bannwarth, C.; Ehlert, S.; Grimme, S. GFN2-xTB─An Accurate and Broadly Parametrized Self-Consistent Tight-Binding Quantum Chemical Method with Multipole Electrostatics and Density-Dependent Dispersion Contributions. Journal of Chemical Theory and Computation 2019, 15 (3), 1652-1671.",
@@ -229,9 +222,8 @@ KRAS_VERIFIED_REFERENCES = [
         "doi": "10.1038/s41573-020-0090-8",
     },
     {
-        "citation": "Koppada, N.; Canon, J.; Borella, C.; Christopher, R.; Gaida, K.; Holt, T.; Lipford, J. R.; Saiki, A. Y.; San Miguel, T.; Van, G. et al. Mechanisms of Resistance to Direct KRAS(G12C) Inhibitors. Cancer Discov. 2020, 10 (1), 54–71.",
-        "doi": "",
-        "needs_review": True,
+        "citation": "Awad, M. M.; Liu, S.; Rybkin, I. I.; Arbour, K. C.; Dilly, J.; Zhu, V. W.; Johnson, M. L.; Heist, R. S.; Patil, T.; Riely, G. J.; et al. Acquired Resistance to KRAS G12C Inhibition in Cancer. New England Journal of Medicine 2021, 384 (25), 2382-2393.",
+        "doi": "10.1056/nejmoa2105281",
     },
     {
         "citation": "Ostrem, J. M.; Peters, U.; Sos, M. L.; Wells, J. A.; Shokat, K. M. K-Ras(G12C) inhibitors allosterically control GTP affinity and effector interactions. Nature 2013, 503 (7477), 548-551.",
@@ -250,18 +242,16 @@ KRAS_VERIFIED_REFERENCES = [
         "doi": "10.1158/2159-8290.cd-21-1331",
     },
     {
-        "citation": "Lou, L. J.; Wang, C.; Guo, H. R.; Zhang, Y.; Zhao, Y. Progress in direct small-molecule inhibitors targeting mutant KRAS. Acta Pharm. Sin. B 2023, 13 (8), 3254–3273.",
-        "doi": "",
-        "needs_review": True,
+        "citation": "Pandey, D.; Chauhan, S. C.; Kashyap, V. K.; Roy, K. K. Structural insights into small-molecule KRAS inhibitors for targeting KRAS mutant cancers. European Journal of Medicinal Chemistry 2024, 277, 116771.",
+        "doi": "10.1016/j.ejmech.2024.116771",
     },
     {
         "citation": "Kim, D.; Herdeis, L.; Rudolph, D.; Zhao, Y.; Böttcher, J.; Vides, A.; Ayala-Santos, C. I.; Pourfarjam, Y.; Cuevas-Navarro, A.; Xue, J. Y.; et al. Pan-KRAS inhibitor disables oncogenic signalling and tumour growth. Nature 2023, 619 (7968), 160-166.",
         "doi": "10.1038/s41586-023-06123-3",
     },
     {
-        "citation": "Weng, M. T.; Tung, B. Y.; Chen, C. H.; Tseng, H. W.; Chang, Y. L.; Ni, Y. H. Nanotechnology-based therapeutic approaches in pancreatic cancer. World J. Gastrointest. Oncol. 2022, 14 (1), 74–95.",
-        "doi": "",
-        "needs_review": True,
+        "citation": "Manzur, A.; Oluwasanmi, A.; Moss, D.; Curtis, A.; Hoskins, C. Nanotechnologies in Pancreatic Cancer Therapy. Pharmaceutics 2017, 9 (4), 39.",
+        "doi": "10.3390/pharmaceutics9040039",
     },
     {
         "citation": "Hanahan, D. Hallmarks of Cancer: New Dimensions. Cancer Discovery 2022, 12 (1), 31-46.",
