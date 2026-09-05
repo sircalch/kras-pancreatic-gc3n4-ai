@@ -101,7 +101,12 @@ def build_kras_submission_bundle():
         dst_docx = os.path.join(sub_dir, dst_name)
         if os.path.exists(src_docx):
             shutil.copyfile(src_docx, dst_docx)
-        
+
+    src_si = os.path.join(base_dir, "manuscript", "KRAS_gC3N4_Supporting_Information_Table_S1.docx")
+    dst_si = os.path.join(sub_dir, "03_Supporting_Information_KRAS_gC3N4_Monreal_Hernandez_et_al.docx")
+    if os.path.exists(src_si):
+        shutil.copyfile(src_si, dst_si)
+
     zip_path = os.path.join(base_dir, "kras-pancreatic-gC3N4-ai-FINAL-SUBMISSION-READY.zip")
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_f:
         for root, dirs, files in os.walk(sub_dir):

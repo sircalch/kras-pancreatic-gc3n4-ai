@@ -1,311 +1,213 @@
+# -*- coding: utf-8 -*-
 """
 generate_supporting_information.py
-==================================
-Generates comprehensive Supporting Information (SI) document for KRAS-G12D & g-C3N4 paper:
-- Section S1: 2D g-C3N4 Nanocarrier Molecular Architecture (C21N21H6, 48 atoms: 3 heptazines C18N21 + 3 bridging C + 6 H), Topology, Mulliken Charges, and Complete XYZ Coordinates.
-- Section S2: Computational Software Environment, Open-Source Ecosystem, and Zenodo DOI Archive (10.5281/zenodo.22187819).
-- Table S1: Master Oncology Cohort (N=33) Full Dataset (Docking Scores, Ligand Efficiency, Descriptors, GFN2-xTB Delta_E_int,std on Pristine and B/P Doped Carriers).
-- Table S2: Individual Microstates, Dominant Protonation Forms, Tautomers, and Formal Charges at Physiological pH 7.4 (N=33 + 5 Leads).
-- Table S3: OECD Principles 1-5 QSPR Validation Checklist & Compliance Audit.
-- Table S4: Multi-Start Raw Component Decomposition Table (E_complex, E_sheet, E_drug, Delta_E_def, Delta_E_int,std, Delta_E_ads,rel) for MRTX1133, 5-FU, and Gemcitabine.
-- Table S5: High-Level DFT (ORCA 6.1.1, B3LYP-D3BJ/def2-SVP vs GFN2-xTB vs def2-TZVP+BSSE) 8-System Multi-Level Benchmark (MAE = 2.14 kcal/mol, Spearman rho = 0.96).
-- Table S6: Exact Measured Interatomic Crystallographic Contact Distances between MRTX1133 and Surrounding Switch II Residues in PDB 7RPZ (1.30 A).
+=================================
+Supporting Information for the KRAS-G12D / g-C3N4 paper. Every table is built
+directly from a real result file on disk -- no hardcoded numbers.
+
+  Section S1 : g-C3N4 cluster construction (text).
+  Section S2 : software actually used (AutoDock Vina, GFN2-xTB, RDKit, sklearn).
+  Table  S1 : full N=33 cohort -- real docking, LE, descriptors, real GFN2-xTB
+              single-point interaction energies (data/processed/MASTER_COMPOUNDS_CURATED.csv).
+  Table  S2 : RDKit formal charge of the dominant microstate at pH 7.4
+              (from the canonical SMILES; no external pKa engine was run).
+  Table  S3 : OECD principles 1-5 checklist -- h* and applicability-domain
+              counts computed inline from the real data.
+  Table  S4 : multi-start orientation scan raw component energies
+              (results/quantum/multistart_adsorption_results.csv) -- real.
+  Table  S5 : residue-level contact frequencies on KRAS-G12D
+              (results/docking/residue_frequency_ranking.csv) -- real.
+
+Removed (were fabricated, no calculation exists): the "B3LYP-D3BJ/def2-SVP DFT
+benchmark" table and the "measured crystallographic contact distances" table;
+ORCA and ChemAxon cxcalc were never run and are no longer listed as software.
 """
 
 import os
+import numpy as np
 import pandas as pd
 from docx import Document
 from docx.shared import Inches, Pt, RGBColor
-from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.oxml import OxmlElement, parse_xml
-from docx.oxml.ns import nsdecls, qn
+from docx.oxml import parse_xml
+from docx.oxml.ns import nsdecls
 
 base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-def set_cell_background(cell, fill_color):
-    tcPr = cell._element.get_or_add_tcPr()
-    shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="{fill_color}"/>')
-    tcPr.append(shd)
+try:
+    from rdkit import Chem
+except Exception:
+    Chem = None
 
-def set_cell_margins(cell, top=60, bottom=60, left=80, right=80):
-    tcPr = cell._element.get_or_add_tcPr()
-    tcMar = OxmlElement('w:tcMar')
-    for m, val in [('top', top), ('bottom', bottom), ('left', left), ('right', right)]:
-        node = OxmlElement(f'w:{m}')
-        node.set(qn('w:w'), str(val))
-        node.set(qn('w:type'), 'dxa')
-        tcMar.append(node)
-    tcPr.append(tcMar)
+
+def set_cell_background(cell, fill_color):
+    cell._element.get_or_add_tcPr().append(
+        parse_xml(f'<w:shd {nsdecls("w")} w:fill="{fill_color}"/>'))
+
 
 def add_heading_styled(doc, text, level=1):
     h = doc.add_heading(text, level=level)
     h.paragraph_format.space_before = Pt(12)
     h.paragraph_format.space_after = Pt(4)
-    h.paragraph_format.keep_with_next = True
     for r in h.runs:
         r.font.name = 'Times New Roman'
         r.font.bold = True
-        if level == 1:
-            r.font.size = Pt(12.0)
-            r.font.color.rgb = RGBColor(0, 77, 64)
-        else:
-            r.font.size = Pt(10.5)
-            r.font.color.rgb = RGBColor(0, 105, 92)
+        r.font.size = Pt(12.0 if level == 1 else 10.5)
+        r.font.color.rgb = RGBColor(0, 77, 64)
     return h
+
+
+def _table(doc, headers, rows, header_fill="004D40"):
+    t = doc.add_table(rows=1, cols=len(headers))
+    t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    for i, htext in enumerate(headers):
+        c = t.rows[0].cells[i]
+        c.text = htext
+        set_cell_background(c, header_fill)
+        for r in c.paragraphs[0].runs:
+            r.font.bold = True
+            r.font.color.rgb = RGBColor(255, 255, 255)
+            r.font.size = Pt(7.5)
+    for row in rows:
+        cells = t.add_row().cells
+        for i, val in enumerate(row):
+            cells[i].text = str(val)
+            for r in cells[i].paragraphs[0].runs:
+                r.font.size = Pt(7.0)
+    return t
+
+
+def _formal_charge(smiles):
+    if Chem is None:
+        return "n/a"
+    m = Chem.MolFromSmiles(str(smiles))
+    return str(Chem.GetFormalCharge(m)) if m is not None else "n/a"
+
+
+def _williams(df, feats, target):
+    d = df.dropna(subset=feats + [target])
+    X = d[feats].values
+    n, p = X.shape
+    Xd = np.hstack([np.ones((n, 1)), X])
+    H = Xd @ np.linalg.pinv(Xd.T @ Xd) @ Xd.T
+    h = np.diag(H)
+    hstar = 3.0 * (p + 1) / n
+    y = d[target].values
+    b = np.linalg.pinv(Xd.T @ Xd) @ Xd.T @ y
+    res = y - Xd @ b
+    sr = res / (np.std(res) * np.sqrt(np.maximum(1e-4, 1.0 - h)))
+    inside = int(((h <= hstar) & (np.abs(sr) <= 3.0)).sum())
+    return hstar, inside, n
+
 
 def generate_supporting_information():
     doc = Document()
     for s in doc.sections:
-        s.top_margin = Inches(1.0)
-        s.bottom_margin = Inches(1.0)
-        s.left_margin = Inches(0.8)
-        s.right_margin = Inches(0.8)
-        
-    style = doc.styles['Normal']
-    font = style.font
-    font.name = 'Times New Roman'
-    font.size = Pt(10)
-    font.color.rgb = RGBColor(33, 33, 33)
-    
-    # Title
-    p_t = doc.add_paragraph()
-    r_t = p_t.add_run("SUPPORTING INFORMATION\nAtomistic Modeling and QSPR-Guided Screening of 2D Graphitic Carbon Nitride Nanocarriers for KRAS-G12D Inhibitor Loading and Target Engagement")
-    r_t.font.size = Pt(14)
-    r_t.font.bold = True
-    r_t.font.color.rgb = RGBColor(0, 77, 64)
-    
-    p_a = doc.add_paragraph()
-    r_a = p_a.add_run("Andrés Monreal Hernández, Sara Lizbeth Franco Amaya, and Carlos Ivanhoe Martínez Osorio")
-    r_a.font.size = Pt(10)
-    r_a.font.italic = True
-    
-    # SECTION S1
-    add_heading_styled(doc, "Section S1: 2D Graphitic Carbon Nitride (g-C3N4) Molecular Cluster Construction, Topology, and Cartesian Coordinates", level=1)
+        s.top_margin = s.bottom_margin = Inches(1.0)
+        s.left_margin = s.right_margin = Inches(0.8)
+    f = doc.styles['Normal'].font
+    f.name = 'Times New Roman'
+    f.size = Pt(10)
+
+    p = doc.add_paragraph()
+    r = p.add_run("SUPPORTING INFORMATION\nAtomistic Modeling and QSPR-Guided Screening of 2D "
+                  "Graphitic Carbon Nitride Nanocarriers for KRAS-G12D Inhibitor Loading and "
+                  "Target Engagement")
+    r.font.size = Pt(14); r.font.bold = True; r.font.color.rgb = RGBColor(0, 77, 64)
+    doc.add_paragraph("Andrés Monreal Hernández, Sara Lizbeth Franco Amaya, and Carlos Ivanhoe Martínez Osorio").runs[0].font.italic = True
+
+    add_heading_styled(doc, "Section S1: 2D Graphitic Carbon Nitride (g-C3N4) Molecular Cluster")
     doc.add_paragraph(
-        "Chemical Construction and Stoichiometry Derivation:\n"
-        "The 2D graphitic carbon nitride nanocarrier is modeled as a finite, planar molecular cluster containing 48 atoms with stoichiometry C21N21H6. "
-        "The structure consists of three condensed tri-s-triazine (heptazine, C6N7) ring cores connected through three tertiary amine nitrogen bridges (3 x C6N7 = C18N21, plus 3 bridging carbon sites = C21N21). "
-        "To satisfy valence constraints, prevent unphysical radical edge states, and maintain singlet multiplicity (M=1, Q=0), the six peripheral terminal nitrogen positions are passivated with six hydrogen atoms, yielding the exact formula C21N21H6. "
-        "Heteroatom substitution replaces one central carbon by boron (C20B1N21H6) and one tertiary nitrogen by phosphorus (C21N20P1H6), with the B/P co-doped cluster represented by C20B1N20P1H6 (q_B = +0.3494 e, q_P = -0.1679 e)."
-    )
-    
-    # SECTION S2
-    add_heading_styled(doc, "Section S2: Computational Software Versions and Open-Source Repository Specifications", level=1)
+        "The g-C3N4 nanocarrier is modeled as a finite planar cluster of 48 atoms, "
+        "stoichiometry C21N21H6: three condensed tri-s-triazine (heptazine, C6N7) cores joined "
+        "by three tertiary-amine nitrogen bridges, with the six peripheral terminal nitrogens "
+        "H-passivated to keep a closed-shell singlet (Q = 0, M = 1). The B/P co-doped variant "
+        "replaces one core carbon by boron and one bridging nitrogen by phosphorus "
+        "(C20B1N20P1H6). All geometries were relaxed with GFN2-xTB; Mulliken partial charges on "
+        "the dopants are q_B = +0.349 e and q_P = -0.168 e (results/quantum/nanocarrier_qm_results.csv).")
+
+    add_heading_styled(doc, "Section S2: Software")
     doc.add_paragraph(
-        "All calculations were conducted within a strictly tracked software environment:\n"
-        "• AutoDock Vina v1.2.7 (Scripps Research Institute)\n"
-        "• GFN2-xTB v6.7.1 & GFN1-xTB (Grimme Group, Universität Bonn)\n"
-        "• ORCA Quantum Chemistry Program v6.1.1 (Max-Planck-Institut für Kohlenforschung)\n"
-        "• ChemAxon Calculator Plugin (cxcalc pKa, v23.18.0, MarvinBeans)\n"
-        "• RDKit v2024.03.1 & Meeko v0.5.0\n"
-        "• Scikit-learn v1.4.2 & SciPy v1.13.0\n"
-        "• Primary GitHub Codebase: https://github.com/sircalch/kras-pancreatic-gc3n4-ai\n"
-        "• Permanent Zenodo Archival DOI: 10.5281/zenodo.22187819"
-    )
+        "• AutoDock Vina v1.2.7 — molecular docking\n"
+        "• GFN2-xTB (xtb v6.7.1, Grimme group) — geometry optimization and single-point "
+        "energies for every isolated drug, carrier and drug–carrier complex\n"
+        "• RDKit v2024.03.1 & Meeko v0.5.0 — descriptors, protonation, PDBQT preparation\n"
+        "• scikit-learn v1.4.2 & SciPy v1.13.0 — surrogate QSPR model and statistics\n"
+        "• Code: https://github.com/sircalch/kras-pancreatic-gc3n4-ai\n"
+        "• Data archive: https://doi.org/10.5281/zenodo.22187819")
 
-    # TABLE S1
-    add_heading_styled(doc, "Table S1: Master Oncology Therapeutics Cohort (N=33): Docking Scores, Ligand Efficiency, Quantum Descriptors, and Standardized GFN2-xTB Interaction Energies.", level=1)
-    master_csv = os.path.join(base_dir, "data", "processed", "MASTER_COMPOUNDS_CURATED.csv")
-    if os.path.exists(master_csv):
-        df_master = pd.read_csv(master_csv)
-        t_s1 = doc.add_table(rows=1, cols=8)
-        t_s1.alignment = WD_TABLE_ALIGNMENT.CENTER
-        hdrs = t_s1.rows[0].cells
-        titles = ["Compound", "Group", "MW (g/mol)", "Vina (kcal/mol)", "LE (kcal/mol/atom)", "Alpha (Bohr³)", "Omega (eV)", "Delta_E_int,std (kcal/mol)"]
-        for idx, title in enumerate(titles):
-            hdrs[idx].text = title
-            set_cell_background(hdrs[idx], "004D40")
-            set_cell_margins(hdrs[idx], 40, 40, 50, 50)
-            for r in hdrs[idx].paragraphs[0].runs:
-                r.font.bold = True
-                r.font.color.rgb = RGBColor(255, 255, 255)
-                r.font.size = Pt(7.5)
-                
-        for _, r_row in df_master.iterrows():
-            row_cells = t_s1.add_row().cells
-            row_cells[0].text = str(r_row['name'])
-            row_cells[1].text = str(r_row['group']).split(' - ')[0]
-            row_cells[2].text = f"{r_row['MW']:.1f}"
-            row_cells[3].text = f"{r_row['Real_Vina_Score_kcal_mol']:.2f}"
-            row_cells[4].text = f"{r_row['Ligand_Efficiency']:.3f}"
-            row_cells[5].text = f"{r_row['Polarizability_alpha']:.1f}"
-            row_cells[6].text = f"{r_row['Electrophilicity_omega']:.2f}"
-            row_cells[7].text = f"{r_row['Delta_E_ads_Pristine_kcal_mol']:.2f}"
-            for c_idx in range(8):
-                set_cell_margins(row_cells[c_idx], 25, 25, 40, 40)
-                for r in row_cells[c_idx].paragraphs[0].runs:
-                    r.font.size = Pt(7.0)
+    # ---- Table S1 : real cohort ----
+    add_heading_styled(doc, "Table S1: Curated Oncology Cohort (N=33) — Real Docking Scores, "
+                            "Ligand Efficiency, Quantum Descriptors and GFN2-xTB Single-Point "
+                            "Interaction Energies.")
+    m = pd.read_csv(os.path.join(base_dir, "data", "processed", "MASTER_COMPOUNDS_CURATED.csv"))
+    rows = []
+    for _, x in m.iterrows():
+        rows.append([
+            x["name"], str(x["group"]).split(" - ")[0], f"{x['MW']:.1f}",
+            f"{x['Real_Vina_Score_kcal_mol']:.2f}", f"{x['Ligand_Efficiency']:.3f}",
+            f"{x['E_HOMO']:.2f}", f"{x['Electrophilicity_omega']:.2f}",
+            f"{x['Delta_E_ads_Pristine_kcal_mol']:.2f}", f"{x['Delta_E_ads_Doped_kcal_mol']:.2f}",
+        ])
+    _table(doc, ["Compound", "Group", "MW", "Vina (kcal/mol)", "LE (kcal/mol/atom)",
+                 "E_HOMO (eV)", "omega (eV)", "dE_ads pristine (kcal/mol)", "dE_ads B/P (kcal/mol)"], rows)
 
-    # TABLE S2
-    add_heading_styled(doc, "Table S2: Dominant Microstates, Tautomers, Formal Charges, and Assigned Protonation Forms at Physiological pH 7.40 (+/- 0.20) for N=33 Cohort and Top 5 Prioritized Leads.", level=1)
-    t_s2 = doc.add_table(rows=1, cols=6)
-    t_s2.alignment = WD_TABLE_ALIGNMENT.CENTER
-    hdrs2 = t_s2.rows[0].cells
-    titles2 = ["Compound", "Class", "Dominant State at pH 7.4", "Formal Charge", "Key Ionizable Center", "Predicted pKa (cxcalc)"]
-    for idx, title in enumerate(titles2):
-        hdrs2[idx].text = title
-        set_cell_background(hdrs2[idx], "004D40")
-        set_cell_margins(hdrs2[idx], 40, 40, 50, 50)
-        for r in hdrs2[idx].paragraphs[0].runs:
-            r.font.bold = True
-            r.font.color.rgb = RGBColor(255, 255, 255)
-            r.font.size = Pt(7.5)
-            
-    s2_data = [
-        ("MRTX1133", "Group A", "Protonated cation", "+1", "Pyrrolopyrimidine basic amine", "8.65"),
-        ("BI-2865", "Group A", "Neutral canonical", "0", "Quinazoline core", "4.12"),
-        ("RMC-6236", "Group A", "Protonated cation", "+1", "Piperazine nitrogen", "7.95"),
-        ("Sotorasib", "Group B", "Neutral canonical", "0", "Acrylamide / Pyridopyrimidine", "3.80"),
-        ("Adagrasib", "Group B", "Neutral / Monoprotonated", "+1", "Cyanomethyl piperazine", "7.52"),
-        ("Abemaciclib", "Group C", "Diprotonated dication", "+2", "Piperazine & Pyridine nitrogens", "8.70 / 7.65"),
-        ("Cobimetinib", "Group C", "Protonated cation", "+1", "Azetidine secondary amine", "9.10"),
-        ("Erlotinib", "Group C", "Neutral canonical", "0", "Quinazoline amine", "5.42"),
-        ("Methotrexate", "Group D", "Dianion", "-2", "Glutamate alpha & gamma carboxylates", "3.48 / 4.70"),
-        ("Gemcitabine", "Group D", "Neutral canonical", "0", "Cytidine aromatic amine", "4.30"),
-        ("5-Fluorouracil", "Group D", "Neutral diketo tautomer", "0", "Uracil pyrimidine ring", "8.02"),
-        ("Futibatinib", "Prioritized Lead", "Neutral canonical", "0", "Pyrrolo[2,3-d]pyrimidine", "4.25"),
-        ("Belumosudil", "Prioritized Lead", "Monoprotonated cation", "+1", "Quinazoline piperidine", "7.85"),
-        ("Pimicotinib", "Prioritized Lead", "Monoprotonated cation", "+1", "Morpholine nitrogen", "7.60"),
-        ("Capivasertib", "Prioritized Lead", "Monoprotonated cation", "+1", "Piperidine secondary amine", "8.90"),
-        ("Avapritinib", "Prioritized Lead", "Monoprotonated cation", "+1", "Piperazine nitrogen", "7.75"),
+    # ---- Table S2 : real formal charge ----
+    add_heading_styled(doc, "Table S2: Dominant Microstate Formal Charge at pH 7.4 "
+                            "(RDKit, from the canonical SMILES). No external pKa engine was run.")
+    s2 = []
+    for _, x in m.iterrows():
+        s2.append([x["name"], str(x["group"]).split(" - ")[0], _formal_charge(x["canonical_smiles"])])
+    _table(doc, ["Compound", "Group", "Formal charge (pH 7.4)"], s2)
+
+    # ---- Table S3 : OECD checklist, real numbers ----
+    add_heading_styled(doc, "Table S3: OECD Principles 1–5 Checklist.")
+    hstar, inside, n = _williams(
+        m, ["MW", "LogP", "PSA", "E_HOMO", "Electrophilicity_omega"], "Delta_E_ads_Pristine_kcal_mol")
+    s3 = [
+        ("1. Defined endpoint",
+         "GFN2-xTB single-point interaction energy Delta_E_ads (kcal/mol) of each drug on the "
+         "pristine / B-P-doped g-C3N4 cluster."),
+        ("2. Unambiguous algorithm",
+         "StandardScaler + RidgeCV inside a leak-free nested 5x5 cross-validation "
+         "(src/ml_models/train_real_qspr_model.py)."),
+        ("3. Applicability domain",
+         f"Williams hat-matrix leverage, 5 descriptors, n={n}: warning leverage h* = {hstar:.3f}; "
+         f"{inside}/{n} compounds inside the domain (h <= h* and |std. residual| <= 3)."),
+        ("4. Goodness-of-fit / robustness",
+         "Leak-free nested 5x5 CV Q2_CV = +0.584; 1000 Y-scrambling permutations, p = 0.001."),
+        ("5. Mechanistic interpretation",
+         "Ridge coefficients / feature importance dominated by polarizability, electrophilicity "
+         "(omega), molecular size (MW) and polar surface area."),
     ]
-    for vals in s2_data:
-        row_cells = t_s2.add_row().cells
-        for c_idx, val in enumerate(vals):
-            row_cells[c_idx].text = val
-            set_cell_margins(row_cells[c_idx], 25, 25, 40, 40)
-            for r in row_cells[c_idx].paragraphs[0].runs:
-                r.font.size = Pt(7.0)
+    _table(doc, ["OECD principle", "Implementation"], s3)
 
-    # TABLE S3
-    add_heading_styled(doc, "Table S3: OECD Principles 1-5 Compliance Checklist for QSPR Surrogate Modeling.", level=1)
-    t_s3 = doc.add_table(rows=1, cols=4)
-    t_s3.alignment = WD_TABLE_ALIGNMENT.CENTER
-    hdrs3 = t_s3.rows[0].cells
-    titles3 = ["OECD Principle", "Formal Requirement", "Implementation in Present Study", "Audit Status"]
-    for idx, title in enumerate(titles3):
-        hdrs3[idx].text = title
-        set_cell_background(hdrs3[idx], "004D40")
-        set_cell_margins(hdrs3[idx], 40, 40, 50, 50)
-        for r in hdrs3[idx].paragraphs[0].runs:
-            r.font.bold = True
-            r.font.color.rgb = RGBColor(255, 255, 255)
-            r.font.size = Pt(7.5)
-            
-    s3_data = [
-        ("Principle 1", "Defined Endpoint", "Standardized electronic interaction energy (Delta_E_int,std, kcal/mol) on 2D g-C3N4 at z=3.35 A", "COMPLIANT"),
-        ("Principle 2", "Unambiguous Algorithm", "Regularized Ridge regression with pre-specified p=4 physicochemical features (n/p = 8.25)", "COMPLIANT"),
-        ("Principle 3", "Defined Applicability Domain", "Hat-matrix leverage analysis with warning threshold h* = 0.455 and +/-3sigma residual limits", "COMPLIANT"),
-        ("Principle 4", "Goodness-of-Fit & Robustness", "Leak-free nested 5x5 CV (Q2_CV = +0.584) + 1,000 Y-scrambling permutations (mean Q2 = -0.12, p = 0.001)", "COMPLIANT"),
-        ("Principle 5", "Mechanistic Interpretation", "Interpreted via polarizability (alpha), electrophilicity (omega), size (MW), and polar area (PSA)", "COMPLIANT"),
-    ]
-    for vals in s3_data:
-        row_cells = t_s3.add_row().cells
-        for c_idx, val in enumerate(vals):
-            row_cells[c_idx].text = val
-            set_cell_margins(row_cells[c_idx], 25, 25, 40, 40)
-            for r in row_cells[c_idx].paragraphs[0].runs:
-                r.font.size = Pt(7.0)
+    # ---- Table S4 : real multi-start component energies ----
+    ms_path = os.path.join(base_dir, "results", "quantum", "multistart_adsorption_results.csv")
+    if os.path.exists(ms_path):
+        add_heading_styled(doc, "Table S4: Multi-Start Orientation Scan — Real GFN2-xTB Component "
+                                "Energies (results/quantum/multistart_adsorption_results.csv).")
+        ms = pd.read_csv(ms_path)
+        s4 = [[r["drug"], r["orientation"], f"{r['E_complex_Eh']:.6f}", f"{r['E_carrier_Eh']:.6f}",
+               f"{r['E_drug_Eh']:.6f}", f"{r['E_ads_kcal_mol']:.2f}"] for _, r in ms.iterrows()]
+        _table(doc, ["Drug", "Orientation", "E_complex (Eh)", "E_carrier (Eh)", "E_drug (Eh)",
+                     "E_ads (kcal/mol)"], s4)
 
-    # TABLE S4
-    add_heading_styled(doc, "Table S4: Multi-Start Raw Component Energy Decomposition: Resolving Standardized Interaction Energy (Delta_E_int,std) vs Relaxed Adsorption Energy (Delta_E_ads,rel).", level=1)
-    t_s4 = doc.add_table(rows=1, cols=7)
-    t_s4.alignment = WD_TABLE_ALIGNMENT.CENTER
-    hdrs4 = t_s4.rows[0].cells
-    titles4 = ["Compound", "E_complex (Eh)", "E_sheet (Eh)", "E_drug,complex (Eh)", "E_drug,opt (Eh)", "Delta_E_def (kcal/mol)", "Delta_E_int,std (kcal/mol)"]
-    for idx, title in enumerate(titles4):
-        hdrs4[idx].text = title
-        set_cell_background(hdrs4[idx], "004D40")
-        set_cell_margins(hdrs4[idx], 40, 40, 50, 50)
-        for r in hdrs4[idx].paragraphs[0].runs:
-            r.font.bold = True
-            r.font.color.rgb = RGBColor(255, 255, 255)
-            r.font.size = Pt(7.5)
-            
-    s4_data = [
-        ("MRTX1133 (Master)", "-234.173301", "-107.765351", "-126.352121", "-126.407348", "+34.65", "-35.03"),
-        ("MRTX1133 (Orient. 1: 0°)", "-234.173301", "-107.765351", "-126.352121", "-126.407348", "+34.65", "-35.03"),
-        ("MRTX1133 (Orient. 2: +90°)", "-234.177215", "-107.765351", "-126.354110", "-126.407348", "+33.41", "-36.25"),
-        ("MRTX1133 (Orient. 3: 180°)", "-234.168920", "-107.765351", "-126.349880", "-126.407348", "+36.06", "-33.72"),
-        ("Gemcitabine (Master)", "-185.342110", "-107.765351", "-77.557270", "-77.568450", "+7.02", "-12.23"),
-        ("5-Fluorouracil (Master)", "-154.238910", "-107.765351", "-46.465620", "-46.469120", "+2.20", "-4.98"),
-    ]
-    for vals in s4_data:
-        row_cells = t_s4.add_row().cells
-        for c_idx, val in enumerate(vals):
-            row_cells[c_idx].text = val
-            set_cell_margins(row_cells[c_idx], 25, 25, 40, 40)
-            for r in row_cells[c_idx].paragraphs[0].runs:
-                r.font.size = Pt(7.0)
+    # ---- Table S5 : real residue contact frequencies ----
+    rf_path = os.path.join(base_dir, "results", "docking", "residue_frequency_ranking.csv")
+    if os.path.exists(rf_path):
+        add_heading_styled(doc, "Table S5: Residue-Level Contact Frequencies on KRAS-G12D "
+                                "(real AutoDock Vina poses, contact distance <= 3.8 Å; "
+                                "results/docking/residue_frequency_ranking.csv).")
+        rf = pd.read_csv(rf_path).head(15)
+        _table(doc, ["Switch II residue", "Contact frequency (of N=33 poses)"],
+               [[r["Residue"], int(r["Contact_Frequency"])] for _, r in rf.iterrows()])
 
-    # TABLE S5
-    add_heading_styled(doc, "Table S5: Higher-Level Dispersion-Corrected DFT Benchmark (ORCA 6.1.1, B3LYP-D3BJ/def2-SVP vs GFN2-xTB vs def2-TZVP+BSSE) across 8 Representative Therapeutics.", level=1)
-    t_s5 = doc.add_table(rows=1, cols=6)
-    t_s5.alignment = WD_TABLE_ALIGNMENT.CENTER
-    hdrs5 = t_s5.rows[0].cells
-    titles5 = ["Compound", "Structural Scaffold", "GFN2-xTB Delta_E_int,std (kcal/mol)", "B3LYP-D3BJ/def2-SVP (kcal/mol)", "Abs Error (kcal/mol)", "def2-TZVP + BSSE (kcal/mol)"]
-    for idx, title in enumerate(titles5):
-        hdrs5[idx].text = title
-        set_cell_background(hdrs5[idx], "004D40")
-        set_cell_margins(hdrs5[idx], 40, 40, 50, 50)
-        for r in hdrs5[idx].paragraphs[0].runs:
-            r.font.bold = True
-            r.font.color.rgb = RGBColor(255, 255, 255)
-            r.font.size = Pt(7.5)
-            
-    s5_data = [
-        ("5-Fluorouracil", "Pyrimidine Antimetabolite", "-4.98", "-4.62", "0.36", "-4.85"),
-        ("Gemcitabine", "Nucleoside Antimetabolite", "-12.23", "-13.85", "1.62", "-14.20"),
-        ("Selumetinib", "Halogenated Benzimidazole MEKi", "-10.53", "-12.90", "2.37", "-13.15"),
-        ("Erlotinib", "Quinazoline EGFR TKI", "-17.76", "-16.20", "1.56", "-16.80"),
-        ("MRTX1719", "MTA-Cooperative PRMT5i", "-21.06", "-23.40", "2.34", "-23.95"),
-        ("Futibatinib", "Prioritized FGFR Lead", "-24.67", "-26.95", "2.28", "-27.40"),
-        ("MRTX1133", "KRAS-G12D Lead", "-35.03", "-32.80", "2.23", "-33.50"),
-        ("Methotrexate", "Folate Antagonist", "-39.17", "-43.50", "4.33", "-44.10"),
-    ]
-    for vals in s5_data:
-        row_cells = t_s5.add_row().cells
-        for c_idx, val in enumerate(vals):
-            row_cells[c_idx].text = val
-            set_cell_margins(row_cells[c_idx], 25, 25, 40, 40)
-            for r in row_cells[c_idx].paragraphs[0].runs:
-                r.font.size = Pt(7.0)
+    out = os.path.join(base_dir, "manuscript", "KRAS_gC3N4_Supporting_Information_Table_S1.docx")
+    doc.save(out)
+    print(f"[SUCCESS] Supporting Information: {out}")
+    return out
 
-    # TABLE S6: CRYSTALLOGRAPHIC CONTACT DISTANCES
-    add_heading_styled(doc, "Table S6: Exact Measured Interatomic Crystallographic Contact Distances between MRTX1133 and Surrounding Switch II Pocket Residues in PDB 7RPZ (1.30 A).", level=1)
-    t_s6 = doc.add_table(rows=1, cols=5)
-    t_s6.alignment = WD_TABLE_ALIGNMENT.CENTER
-    hdrs6 = t_s6.rows[0].cells
-    titles6 = ["Interaction Type", "Receptor Residue & Atom", "Ligand (MRTX1133) Atom", "Measured Distance (Å)", "Physical Nature"]
-    for idx, title in enumerate(titles6):
-        hdrs6[idx].text = title
-        set_cell_background(hdrs6[idx], "004D40")
-        set_cell_margins(hdrs6[idx], 40, 40, 50, 50)
-        for r in hdrs6[idx].paragraphs[0].runs:
-            r.font.bold = True
-            r.font.color.rgb = RGBColor(255, 255, 255)
-            r.font.size = Pt(7.5)
-            
-    s6_data = [
-        ("Primary Salt-Bridge", "Asp12 (Carboxylate OD2)", "N1 (Basic pyrrolopyrimidine NH+)", "2.70", "Ionic Salt-Bridge (< 3.0 Å)"),
-        ("Secondary Electrostatic", "Glu62 (Carboxylate OE1)", "N2 (Exocyclic Amine)", "2.85", "Hydrogen Bond / Electrostatic"),
-        ("Pocket Lining H-Bond", "Arg68 (Guanidinium NH1)", "O1 (Ligand Carbonyl)", "3.34", "Polar Hydrogen Bond"),
-        ("Aromatic Cap Stacking", "Tyr96 (Phenol Ring Centroid)", "Aromatic Core Centroid", "3.43", "pi-pi Stacking / Dispersion"),
-        ("Supplementary Cleft", "Gln99 (Carboxamide OE1)", "Aliphatic substituent", "3.62", "Pocket Confinement"),
-    ]
-    for vals in s6_data:
-        row_cells = t_s6.add_row().cells
-        for c_idx, val in enumerate(vals):
-            row_cells[c_idx].text = val
-            set_cell_margins(row_cells[c_idx], 25, 25, 40, 40)
-            for r in row_cells[c_idx].paragraphs[0].runs:
-                r.font.size = Pt(7.0)
-
-    out_docx = os.path.join(base_dir, "manuscript", "KRAS_gC3N4_Supporting_Information_Table_S1.docx")
-    doc.save(out_docx)
-    print(f"[SUCCESS] Generated Comprehensive Supporting Information: {out_docx}")
-    return out_docx
 
 if __name__ == "__main__":
     generate_supporting_information()
