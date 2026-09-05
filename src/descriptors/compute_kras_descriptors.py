@@ -23,14 +23,30 @@ def download_kras_pdb(base_dir):
 
 def calculate_all_descriptors():
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    raw_csv = os.path.join(base_dir, "data", "raw", "kras_drug_library.csv")
     out_csv = os.path.join(base_dir, "data", "processed", "kras_isolated_descriptors.csv")
-    
+
     download_kras_pdb(base_dir)
-    
-    df = pd.read_csv(raw_csv)
+
+    # Compound set + SMILES come from the curated master database (the 33 compounds
+    # that actually have real GFN2-xTB calculations). The stale
+    # data/raw/kras_drug_library.csv holds a different, unrelated 36-compound list.
+    master_csv = os.path.join(base_dir, "data", "processed", "MASTER_COMPOUNDS_CURATED.csv")
+    df = pd.read_csv(master_csv).rename(columns={"canonical_smiles": "smiles"})
+
+    # Real GFN2-xTB frontier-orbital / Conceptual-DFT indices, from the actual xtb
+    # single-point outputs (src/quantum/run_molecular_qm.py). The old code
+    # fabricated E_HOMO/E_LUMO with an empirical RDKit-descriptor formula
+    # (e_homo = -5.15 - 0.20*logp - ...); replaced here by a merge on the real
+    # per-molecule quantum observables. No new computation.
+    qm_csv = os.path.join(base_dir, "results", "quantum", "isolated_drugs_qm_results.csv")
+    qm = pd.read_csv(qm_csv).set_index("name")
+    qm = qm[qm["returncode"] == 0]
+    missing = sorted(set(df["name"]) - set(qm.index))
+    if missing:
+        raise RuntimeError(f"No real GFN2-xTB result for: {missing} -- refusing to fabricate.")
+
     records = []
-    
+
     for idx, row in df.iterrows():
         name = row['name']
         smiles = row['smiles']
@@ -57,20 +73,21 @@ def calculate_all_descriptors():
         logs = 0.16 - 0.63 * logp - 0.0062 * mw + 0.066 * rbc - 0.74 * (arom_rings / (nor + 1e-5))
         ws_mg_ml = (10 ** logs) * mw * 1000.0
         
-        # 3. Quantum Electronic Frontiers & CDFT Indices
-        e_homo = -5.15 - 0.20 * logp - 0.06 * arom_rings + 0.10 * hbd
-        e_lumo = -1.25 - 0.16 * logp - 0.07 * arom_rings + 0.08 * hba
-        gap = e_lumo - e_homo
-        eta = gap / 2.0
-        s = 1.0 / (2.0 * eta) if eta > 1e-4 else 0.0
-        chi = -(e_homo + e_lumo) / 2.0
-        mu = -chi
-        omega = (mu ** 2) / (2.0 * eta) if eta > 1e-4 else 0.0
+        # 3. Quantum Electronic Frontiers & CDFT Indices -- REAL GFN2-xTB values
+        q = qm.loc[name]
+        e_homo = float(q["E_HOMO_eV"])
+        e_lumo = float(q["E_LUMO_eV"])
+        gap = float(q["Gap_eV"])
+        eta = float(q["Hardness_eta_eV"])
+        s = float(q["Softness_S_eV_inv"])
+        chi = float(q["Electronegativity_chi_eV"])
+        mu = float(q["Chemical_Potential_mu_eV"])
+        omega = float(q["Electrophilicity_omega_eV"])
         
         records.append({
             "name": name,
-            "drug_class": row['class'],
-            "drugbank_id": row['drugbank_id'],
+            "drug_class": row.get('drug_class', row.get('class', '')),
+            "drugbank_id": row.get('drugbank_id', row.get('InChIKey', '')),
             "smiles": smiles,
             "MW": round(mw, 3),
             "LogP": round(logp, 3),

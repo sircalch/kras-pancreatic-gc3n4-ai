@@ -410,10 +410,11 @@ def generate_kras_full_manuscript():
         r_num = p_ref.add_run(f"{idx}. ")
         r_num.font.bold = True
         p_ref.add_run(ref['citation'] + " ")
-        r_doi = p_ref.add_run(f"doi:{ref['doi']}")
-        r_doi.font.italic = True
-        r_doi.font.size = Pt(9.0)
-        r_doi.font.color.rgb = RGBColor(0, 77, 64)
+        if ref.get('doi'):
+            r_doi = p_ref.add_run(f"doi:{ref['doi']}")
+            r_doi.font.italic = True
+            r_doi.font.size = Pt(9.0)
+            r_doi.font.color.rgb = RGBColor(0, 77, 64)
         
     out_docx = os.path.join(base_dir, "manuscript", "KRAS_gC3N4_Full_Q1_Research_Paper_Monreal_Hernandez_et_al.docx")
     doc.save(out_docx)

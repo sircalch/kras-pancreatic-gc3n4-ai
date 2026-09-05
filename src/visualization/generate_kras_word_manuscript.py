@@ -131,14 +131,15 @@ def generate_kras_word_manuscript():
     p_abs.paragraph_format.line_spacing = 1.15
     p_abs.add_run(
         "Pancreatic Ductal Adenocarcinoma (PDAC) remains an intractable gastrointestinal malignancy characterized by dense desmoplastic stroma and universal "
-        "harboring of oncogenic KRAS driver mutations, predominantly KRAS-G12D (>45%). Here, we present a multi-scale quantum chemical (DFTB3-D4), physical molecular "
+        "harboring of oncogenic KRAS driver mutations, predominantly KRAS-G12D (>45%). Here, we present a multi-scale quantum chemical (GFN2-xTB, with DFT single-point "
+        "benchmarking of the carrier), physical molecular "
         "docking (AutoDock Vina v1.2.7 against PDB ID: 7RPZ, 1.45 Å), and Explainable Machine Learning QSAR framework investigating 2D graphitic carbon nitride "
         "(g-C3N4) and heteroatom-doped (B/P-g-C3N4) nanocarriers delivering 33 direct KRAS-G12D allosteric inhibitors (e.g., MRTX1133) and PDAC therapeutics. "
-        "Quantum adsorption modeling revealed favorable, non-covalent chemisorption (Delta_E_ads = -18.5 to -65.2 kcal/mol) on tri-s-triazine polymeric frameworks. "
-        "Physical docking against the crystal structure of human oncogenic KRAS-G12D demonstrated robust macromolecular stabilization (-5.09 to -9.94 kcal/mol) "
-        "and critical contact engagements with the Switch II allosteric pocket (Asp12, Gly13, Gln61, Glu62, Tyr96). Machine Learning models (ExtraTrees and XGBoost) "
+        "Real GFN2-xTB adsorption modeling revealed favorable loading on the tri-s-triazine polymeric framework (Delta_E_ads = -5.0 to -39.9 kcal/mol across the pristine and B/P-doped supercells). "
+        "Physical docking against the crystal structure of human oncogenic KRAS-G12D demonstrated macromolecular stabilization (real Vina -2.9 to -9.8 kcal/mol) "
+        "and recurrent contact engagements within the Switch II allosteric pocket (Tyr96, Asp12, Glu62, Arg68, Gln99). Regularized-linear (RidgeCV) QSAR models "
         "yielded modest, non-overfit predictive accuracy on the real GFN2-xTB adsorption energies via leak-free nested 5x5 cross-validation "
-        "(Q2_CV = 0.552 pristine, 0.513 B/P-doped; n=33, p=4), corroborated by exploratory feature-importance rankings and OECD Principle 3 Williams leverage validation (31/33 compounds within the applicability domain). "
+        "(Q2_CV = 0.552 pristine, 0.513 B/P-doped; n=33), corroborated by exploratory feature-importance rankings and OECD Principle 3 Williams leverage validation (31/33 compounds within the applicability domain). "
         "This study establishes a foundational computational framework for 2D polymeric nanocarriers overcoming stroma-mediated resistance in KRAS-driven pancreatic oncology."
     )
     
@@ -162,8 +163,9 @@ def generate_kras_word_manuscript():
     
     add_heading_styled(doc, "2. Computational and Experimental Section", level=1)
     doc.add_paragraph(
-        "2.1 Quantum Chemical Tight-Binding Modeling: Quantum adsorption of therapeutics on g-C3N4 and B/P-doped supercells was performed with DFTB3-D4. "
-        "Frontier orbital energies and Conceptual DFT reactivity indices were rigorously extracted."
+        "2.1 Quantum Chemical Tight-Binding Modeling: Geometry optimizations and single-point energies for the isolated therapeutics, the g-C3N4 / B/P-doped "
+        "carrier supercells, and every drug-carrier complex were computed with GFN2-xTB (D4 dispersion). Adsorption energies were taken as "
+        "Delta_E_ads = E(complex) - E(carrier) - E(drug). Frontier orbital energies and Conceptual DFT reactivity indices were extracted directly from the xtb output."
     )
     doc.add_paragraph(
         "2.2 Physical Molecular Docking on KRAS-G12D Crystal: Docking was performed using AutoDock Vina v1.2.7 on the high-resolution crystal structure "
@@ -171,15 +173,15 @@ def generate_kras_word_manuscript():
     )
     
     add_image_if_exists(doc, os.path.join(fig_dir, "fig2_kras_quantum_cdft_architecture.png"),
-                        "Figure 2: Quantum CDFT Architecture & Electronic Reactivity for 2D g-C3N4 Systems: (a) HOMO/LUMO frontier orbital alignment; (b) Chemical hardness and electrophilicity index.")
+                        "Figure 2: Real Quantum CDFT Electronic Reactivity of the Isolated KRAS/PDAC Therapeutics Cohort (real GFN2-xTB single points, n=38): (a) HOMO/LUMO frontier-orbital distribution; (b) chemical hardness vs. electrophilicity index. No real complex-level frontier-orbital calculation exists for either g-C3N4 variant (the carrier band edges are near-degenerate).")
     
     add_heading_styled(doc, "3. Results and Discussion", level=1)
     
     add_image_if_exists(doc, os.path.join(fig_dir, "fig3_kras_docking_vina_statistical_profiles.png"),
-                        "Figure 3: Physical Molecular Docking Statistical Profiles on Human KRAS-G12D Crystal: (a) Binding energy distributions; (b) Ranking of top 10 high-affinity KRAS-G12D inhibitors (highlighting MRTX1133 at -9.16 kcal/mol and BI-2865 at -9.94 kcal/mol).")
+                        "Figure 3: Physical Molecular Docking Statistical Profiles on Human KRAS-G12D Crystal (real AutoDock Vina v1.2.7, PDB 7RPZ): (a) binding-energy distribution; (b) ranking of the top-10 highest-affinity compounds (Abemaciclib -9.75, Cobimetinib -9.12 kcal/mol; MRTX1133 -8.06, BI-2865 -8.46 kcal/mol).")
     
     add_image_if_exists(doc, os.path.join(fig_dir, "fig4_kras_residue_contact_frequency.png"),
-                        "Figure 4: Residue-Level Interaction Fingerprints on KRAS-G12D: Contact frequency analysis demonstrating dominant interactions with oncogenic Asp12, Tyr96, Glu62, and Arg68.")
+                        "Figure 4: Residue-Level Interaction Fingerprints on KRAS-G12D (real Vina poses, contact distance <= 3.8 A): most frequent contacts are Tyr96, Asp12, Glu62, Arg68, Gln99, Tyr64, Gly60 and Met72.")
     
     # Table 1: Descriptors
     desc_csv = os.path.join(base_dir, "data", "processed", "kras_isolated_descriptors.csv")
@@ -217,7 +219,7 @@ def generate_kras_word_manuscript():
                     r.font.size = Pt(8.5)
                     
     add_image_if_exists(doc, os.path.join(fig_dir, "fig5_kras_parity_models_evaluation.png"),
-                        "Figure 5: Parity Plots (Predicted vs Observed Delta_G) for Machine Learning Nano-QSAR Models on g-C3N4 Systems.")
+                        "Figure 5: Leak-free nested 5x5 CV parity plots (real observed vs out-of-fold predicted GFN2-xTB Delta_E_ads) for the pristine and B/P-doped g-C3N4 systems (n=33).")
     
     add_image_if_exists(doc, os.path.join(fig_dir, "fig6_kras_shap_xai_importance_rankings.png"),
                         "Figure 6: Explainable AI (SHAP) Feature Importance Rankings for 2D g-C3N4 Nanocarrier Delivery.")
@@ -241,7 +243,9 @@ def generate_kras_word_manuscript():
     doc.add_paragraph("Supported by Universidad Estatal de Sonora and Universidad de Sonora. Full code and docking PDBQT files are available in the repository.")
     
     add_heading_styled(doc, "References", level=1)
-    from build_comprehensive_verified_references import VERIFIED_REFERENCES
+    import sys as _sys
+    _sys.path.insert(0, os.path.join(base_dir, "src", "curation"))
+    from build_kras_verified_references import KRAS_VERIFIED_REFERENCES as VERIFIED_REFERENCES
     for idx, ref in enumerate(VERIFIED_REFERENCES, 1):
         p_ref = doc.add_paragraph()
         p_ref.paragraph_format.left_indent = Inches(0.4)
@@ -249,10 +253,11 @@ def generate_kras_word_manuscript():
         r_num = p_ref.add_run(f"{idx}. ")
         r_num.font.bold = True
         p_ref.add_run(ref['citation'] + " ")
-        r_doi = p_ref.add_run(f"doi:{ref['doi']}")
-        r_doi.font.italic = True
-        r_doi.font.size = Pt(9.0)
-        r_doi.font.color.rgb = RGBColor(0, 105, 92)
+        if ref.get('doi'):
+            r_doi = p_ref.add_run(f"doi:{ref['doi']}")
+            r_doi.font.italic = True
+            r_doi.font.size = Pt(9.0)
+            r_doi.font.color.rgb = RGBColor(0, 105, 92)
         
     out_docx = os.path.join(base_dir, "manuscript", "Beilstein_Manuscript_KRAS_gC3N4_Monreal_Hernandez_et_al.docx")
     doc.save(out_docx)

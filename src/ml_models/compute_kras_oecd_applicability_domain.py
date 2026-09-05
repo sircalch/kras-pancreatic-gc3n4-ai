@@ -45,13 +45,17 @@ def compute_williams_domain():
         X_design = np.hstack([np.ones((n, 1)), X])
         p_eff = p + 1
         
-        try:
-            H = X_design @ np.linalg.pinv(X_design.T @ X_design) @ X_design.T
-            h_diag = np.diag(H)
-        except Exception:
-            h_diag = np.random.uniform(0.08, 0.35, n)
+        # Real hat-matrix leverages. If this ever fails it is a data/design-matrix
+        # bug that must surface, not be masked with random numbers.
+        H = X_design @ np.linalg.pinv(X_design.T @ X_design) @ X_design.T
+        h_diag = np.diag(H)
             
         h_star = 3.0 * p_eff / n
+        n_in = int(((h_diag <= h_star) & (np.abs(
+            (y - X_design @ (np.linalg.pinv(X_design.T @ X_design) @ X_design.T @ y))
+            / (np.std(y - X_design @ (np.linalg.pinv(X_design.T @ X_design) @ X_design.T @ y))
+               * np.sqrt(np.maximum(1e-4, 1.0 - h_diag)))) <= 3.0)).sum())
+        print(f"[AD] {sys_name}: n={n}, p_eff={p_eff}, h*={h_star:.3f}, inside domain = {n_in}/{n}")
         
         beta = np.linalg.pinv(X_design.T @ X_design) @ X_design.T @ y
         y_pred = X_design @ beta

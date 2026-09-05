@@ -34,8 +34,8 @@ def make_graphical_abstract(base_dir, fig_dir):
     
     panels = [
         ("A. 2D Polymeric g-C3N4\n(Pristine & B/P-Doped Nanolayers)\n- Metal-free high biocompatibility\n- Deep pancreatic stroma penetration\n- pH-responsive tumor drug release", 0.04, 0.12, 0.28, 0.70, "#E0F2F1", "#00695C"),
-        ("B. Physical Docking (AutoDock Vina)\nHuman KRAS-G12D (PDB: 7RPZ, 1.45 Å)\n- 33 PDAC & KRAS Drugs Screened\n- MRTX1133 Delta_G = -9.16 kcal/mol\n- BI-2865 Delta_G = -9.94 kcal/mol", 0.36, 0.12, 0.28, 0.70, "#E8F5E9", "#2E7D32"),
-        ("C. Explainable AI & OECD QSAR\nLeak-free nested 5x5 Ridge CV\n- Q2_CV = 0.55 (pristine), 0.51 (doped)\n- Top feature: HBA / Electrophilicity omega\n- 31/33 inside Williams Domain (h*)", 0.68, 0.12, 0.28, 0.70, "#FBE9E7", "#D84315")
+        ("B. Physical Docking (AutoDock Vina)\nHuman KRAS-G12D (PDB: 7RPZ, 1.45 Å)\n- 33 PDAC & KRAS Drugs Screened\n- Real Vina scores -2.9 to -9.8 kcal/mol\n- Switch II: Tyr96, Asp12, Glu62, Arg68", 0.36, 0.12, 0.28, 0.70, "#E8F5E9", "#2E7D32"),
+        ("C. Explainable AI & OECD QSAR\nLeak-free nested 5x5 Ridge CV\n- Q2_CV = 0.55 (pristine), 0.51 (doped)\n- Top feature: HBA / Electrophilicity omega\n- OECD Principle 3 Williams domain", 0.68, 0.12, 0.28, 0.70, "#FBE9E7", "#D84315")
     ]
     
     for text, x, y, w, h, bg_c, border_c in panels:
@@ -54,16 +54,23 @@ def make_graphical_abstract(base_dir, fig_dir):
     print(f"Generated KRAS Graphical Abstract: {out_p}")
 
 def make_fig1_workflow(base_dir, fig_dir):
+    # Real ranges pulled from the actual result files (no hardcoded numbers).
+    ads = pd.read_csv(os.path.join(base_dir, "results", "quantum", "adsorption_qm_results.csv"))
+    vina = pd.read_csv(os.path.join(base_dir, "results", "docking", "real_vina_docking_summary.csv"))
+    a_lo, a_hi = ads["Delta_E_ads_kcal_mol"].min(), ads["Delta_E_ads_kcal_mol"].max()
+    v_lo, v_hi = vina["Real_Vina_Score_kcal_mol"].min(), vina["Real_Vina_Score_kcal_mol"].max()
+    n_drugs = vina["name"].nunique()
+
     fig, ax = plt.subplots(figsize=(14, 7), dpi=300)
     ax.axis('off')
-    
+
     boxes = [
         ("1. 2D Graphitic Carbon Nitride\n(Pristine & B/P-Doped g-C3N4)", 0.05, 0.55, 0.25, 0.35, "#E0F2F1", "#00695C"),
         ("2. Pancreatic Ductal Stroma\nEnhanced EPR & pH-Cleavage\n(Deep Fibrotic Tumor Infiltration)", 0.38, 0.55, 0.25, 0.35, "#E8F5E9", "#2E7D32"),
         ("3. Oncogenic Target Crystal\nHuman KRAS-G12D Allosteric\n(PDB ID: 7RPZ, 1.45 Å)", 0.70, 0.55, 0.25, 0.35, "#FBE9E7", "#D84315"),
-        ("4. Quantum CDFT & Tight-Binding\nAdsorption Energies & FMO\n(Delta_E_ads = -18.5 to -65.2 kcal/mol)", 0.05, 0.10, 0.25, 0.35, "#E1F5FE", "#0277BD"),
-        ("5. 100% Real Physical Docking\nAutoDock Vina v1.2.7 (Switch II)\n(33 PDAC Therapeutics Screened)", 0.38, 0.10, 0.25, 0.35, "#EDE7F6", "#4527A0"),
-        ("6. Explainable AI & OECD QSAR\nExtraTrees + XGBoost + SHAP\n(MAPE < 6.40%, Williams Domain)", 0.70, 0.10, 0.25, 0.35, "#FCE4EC", "#C2185B"),
+        (f"4. Quantum CDFT & Tight-Binding\nGFN2-xTB Adsorption Energies & FMO\n(Delta_E_ads = {a_hi:.1f} to {a_lo:.1f} kcal/mol)", 0.05, 0.10, 0.25, 0.35, "#E1F5FE", "#0277BD"),
+        (f"5. Real Physical Docking\nAutoDock Vina v1.2.7 (Switch II)\n({n_drugs} therapeutics; Vina {v_hi:.1f} to {v_lo:.1f} kcal/mol)", 0.38, 0.10, 0.25, 0.35, "#EDE7F6", "#4527A0"),
+        ("6. Explainable AI & OECD QSAR\nLeak-free nested 5x5 Ridge CV + SHAP\n(Q2_CV = 0.55 / 0.51; Williams Domain)", 0.70, 0.10, 0.25, 0.35, "#FCE4EC", "#C2185B"),
     ]
     
     for title, x, y, w, h, bg_c, border_c in boxes:
@@ -85,40 +92,45 @@ def make_fig1_workflow(base_dir, fig_dir):
     print(f"Generated Figure 1: {out_p}")
 
 def make_fig2_quantum(base_dir, fig_dir):
+    # Real GFN2-xTB single-point observables for the isolated therapeutics cohort
+    # (results/quantum/isolated_drugs_qm_results.csv). The previous version used
+    # hardcoded homo/lumo/eta/omega arrays for 3 fictitious "systems" - fabricated.
+    # No real complex-level frontier-orbital calculation exists for either g-C3N4
+    # variant (the carrier band edges are near-degenerate; see nanocarrier_qm_results.csv).
+    qm_csv = os.path.join(base_dir, "results", "quantum", "isolated_drugs_qm_results.csv")
+    df = pd.read_csv(qm_csv)
+    df = df[df["returncode"] == 0]
+    homo = df["E_HOMO_eV"].values
+    lumo = df["E_LUMO_eV"].values
+    eta = df["Hardness_eta_eV"].values
+    omega = df["Electrophilicity_omega_eV"].values
+    n = len(df)
+
     fig, axes = plt.subplots(1, 2, figsize=(14, 6), dpi=300)
-    plt.subplots_adjust(top=0.86, wspace=0.28)
-    
+    plt.subplots_adjust(top=0.84, wspace=0.28)
+
     ax0 = axes[0]
-    systems = ["Isolated Drugs", "g-C3N4 Pristine", "B/P-Doped g-C3N4"]
-    homo = [-5.72, -6.25, -6.04]
-    lumo = [-1.92, -2.58, -2.31]
-    
-    x = np.arange(len(systems))
-    ax0.bar(x - 0.15, homo, width=0.28, color='#00695C', label='E_HOMO (eV)', edgecolor='k')
-    ax0.bar(x + 0.15, lumo, width=0.28, color='#D84315', label='E_LUMO (eV)', edgecolor='k')
-    ax0.set_xticks(x)
-    ax0.set_xticklabels(systems, fontweight='bold')
-    ax0.set_ylabel("Electronic Energy (eV)", fontsize=11)
-    ax0.set_title("(a) Frontier Molecular Orbital (FMO) Alignment", fontsize=11.5, fontweight='bold', pad=10)
+    ax0.hist(homo, bins=12, color='#00695C', edgecolor='k', alpha=0.85,
+             label=f'E_HOMO (mean={homo.mean():.2f} eV)')
+    ax0.hist(lumo, bins=12, color='#D84315', edgecolor='k', alpha=0.7,
+             label=f'E_LUMO (mean={lumo.mean():.2f} eV)')
+    ax0.set_xlabel("Electronic Energy (eV)", fontsize=11)
+    ax0.set_ylabel("Compound Count", fontsize=11)
+    ax0.set_title(f"(a) Real GFN2-xTB Frontier Molecular Orbitals (n={n})",
+                  fontsize=11.5, fontweight='bold', pad=10)
     ax0.grid(True, linestyle=':', alpha=0.6)
-    ax0.legend(loc='lower right', frameon=True)
-    
+    ax0.legend(loc='upper left', frameon=True)
+
     ax1 = axes[1]
-    eta = [1.90, 1.83, 1.86]
-    omega = [3.82, 5.12, 4.65]
-    
-    ax1_twin = ax1.twinx()
-    b1 = ax1.bar(x - 0.15, eta, width=0.28, color='#2E7D32', label=r'Chemical Hardness $\eta$ (eV)', edgecolor='k')
-    b2 = ax1_twin.bar(x + 0.15, omega, width=0.28, color='#6A1B9A', label=r'Electrophilicity $\omega$ (eV)', edgecolor='k')
-    
-    ax1.set_xticks(x)
-    ax1.set_xticklabels(systems, fontweight='bold')
-    ax1.set_ylabel(r"Chemical Hardness $\eta$ (eV)", color='#2E7D32', fontsize=11)
-    ax1_twin.set_ylabel(r"Electrophilicity Index $\omega$ (eV)", color='#6A1B9A', fontsize=11)
-    ax1.set_title("(b) Conceptual DFT Global Reactivity Indices", fontsize=11.5, fontweight='bold', pad=10)
+    ax1.scatter(eta, omega, color='#6A1B9A', edgecolor='k', s=70, alpha=0.85, zorder=4)
+    ax1.set_xlabel(r"Chemical Hardness $\eta$ (eV)", fontsize=11)
+    ax1.set_ylabel(r"Electrophilicity Index $\omega$ (eV)", fontsize=11)
+    ax1.set_title("(b) Real Conceptual DFT Global Reactivity Indices",
+                  fontsize=11.5, fontweight='bold', pad=10)
     ax1.grid(True, linestyle=':', alpha=0.6)
-    
-    plt.suptitle("Figure 2: Quantum CDFT Architecture & Electronic Reactivity for 2D g-C3N4 Systems", fontsize=13, fontweight='bold', y=0.96)
+
+    plt.suptitle("Figure 2: Real Quantum CDFT Electronic Reactivity of the Isolated KRAS/PDAC Therapeutics Cohort",
+                 fontsize=13, fontweight='bold', y=0.95)
     out_p = os.path.join(fig_dir, "fig2_kras_quantum_cdft_architecture.png")
     plt.savefig(out_p, bbox_inches='tight')
     plt.close()
@@ -319,10 +331,18 @@ def make_fig9_3d_spatial(base_dir, fig_dir):
     fig, axes = plt.subplots(1, 3, figsize=(18, 5.5), dpi=300)
     plt.subplots_adjust(top=0.82, wspace=0.25, bottom=0.15)
     
+    vina = pd.read_csv(os.path.join(base_dir, "results", "docking", "real_vina_docking_summary.csv")).set_index("name")["Real_Vina_Score_kcal_mol"]
+    ads = pd.read_csv(os.path.join(base_dir, "results", "quantum", "adsorption_qm_results.csv"))
+    ads_p = ads[ads.carrier_name == "pristine"].set_index("drug_name")["Delta_E_ads_kcal_mol"]
+    ads_d = ads[ads.carrier_name == "BP_doped"].set_index("drug_name")["Delta_E_ads_kcal_mol"]
+
     modes = [
-        ("MRTX1133 @ KRAS-G12D", "-9.16 kcal/mol", "#00695C", "Key contacts: Asp12, Tyr96, Glu62, Arg68"),
-        ("BI-2865 @ KRAS-G12D", "-9.94 kcal/mol", "#0277BD", "Key contacts: Asp12, Gln99, Gly60, Met72"),
-        ("MRTX1133 @ B/P-g-C3N4", "-9.16 kcal/mol", "#D84315", "Key contacts: Triazine pi-pi coordination, Delta_E = -58.2 kcal/mol")
+        (f"MRTX1133 @ KRAS-G12D", f"real Vina {vina['MRTX1133']:.2f} kcal/mol", "#00695C",
+         "Key contacts: Asp12, Tyr96, Glu62, Arg68, Gln99, Met72"),
+        (f"BI-2865 @ KRAS-G12D", f"real Vina {vina['BI-2865']:.2f} kcal/mol", "#0277BD",
+         "Key contacts: Asp12, Tyr96, Glu62, Arg68, Gln99, His95"),
+        (f"MRTX1133 @ B/P-g-C3N4", f"real GFN2-xTB Delta_E_ads = {ads_d['MRTX1133']:.2f} kcal/mol", "#D84315",
+         f"Triazine pi-stacking; pristine Delta_E_ads = {ads_p['MRTX1133']:.2f} kcal/mol"),
     ]
     
     for ax_idx, (title, score, col, contacts) in enumerate(modes):

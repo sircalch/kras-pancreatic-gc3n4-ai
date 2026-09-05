@@ -100,7 +100,7 @@ def generate_figure7_correlation(base_dir):
     
     fig, ax = plt.subplots(figsize=(13, 10.5), dpi=300)
     sns.heatmap(corr, annot=True, fmt=".2f", cmap="vlag", center=0, cbar_kws={'label': 'Pearson Correlation (r)'}, ax=ax, annot_kws={"size": 7.5})
-    ax.set_title("Pearson Inter-Descriptor Correlation Matrix (20 Descriptors across 36 KRAS Therapeutics)", fontsize=12, fontweight='bold', pad=12)
+    ax.set_title(f"Pearson Inter-Descriptor Correlation Matrix ({len(cols)} Descriptors across {len(df)} KRAS Therapeutics)", fontsize=12, fontweight='bold', pad=12)
     out_p = os.path.join(base_dir, "figures", "fig7_kras_descriptor_correlation_matrix.png")
     plt.savefig(out_p, bbox_inches='tight')
     plt.close()
@@ -109,8 +109,12 @@ def generate_figure7_correlation(base_dir):
 def generate_all_figures():
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     os.makedirs(os.path.join(base_dir, "figures"), exist_ok=True)
-    generate_figure1_workflow(base_dir)
-    generate_figure2_quantum_cdft(base_dir)
+    # Figures 1-6, 9 and the graphical abstract come from the master engine, which
+    # reads only real result files. The local generate_figure1_workflow /
+    # generate_figure2_quantum_cdft here are kept for reference but are NOT used:
+    # their earlier versions hardcoded fabricated HOMO/LUMO/energy values.
+    import generate_kras_master_figures as gm
+    gm.generate_master_suite()
     generate_figure7_correlation(base_dir)
 
 if __name__ == "__main__":
