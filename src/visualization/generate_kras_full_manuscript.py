@@ -290,9 +290,9 @@ def generate_kras_full_manuscript():
         "penalties arising from de novo ligand preparation, and confirms that our screening pipeline operates under realistic, unbiased conditions."
     )
     
-    # Figure 1: Redocking Validation + 2D Lollipop
+    # Figure 1: Redocking Validation (summary + real Vina modes)
     add_image_if_exists(doc, os.path.join(fig_dir, "fig3_redocking_validation_final.jpg"),
-                        "Figure 1: Crystallographic Pose-Recovery Validation of MRTX1133 on KRAS-G12D (PDB ID: 7RPZ, 1.30 Å resolution): (a) 3D structural superposition of crystallographic (emerald green sticks) and top-ranked redocked (ruby orange sticks) MRTX1133 poses inside the Switch II allosteric pocket of KRAS-G12D (PDB ID: 7RPZ, 1.30 Å resolution), demonstrating 1.419 Å heavy-atom RMSD pose recovery (-9.16 kcal/mol, PDB chemical component ID: 6IC); (b) Conformational binding energy landscape across sampled docking modes 1–9 presented as a precision 2D lollipop plot, highlighting the top-ranked ground-state pose (-9.16 kcal/mol) and the tight distribution of negative binding scores.")
+                        "Figure 1: Crystallographic Pose-Recovery Validation of MRTX1133 on KRAS-G12D (PDB ID: 7RPZ, 1.30 Å resolution): (a) redocking validation summary - the top-ranked redocked pose of the co-crystallized ligand MRTX1133 (PDB chemical component ID: 6IC) recovers the crystallographic pose with a 1.419 Å heavy-atom RMSD, within the commonly used <= 2.0 Å criterion; (b) the AutoDock Vina output modes for this redocking run (the search returned four distinct modes spanning -9.16 to -7.80 kcal/mol; the top mode, in orange, is -9.16 kcal/mol).")
     
     add_heading_styled(doc, "3.2 Mechanistic Binding Profiling Across Structured Pharmacological Classes", level=2)
     doc.add_paragraph(
@@ -445,9 +445,9 @@ def generate_kras_full_manuscript():
     add_image_if_exists(doc, os.path.join(fig_dir, "fig9_kras_virtual_screening_distribution.png"),
                         "Figure 4: Multi-Objective Evaluation of Prioritized Leads and Benchmark Controls from the 350-Compound Virtual Screen: (a) AutoDock Vina binding scores on PDB 7RPZ comparing prioritized leads against benchmark controls; (b) Size-normalized ligand-efficiency comparison across prioritized leads and controls.")
     
-    # Figure 5: Multi-Scale Structural Architecture (EXACT 4 PANELS)
+    # Figure 5: Multi-Scale Structural Context (schematic; real GFN2-xTB energetics)
     add_image_if_exists(doc, os.path.join(fig_dir, "fig10_atomistic_multiscale_final.jpg"),
-                        "Figure 5: Multi-Scale Atomistic Structural Architecture and 2D g-C3N4 Carrier Surface: (a) KRAS-G12D Switch II allosteric pocket with docked MRTX1133 (-9.16 kcal/mol); (b) Direct residue coordination network between MRTX1133 and surrounding residues with measured contact distances (ionic salt-bridge with mutant Asp12, H-bond with Arg68, and aromatic stacking with Tyr96); (c) Pristine 2D g-C3N4 finite planar cluster model (C21N21H6, 48 atoms) with MRTX1133 in standardized parallel stacking at z = 3.35 Angstroms (Delta_E_int,std = -35.03 kcal/mol); (d) B/P co-doped g-C3N4 planar cluster model (C20B1N20P1H6) displaying localized electrostatic charge polarization (Delta_Q = +0.19 e for MRTX1133) and heteroatom dopant sites.")
+                        "Figure 5: Multi-scale structural context and real GFN2-xTB interfacial energetics (schematic cards; the reported values are GFN2-xTB output, not a rendered structure): (a) MRTX1133 in the KRAS-G12D Switch II allosteric cleft (PDB ID: 7RPZ, 1.30 Å), with the ionic salt-bridge to mutant Asp12 (OD2 = 2.70 Å from the crystallographic coordinates); (b) pristine finite planar g-C3N4 cluster (C21N21H6, 48 atoms), MRTX1133 in standardized parallel stacking (initial separation z = 3.35 Å), real Delta_E_ads = -35.03 kcal/mol and interfacial charge transfer Delta_Q = +0.19 e; (c) B/P co-doped cluster (C20B1N20P1H6), real Delta_E_ads = -35.04 kcal/mol, Delta_Q = +0.15 e, GFN2-xTB dopant partial charges q(B) = +0.36 e and q(P) = -0.20 e.")
     
     add_heading_styled(doc, "3.6 Structural Biology of KRAS-G12D and Drug Resistance Context", level=2)
     doc.add_paragraph(
@@ -456,7 +456,7 @@ def generate_kras_full_manuscript():
         "Switch II adopts a partially open topology that exposes a shallow hydrophobic groove flanked by Tyr96 (aromatic cap), His95 (histidine lining), and Glu62/Arg68 "
         "(ionic rim). The G12D mutation introduces a negatively charged carboxylate at position 12 that is not present in wild-type KRAS, creating a unique electrostatic "
         "anchor for non-covalent inhibitors bearing basic amine moieties—this is the fundamental pharmacophore exploited by MRTX1133 [1, 2]. "
-        "Critically, acquired resistance mutations at KRAS (e.g., Y96D, H95Q, R68S) directly disrupt the very residues that constitute the Switch II pocket architecture (Figure 5b), "
+        "Critically, acquired resistance mutations at KRAS (e.g., Y96D, H95Q, R68S) directly disrupt the very residues that constitute the Switch II pocket architecture (Figure 5a),"
         "underscoring the importance of understanding multi-residue coordination rather than single-point docking scores. Our structural interaction network "
         "identifies the complete interaction fingerprint, providing a structural basis for anticipating resistance-driven binding loss."
     )

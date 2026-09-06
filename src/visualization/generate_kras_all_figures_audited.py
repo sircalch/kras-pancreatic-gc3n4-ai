@@ -1,14 +1,9 @@
 """
 generate_kras_all_figures_audited.py
 ====================================
-Regenerates all publication figures for KRAS-G12D & g-C3N4 Manuscript at 300+ DPI.
-- Eliminates hardcoded 'Figure X' strings from within figure graphics.
-- Clean size-normalized Ligand Efficiency comparison in Fig 4B.
-- Accurate Delta_Q = +0.082 e for MRTX1133 in Fig 5E.
-- Exact live Kruskal-Wallis omnibus statistics (H = 5.763, p = 0.1237, eta2 = 0.095).
-- Williams leverage analysis (h* = 0.455) and 1,000 Y-scrambling permutations.
-- Figure 8 (QSPR suite) is rendered strictly from results/qspr/*.csv + qspr_model_summary.json
-  (leak-free nested 5x5 CV; no simulated data).
+DEPRECATED - stale, non-canonical figure generator (see the raise SystemExit guard
+at the bottom). Left in the tree only for provenance. Do not run. Canonical figures
+come from generate_kras_master_figures.py.
 """
 
 import os
@@ -490,4 +485,15 @@ def generate_all():
     print("\n[SUCCESS] All 5 main figures + Graphical Abstract regenerated and audited!")
 
 if __name__ == "__main__":
-    generate_all()
+    raise SystemExit(
+        "DEPRECATED: this script is a stale, non-canonical figure generator. It contains "
+        "unverified/fabricated content: (i) a hardcoded 9-mode Vina redocking landscape "
+        "([-9.16, -8.84, ... -7.65]) while the real MRTX1133 redocking log has only 4 modes "
+        "(-9.16, -9.15, -8.66, -7.80); (ii) panel (f) 'Multi-Level Quantum Sensitivity "
+        "Benchmark' (GFN2 vs GFN1) built from a hardcoded table -- the GFN1 reference "
+        "calculations were never completed (no energy outputs); (iii) Delta_Q = +0.082 e for "
+        "MRTX1133, whereas the real Interfacial_Charge_Transfer_e is +0.19 e (pristine) / "
+        "+0.15 e (B/P-doped). Canonical figures: generate_kras_master_figures.py "
+        "(generate_master_suite), which now also writes honest fig3_redocking_validation_final "
+        "and fig10_atomistic_multiscale_final from real data only."
+    )

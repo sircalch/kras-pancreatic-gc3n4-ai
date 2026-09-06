@@ -338,9 +338,9 @@ def make_fig9_3d_spatial(base_dir, fig_dir):
 
     modes = [
         (f"MRTX1133 @ KRAS-G12D", f"real Vina {vina['MRTX1133']:.2f} kcal/mol", "#00695C",
-         "Key contacts: Asp12, Tyr96, Glu62, Arg68, Gln99, Met72"),
+         "Switch II pocket (docked pose)"),
         (f"BI-2865 @ KRAS-G12D", f"real Vina {vina['BI-2865']:.2f} kcal/mol", "#0277BD",
-         "Key contacts: Asp12, Tyr96, Glu62, Arg68, Gln99, His95"),
+         "Switch II pocket (docked pose)"),
         (f"MRTX1133 @ B/P-g-C3N4", f"real GFN2-xTB Delta_E_ads = {ads_d['MRTX1133']:.2f} kcal/mol", "#D84315",
          f"Triazine pi-stacking; pristine Delta_E_ads = {ads_p['MRTX1133']:.2f} kcal/mol"),
     ]
@@ -355,14 +355,160 @@ def make_fig9_3d_spatial(base_dir, fig_dir):
         
         ax.text(0.5, 0.85, title, ha='center', va='center', fontsize=12, fontweight='bold', color=col, transform=ax.transAxes)
         ax.text(0.5, 0.70, f"Affinity / Adsorption: {score}", ha='center', va='center', fontsize=11, fontweight='bold', color='#212121', transform=ax.transAxes)
-        ax.text(0.5, 0.45, f"Spatial Interaction Mode:\n{contacts}", ha='center', va='center', fontsize=10, color='#424242', transform=ax.transAxes)
-        ax.text(0.5, 0.20, "[High-Resolution 3D Atomistic Coordinate Rendering\nAutoDock Vina Pose mapped to PDB 7RPZ]", ha='center', va='center', fontsize=8.5, style='italic', color='#757575', transform=ax.transAxes)
-        
-    plt.suptitle("Figure 9: Atomistic 3D Spatial Binding Modes & Interfacial Geometries on KRAS-G12D", fontsize=13, fontweight='bold', y=0.96)
+        ax.text(0.5, 0.45, f"{contacts}", ha='center', va='center', fontsize=10, color='#424242', transform=ax.transAxes)
+        ax.text(0.5, 0.20, "[Schematic summary card - not a rendered structure.\nValues are real; see Fig. 3-4 and Table 1 for the underlying data.]", ha='center', va='center', fontsize=8.5, style='italic', color='#757575', transform=ax.transAxes)
+
+    plt.suptitle("Figure 9: Summary of Representative Binding / Adsorption Modes on KRAS-G12D (schematic)", fontsize=13, fontweight='bold', y=0.96)
     out_p = os.path.join(fig_dir, "fig9_kras_3d_spatial_binding_modes.png")
     plt.savefig(out_p, bbox_inches='tight')
     plt.close()
     print(f"Generated Figure 9: {out_p}")
+
+def _parse_vina_log_modes(log_path):
+    """Read the real AutoDock Vina mode table (mode, affinity) from a docking log."""
+    modes = []
+    if not os.path.exists(log_path):
+        return modes
+    started = False
+    for line in open(log_path):
+        s = line.strip()
+        if s.startswith("-----+"):
+            started = True
+            continue
+        if started:
+            parts = s.split()
+            if len(parts) >= 2 and parts[0].isdigit():
+                try:
+                    modes.append((int(parts[0]), float(parts[1])))
+                except ValueError:
+                    break
+            else:
+                break
+    return modes
+
+
+def make_fig_redocking_final(base_dir, fig_dir):
+    """Full-Q1 Figure 1: crystallographic pose-recovery validation (real data only).
+
+    Panel (a): redocking summary (RMSD 1.419 A vs the <=2.0 A criterion).
+    Panel (b): the *real* AutoDock Vina mode table for the MRTX1133 redocking run.
+    """
+    log_path = os.path.join(base_dir, "data", "figures_source_package",
+                            "01_Figure3_Redocking", "MRTX1133_redocking_vina.log")
+    modes = _parse_vina_log_modes(log_path)
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5.6), dpi=300)
+    plt.subplots_adjust(top=0.88, wspace=0.28, bottom=0.16)
+
+    ax0 = axes[0]
+    ax0.axis('off')
+    rect = patches.FancyBboxPatch((0.05, 0.08), 0.90, 0.84, boxstyle="round,pad=0.03",
+                                  facecolor='#E0F2F1', edgecolor='#00695C', lw=2.5, transform=ax0.transAxes)
+    ax0.add_patch(rect)
+    ax0.text(0.5, 0.86, "Crystallographic Pose-Recovery Validation", ha='center', va='center',
+             fontsize=13, fontweight='bold', color='#004D40', transform=ax0.transAxes)
+    ax0.text(0.5, 0.74, "Target: human KRAS-G12D (PDB ID: 7RPZ, 1.30 A)", ha='center', va='center',
+             fontsize=10.5, color='#00695C', transform=ax0.transAxes)
+    ax0.text(0.5, 0.64, "Co-crystal ligand: MRTX1133 (PDB chem. comp. 6IC)", ha='center', va='center',
+             fontsize=10.5, color='#212121', transform=ax0.transAxes)
+    badge = patches.FancyBboxPatch((0.18, 0.38), 0.64, 0.18, boxstyle="round,pad=0.02",
+                                   facecolor='#00695C', edgecolor='#004D40', lw=1.5, transform=ax0.transAxes)
+    ax0.add_patch(badge)
+    ax0.text(0.5, 0.47, "Heavy-atom RMSD = 1.419 A", ha='center', va='center',
+             fontsize=14, fontweight='bold', color='white', transform=ax0.transAxes)
+    ax0.text(0.5, 0.26, "Criterion: RMSD <= 2.0 A  ->  PASS", ha='center', va='center',
+             fontsize=10.5, fontweight='bold', color='#2E7D32', transform=ax0.transAxes)
+    ax0.text(0.5, 0.15, "AutoDock Vina v1.2.7, exhaustiveness 32", ha='center', va='center',
+             fontsize=9.0, color='#555555', transform=ax0.transAxes)
+    ax0.set_title("(a) Redocking Validation Summary", fontsize=11.5, fontweight='bold', pad=8)
+
+    ax1 = axes[1]
+    if modes:
+        xs = [m for m, _ in modes]
+        ys = [a for _, a in modes]
+        bars = ax1.bar(xs, ys, color='#00695C', edgecolor='k', lw=1.2)
+        bars[0].set_color('#D84315')
+        for b in bars:
+            h = b.get_height()
+            ax1.text(b.get_x() + b.get_width() / 2, h - 0.05, f"{h:.2f}",
+                     ha='center', va='top', fontsize=9, fontweight='bold', color='white')
+        ax1.set_xticks(xs)
+        ax1.set_ylim(min(ys) - 0.6, 0)
+    ax1.set_xlabel("AutoDock Vina output mode", fontsize=11, fontweight='bold')
+    ax1.set_ylabel("Vina score (kcal/mol)", fontsize=11, fontweight='bold')
+    ax1.set_title(f"(b) Real Vina Modes for the MRTX1133 Redocking Run (n={len(modes)})",
+                  fontsize=11.5, fontweight='bold', pad=10)
+    ax1.grid(True, axis='y', linestyle=':', alpha=0.6)
+
+    out_p = os.path.join(fig_dir, "fig3_redocking_validation_final.jpg")
+    plt.savefig(out_p, bbox_inches='tight')
+    plt.close()
+    print(f"Generated Full-Q1 redocking figure (real modes): {out_p}")
+
+
+def make_fig10_multiscale_final(base_dir, fig_dir):
+    """Full-Q1 multi-scale structural figure (real data only, schematic layout).
+
+    All energetics/charges are read from results/quantum/adsorption_qm_results.csv
+    and the GFN2-xTB `charges` output for the doped complex. No DFT/GFN1 benchmark
+    panel (that data was never computed).
+    """
+    ads = pd.read_csv(os.path.join(base_dir, "results", "quantum", "adsorption_qm_results.csv"))
+    ap = ads[(ads.drug_name == "MRTX1133") & (ads.carrier_name == "pristine")].iloc[0]
+    ad = ads[(ads.drug_name == "MRTX1133") & (ads.carrier_name == "BP_doped")].iloc[0]
+
+    qB = qP = None
+    cdir = os.path.join(base_dir, "scratch", "qm_calcs_adsorption", "BP_doped_MRTX1133")
+    xyz_p = os.path.join(cdir, "xtbopt.xyz")
+    ch_p = os.path.join(cdir, "charges")
+    if os.path.exists(xyz_p) and os.path.exists(ch_p):
+        lines = open(xyz_p).read().split('\n')
+        n = int(lines[0])
+        syms = [l.split()[0] for l in lines[2:2 + n]]
+        ch = [float(x) for x in open(ch_p).read().split()]
+        for s, c in zip(syms, ch):
+            if s == 'B' and qB is None:
+                qB = c
+            elif s == 'P' and qP is None:
+                qP = c
+
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5.3), dpi=300)
+    plt.subplots_adjust(top=0.80, wspace=0.22, bottom=0.14)
+
+    cards = [
+        ("#00695C", "(a) KRAS-G12D Switch II pocket",
+         "MRTX1133 in the Switch II allosteric cleft\n(PDB ID: 7RPZ, 1.30 A)\n\n"
+         "Ionic salt-bridge to mutant Asp12: OD2 = 2.70 A\n"
+         "(from the crystallographic coordinates)"),
+        ("#004D40", "(b) Pristine g-C3N4 cluster",
+         "Finite planar C21N21H6 cluster (48 atoms)\n"
+         "Parallel pi-pi stacking, standardized start z = 3.35 A\n\n"
+         f"Real GFN2-xTB Delta_E_ads = {ap.Delta_E_ads_kcal_mol:.2f} kcal/mol\n"
+         f"Interfacial charge transfer Delta_Q = +{ap.Interfacial_Charge_Transfer_e:.2f} e"),
+        ("#D84315", "(c) B/P co-doped g-C3N4 cluster",
+         "C20B1N20P1H6 cluster (one B and one P dopant)\n"
+         + (f"Dopant partial charges: q(B) = {qB:+.2f} e, q(P) = {qP:+.2f} e\n" if qB is not None else "")
+         + f"\nReal GFN2-xTB Delta_E_ads = {ad.Delta_E_ads_kcal_mol:.2f} kcal/mol\n"
+         f"Interfacial charge transfer Delta_Q = +{ad.Interfacial_Charge_Transfer_e:.2f} e"),
+    ]
+    for ax, (col, title, body) in zip(axes, cards):
+        ax.axis('off')
+        r = patches.FancyBboxPatch((0.04, 0.05), 0.92, 0.90, boxstyle="round,pad=0.03",
+                                   facecolor='#FAFAFA', edgecolor=col, lw=2.5, transform=ax.transAxes)
+        ax.add_patch(r)
+        ax.text(0.5, 0.82, title, ha='center', va='center', fontsize=12, fontweight='bold',
+                color=col, transform=ax.transAxes)
+        ax.text(0.5, 0.46, body, ha='center', va='center', fontsize=9.5, color='#333333',
+                transform=ax.transAxes)
+        ax.text(0.5, 0.12, "[Schematic card - values are real GFN2-xTB output; not a rendered structure.]",
+                ha='center', va='center', fontsize=8.0, style='italic', color='#757575', transform=ax.transAxes)
+
+    plt.suptitle("Multi-Scale Structural Context and Real GFN2-xTB Interfacial Energetics (schematic)",
+                 fontsize=13, fontweight='bold', y=0.95)
+    out_p = os.path.join(fig_dir, "fig10_atomistic_multiscale_final.jpg")
+    plt.savefig(out_p, bbox_inches='tight')
+    plt.close()
+    print(f"Generated Full-Q1 multiscale figure (real data): {out_p}")
+
 
 def generate_master_suite():
     base_dir, fig_dir = get_dirs()
@@ -374,7 +520,9 @@ def generate_master_suite():
     make_fig5_parity(base_dir, fig_dir)
     make_fig6_shap(base_dir, fig_dir)
     make_fig9_3d_spatial(base_dir, fig_dir)
-    print("Master 9-Figure Suite for Article 3 (KRAS) generated successfully at 300+ DPI!")
+    make_fig_redocking_final(base_dir, fig_dir)
+    make_fig10_multiscale_final(base_dir, fig_dir)
+    print("Master figure suite for Article 3 (KRAS) generated successfully at 300+ DPI!")
 
 if __name__ == "__main__":
     generate_master_suite()

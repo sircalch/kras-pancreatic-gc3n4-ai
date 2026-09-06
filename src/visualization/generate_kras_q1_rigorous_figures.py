@@ -50,23 +50,41 @@ def make_fig3_redocking_validation(base_dir, fig_dir):
     ax0.text(0.5, 0.24, "Validation Benchmark: Commonly Employed RMSD ≤ 2.0 Å Criterion", ha='center', va='center', fontsize=10.0, fontweight='bold', color='#2E7D32', transform=ax0.transAxes)
     ax0.text(0.5, 0.14, "Status: PASS (High-Fidelity Switch II Docking Protocol)", ha='center', va='center', fontsize=10, fontweight='bold', color='#004D40', transform=ax0.transAxes)
     
-    # Panel B: Energy Distribution of Docked MRTX1133 Conformations
+    # Panel B: real AutoDock Vina output modes for the MRTX1133 redocking run
     ax1 = axes[1]
-    modes = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    affinities = [-9.16, -8.84, -8.62, -8.41, -8.20, -8.05, -7.92, -7.80, -7.65]
-    
+    log_path = os.path.join(base_dir, "data", "figures_source_package",
+                            "01_Figure3_Redocking", "MRTX1133_redocking_vina.log")
+    modes, affinities = [], []
+    if os.path.exists(log_path):
+        started = False
+        for line in open(log_path):
+            s = line.strip()
+            if s.startswith("-----+"):
+                started = True
+                continue
+            if started:
+                parts = s.split()
+                if len(parts) >= 2 and parts[0].isdigit():
+                    modes.append(int(parts[0]))
+                    affinities.append(float(parts[1]))
+                else:
+                    break
+
     bars = ax1.bar(modes, affinities, color='#00695C', edgecolor='k', lw=1.2)
-    bars[0].set_color('#D84315')
-    bars[0].set_edgecolor('k')
-    
-    ax1.set_xlabel("Vina Docking Conformational Mode", fontsize=11, fontweight='bold')
+    if len(bars):
+        bars[0].set_color('#D84315')
+        bars[0].set_edgecolor('k')
+        ax1.set_xticks(modes)
+        ax1.set_ylim(min(affinities) - 0.6, 0)
+
+    ax1.set_xlabel("AutoDock Vina output mode", fontsize=11, fontweight='bold')
     ax1.set_ylabel("AutoDock Vina Score (kcal/mol)", fontsize=11, fontweight='bold')
-    ax1.set_title("(b) Energy Distribution of Docked MRTX1133 Conformations", fontsize=11.5, fontweight='bold', pad=10)
-    ax1.grid(True, linestyle=':', alpha=0.6)
-    
+    ax1.set_title(f"(b) Real Vina Modes for the MRTX1133 Redocking Run (n={len(modes)})", fontsize=11.5, fontweight='bold', pad=10)
+    ax1.grid(True, axis='y', linestyle=':', alpha=0.6)
+
     for bar in bars:
         h = bar.get_height()
-        ax1.text(bar.get_x() + bar.get_width()/2, h - 0.25, f"{h:.2f}", 
+        ax1.text(bar.get_x() + bar.get_width()/2, h - 0.05, f"{h:.2f}",
                  ha='center', va='top', fontsize=9, fontweight='bold', color='white')
                  
     plt.suptitle("Figure 3: Crystallographic Redocking Validation of MRTX1133 on KRAS-G12D (PDB ID: 7RPZ)", fontsize=13, fontweight='bold', y=0.96)
