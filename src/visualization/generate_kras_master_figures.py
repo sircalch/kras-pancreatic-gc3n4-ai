@@ -5,6 +5,7 @@ KRAS-G12D Allosteric Inhibitors & 2D g-C3N4 Nanocarriers in Pancreatic Ductal Ad
 """
 
 import os
+import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -13,10 +14,13 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import ExtraTreesRegressor
 
-sns.set_theme(style="ticks")
-plt.rcParams['font.family'] = 'DejaVu Sans'
-plt.rcParams['font.size'] = 9.5
-plt.rcParams['axes.linewidth'] = 1.0
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _pubstyle
+_pubstyle.apply()
+try:
+    import _mol3d
+except Exception:
+    _mol3d = None
 
 def get_dirs():
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -33,20 +37,31 @@ def make_graphical_abstract(base_dir, fig_dir):
             ha='center', va='center', fontsize=13, fontweight='bold', color='white', transform=ax.transAxes)
     
     panels = [
-        ("A. 2D Polymeric g-C3N4\n(Pristine & B/P-Doped Nanolayers)\n- Metal-free high biocompatibility\n- Deep pancreatic stroma penetration\n- pH-responsive tumor drug release", 0.04, 0.12, 0.28, 0.70, "#E0F2F1", "#00695C"),
-        ("B. Physical Docking (AutoDock Vina)\nHuman KRAS-G12D (PDB: 7RPZ, 1.30 Å)\n- 33 PDAC & KRAS Drugs Screened\n- Real Vina scores -2.9 to -9.8 kcal/mol\n- Switch II: Tyr96, Asp12, Glu62, Arg68", 0.36, 0.12, 0.28, 0.70, "#E8F5E9", "#2E7D32"),
-        ("C. Explainable AI & OECD QSAR\nLeak-free nested 5x5 Ridge CV\n- Q2_CV = 0.55 (pristine), 0.51 (doped)\n- Top feature: HBA / Electrophilicity omega\n- OECD Principle 3 Williams domain", 0.68, 0.12, 0.28, 0.70, "#FBE9E7", "#D84315")
+        ("A. 2D Polymeric g-C3N4\n\n"
+         "Pristine and B/P co-doped\nfinite cluster models\n"
+         "Real GFN2-xTB interaction\nenergetics\n"
+         "Metal-free, all-organic\ncarrier surface", 0.03, 0.12, 0.29, 0.70, "#E0F2F1", "#00695C"),
+        ("B. Physical Docking\n(AutoDock Vina v1.2.7)\n\n"
+         "Human KRAS-G12D\n(PDB ID: 7RPZ, 1.30 A)\n"
+         "33 PDAC / KRAS drugs\n"
+         "Real Vina scores\n-2.9 to -9.8 kcal/mol\n"
+         "Switch II: Tyr96, Asp12,\nGlu62, Arg68", 0.355, 0.12, 0.29, 0.70, "#E8F5E9", "#2E7D32"),
+        ("C. Explainable AI & OECD QSAR\n\n"
+         "Leak-free nested 5x5\nRidge CV\n"
+         "Q2_CV = 0.55 (pristine),\n0.51 (B/P-doped)\n"
+         "Top feature: HBA /\nelectrophilicity omega\n"
+         "OECD Principle 3\nWilliams domain", 0.68, 0.12, 0.29, 0.70, "#FBE9E7", "#D84315"),
     ]
-    
+
     for text, x, y, w, h, bg_c, border_c in panels:
-        rect = patches.FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.02", 
+        rect = patches.FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.02",
                                       facecolor=bg_c, edgecolor=border_c, lw=2.0, transform=ax.transAxes)
         ax.add_patch(rect)
-        ax.text(x + w/2, y + h/2, text, ha='center', va='center', fontsize=10.5, fontweight='bold', color='#004D40', transform=ax.transAxes)
-        
+        ax.text(x + w/2, y + h/2, text, ha='center', va='center', fontsize=8.5, fontweight='bold', color='#004D40', transform=ax.transAxes)
+
     arrow_props = dict(facecolor='#004D40', edgecolor='#004D40', width=3.0, headwidth=10, shrink=0.05)
-    ax.annotate('', xy=(0.35, 0.47), xytext=(0.325, 0.47), xycoords='axes fraction', arrowprops=arrow_props)
-    ax.annotate('', xy=(0.67, 0.47), xytext=(0.645, 0.47), xycoords='axes fraction', arrowprops=arrow_props)
+    ax.annotate('', xy=(0.352, 0.47), xytext=(0.322, 0.47), xycoords='axes fraction', arrowprops=arrow_props)
+    ax.annotate('', xy=(0.678, 0.47), xytext=(0.648, 0.47), xycoords='axes fraction', arrowprops=arrow_props)
     
     out_p = os.path.join(fig_dir, "fig1_graphical_abstract.png")
     plt.savefig(out_p, bbox_inches='tight')
@@ -66,17 +81,17 @@ def make_fig1_workflow(base_dir, fig_dir):
 
     boxes = [
         ("1. 2D Graphitic Carbon Nitride\n(Pristine & B/P-Doped g-C3N4)", 0.05, 0.55, 0.25, 0.35, "#E0F2F1", "#00695C"),
-        ("2. Pancreatic Ductal Stroma\nEnhanced EPR & pH-Cleavage\n(Deep Fibrotic Tumor Infiltration)", 0.38, 0.55, 0.25, 0.35, "#E8F5E9", "#2E7D32"),
-        ("3. Oncogenic Target Crystal\nHuman KRAS-G12D Allosteric\n(PDB ID: 7RPZ, 1.30 Å)", 0.70, 0.55, 0.25, 0.35, "#FBE9E7", "#D84315"),
-        (f"4. Quantum CDFT & Tight-Binding\nGFN2-xTB Adsorption Energies & FMO\n(Delta_E_ads = {a_hi:.1f} to {a_lo:.1f} kcal/mol)", 0.05, 0.10, 0.25, 0.35, "#E1F5FE", "#0277BD"),
-        (f"5. Real Physical Docking\nAutoDock Vina v1.2.7 (Switch II)\n({n_drugs} therapeutics; Vina {v_hi:.1f} to {v_lo:.1f} kcal/mol)", 0.38, 0.10, 0.25, 0.35, "#EDE7F6", "#4527A0"),
-        ("6. Explainable AI & OECD QSAR\nLeak-free nested 5x5 Ridge CV + SHAP\n(Q2_CV = 0.55 / 0.51; Williams Domain)", 0.70, 0.10, 0.25, 0.35, "#FCE4EC", "#C2185B"),
+        ("2. Delivery to pancreatic tumour\nstroma (EPR / pH rationale;\nproposed, not modelled here)", 0.375, 0.55, 0.25, 0.35, "#E8F5E9", "#2E7D32"),
+        ("3. Oncogenic target crystal\nHuman KRAS-G12D (Switch II)\n(PDB ID: 7RPZ, 1.30 A)", 0.70, 0.55, 0.25, 0.35, "#FBE9E7", "#D84315"),
+        (f"4. Quantum CDFT + tight-binding\nGFN2-xTB adsorption energies + FMO\n(Delta_E_ads {a_hi:.1f} to {a_lo:.1f} kcal/mol)", 0.04, 0.10, 0.27, 0.35, "#E1F5FE", "#0277BD"),
+        (f"5. Real physical docking\nAutoDock Vina v1.2.7 (Switch II)\n({n_drugs} drugs; Vina {v_hi:.1f} to {v_lo:.1f} kcal/mol)", 0.375, 0.10, 0.25, 0.35, "#EDE7F6", "#4527A0"),
+        ("6. Explainable AI & OECD QSAR\nLeak-free nested 5x5 Ridge CV + SHAP\n(Q2_CV = 0.55 / 0.51; Williams domain)", 0.685, 0.10, 0.27, 0.35, "#FCE4EC", "#C2185B"),
     ]
-    
+
     for title, x, y, w, h, bg_c, border_c in boxes:
         rect = patches.Rectangle((x, y), w, h, facecolor=bg_c, edgecolor=border_c, lw=2.0, transform=ax.transAxes, zorder=2)
         ax.add_patch(rect)
-        ax.text(x + w/2, y + h/2, title, ha='center', va='center', fontsize=10.5, fontweight='bold', color='#004D40', transform=ax.transAxes, zorder=3)
+        ax.text(x + w/2, y + h/2, title, ha='center', va='center', fontsize=9.0, fontweight='bold', color='#004D40', transform=ax.transAxes, zorder=3)
         
     arrow_props = dict(facecolor='#37474F', edgecolor='#37474F', width=2.5, headwidth=8, shrink=0.05)
     ax.annotate('', xy=(0.37, 0.72), xytext=(0.31, 0.72), xycoords='axes fraction', arrowprops=arrow_props)
@@ -187,7 +202,7 @@ def make_fig4_residues(base_dir, fig_dir):
     bars = ax.bar(df['Residue'], df['Contact_Frequency'], color=colors, edgecolor='k', lw=1.2)
     
     ax.set_xlabel("Human KRAS-G12D Switch II Allosteric Residue (PDB ID: 7RPZ)", fontsize=11, fontweight='bold')
-    ax.set_ylabel("Atomic Contact Frequency (d <= 3.8 Å)", fontsize=11, fontweight='bold')
+    ax.set_ylabel("Atomic Contact Frequency (d <= 3.8 A)", fontsize=11, fontweight='bold')
     ax.set_title("Figure 4: Residue-Level Interaction Fingerprints on KRAS-G12D (Highlighting Oncogenic Asp12)", fontsize=12.5, fontweight='bold', pad=12)
     ax.grid(True, linestyle=':', alpha=0.6)
     
@@ -327,42 +342,88 @@ def make_fig6_shap(base_dir, fig_dir):
     plt.close()
     print(f"Generated Figure 6: {out_p}")
 
+SRC = None  # set in get_dirs via generate_master_suite
+
+
+def _src(base_dir):
+    return os.path.join(base_dir, "data", "figures_source_package")
+
+
+def _mol_ax(ax, specs, title=None, subtitle=None, letter=None, **rkw):
+    """Render specs with _mol3d and place the image on a clean matplotlib axis."""
+    ax.set_xticks([]); ax.set_yticks([])
+    for s in ax.spines.values():
+        s.set_visible(False)
+    if _mol3d is None:
+        ax.text(0.5, 0.5, "3D renderer unavailable", ha="center", va="center",
+                transform=ax.transAxes)
+        return
+    img = _mol3d.render_array(specs, **rkw)
+    ax.imshow(img)
+    if title:
+        ax.set_title(title, fontsize=9.5, fontweight="bold", pad=6)
+    if subtitle:
+        ax.text(0.5, -0.04, subtitle, ha="center", va="top", fontsize=8.0,
+                color=_pubstyle.MUTED, transform=ax.transAxes)
+    if letter:
+        _pubstyle.panel_label(ax, letter, dy=1.0)
+
+
 def make_fig9_3d_spatial(base_dir, fig_dir):
-    fig, axes = plt.subplots(1, 3, figsize=(18, 5.5), dpi=300)
-    plt.subplots_adjust(top=0.82, wspace=0.25, bottom=0.15)
-    
-    vina = pd.read_csv(os.path.join(base_dir, "results", "docking", "real_vina_docking_summary.csv")).set_index("name")["Real_Vina_Score_kcal_mol"]
+    """Figure 9 - real 3D renders of the representative binding / adsorption modes."""
+    S = _src(base_dir)
+    vina = pd.read_csv(os.path.join(base_dir, "results", "docking",
+                       "real_vina_docking_summary.csv")).set_index("name")["Real_Vina_Score_kcal_mol"]
     ads = pd.read_csv(os.path.join(base_dir, "results", "quantum", "adsorption_qm_results.csv"))
-    ads_p = ads[ads.carrier_name == "pristine"].set_index("drug_name")["Delta_E_ads_kcal_mol"]
-    ads_d = ads[ads.carrier_name == "BP_doped"].set_index("drug_name")["Delta_E_ads_kcal_mol"]
+    ap = ads[(ads.drug_name == "MRTX1133") & (ads.carrier_name == "pristine")].iloc[0]
+    adp = ads[(ads.drug_name == "MRTX1133") & (ads.carrier_name == "BP_doped")].iloc[0]
 
-    modes = [
-        (f"MRTX1133 @ KRAS-G12D", f"real Vina {vina['MRTX1133']:.2f} kcal/mol", "#00695C",
-         "Switch II pocket (docked pose)"),
-        (f"BI-2865 @ KRAS-G12D", f"real Vina {vina['BI-2865']:.2f} kcal/mol", "#0277BD",
-         "Switch II pocket (docked pose)"),
-        (f"MRTX1133 @ B/P-g-C3N4", f"real GFN2-xTB Delta_E_ads = {ads_d['MRTX1133']:.2f} kcal/mol", "#D84315",
-         f"Triazine pi-stacking; pristine Delta_E_ads = {ads_p['MRTX1133']:.2f} kcal/mol"),
-    ]
-    
-    for ax_idx, (title, score, col, contacts) in enumerate(modes):
-        ax = axes[ax_idx]
-        ax.axis('off')
-        
-        rect = patches.FancyBboxPatch((0.05, 0.05), 0.90, 0.90, boxstyle="round,pad=0.03", 
-                                      facecolor='#FAFAFA', edgecolor=col, lw=2.5, transform=ax.transAxes)
-        ax.add_patch(rect)
-        
-        ax.text(0.5, 0.85, title, ha='center', va='center', fontsize=12, fontweight='bold', color=col, transform=ax.transAxes)
-        ax.text(0.5, 0.70, f"Affinity / Adsorption: {score}", ha='center', va='center', fontsize=11, fontweight='bold', color='#212121', transform=ax.transAxes)
-        ax.text(0.5, 0.45, f"{contacts}", ha='center', va='center', fontsize=10, color='#424242', transform=ax.transAxes)
-        ax.text(0.5, 0.20, "[Schematic summary card - not a rendered structure.\nValues are real; see Fig. 3-4 and Table 1 for the underlying data.]", ha='center', va='center', fontsize=8.5, style='italic', color='#757575', transform=ax.transAxes)
+    fig, axes = plt.subplots(1, 3, figsize=(11.4, 4.2))
+    fig.subplots_adjust(wspace=0.06, top=0.86, bottom=0.14, left=0.02, right=0.98)
 
-    plt.suptitle("Figure 9: Summary of Representative Binding / Adsorption Modes on KRAS-G12D (schematic)", fontsize=13, fontweight='bold', y=0.96)
+    # (a) MRTX1133 in the KRAS-G12D Switch II pocket (surface + ligand)
+    try:
+        rs, rx = _mol3d.load(os.path.join(S, "00_Graphical_Abstract",
+                             "Scene1_KRAS_G12D_receptor_7RPZ.pdb"), atom=True, hetatm=False)
+        ls, lx = _mol3d.load(os.path.join(S, "00_Graphical_Abstract",
+                             "Scene1_MRTX1133_Switch_II_ligand.pdb"), atom=False, hetatm=True)
+        c = lx.mean(0)
+        keep = np.linalg.norm(rx - c, axis=1) < 10.0
+        rs2 = [rs[i] for i in range(len(rs)) if keep[i]]
+        _mol_ax(axes[0],
+                [{"sym": rs2, "xyz": rx[keep], "style": "none", "surface": True,
+                  "surf_color": "#c6cfdd", "surf_opacity": 0.34},
+                 {"sym": ls, "xyz": lx, "carbon": "#12a37a", "ball": 0.34, "stick": 0.14}],
+                title="(a)  MRTX1133 in the KRAS-G12D Switch II pocket",
+                subtitle=f"PDB 7RPZ (1.30 A) - real Vina {vina['MRTX1133']:.2f} kcal/mol",
+                view="3q", zoom=1.7, size=(1500, 1300))
+    except Exception as exc:
+        axes[0].text(0.5, 0.5, f"[pocket render failed: {exc}]", transform=axes[0].transAxes, ha="center")
+        axes[0].axis("off")
+
+    # (b) pristine g-C3N4 complex, (c) B/P-doped complex - edge-on stacking
+    for ax, xyzf, lab, e, q in [
+        (axes[1], "MRTX1133_pristine_complex_optimized.xyz",
+         "(b)  MRTX1133 on pristine g-C$_3$N$_4$",
+         ap.Delta_E_ads_kcal_mol, ap.Interfacial_Charge_Transfer_e),
+        (axes[2], "MRTX1133_BP_complex_optimized.xyz",
+         "(c)  MRTX1133 on B/P co-doped g-C$_3$N$_4$",
+         adp.Delta_E_ads_kcal_mol, adp.Interfacial_Charge_Transfer_e)]:
+        try:
+            s, x = _mol3d.load(os.path.join(S, "03_Figure10_Atomistic_Structures", xyzf))
+            _mol_ax(ax, [{"sym": s, "xyz": x, "carbon": "#5b6470"}],
+                    title=lab,
+                    subtitle=f"real GFN2-xTB $\\Delta E_{{ads}}$ = {e:.2f} kcal/mol · $\\Delta Q$ = +{q:.2f} e",
+                    view="edge", zoom=1.35, size=(1500, 1150))
+        except Exception as exc:
+            ax.text(0.5, 0.5, f"[render failed: {exc}]", transform=ax.transAxes, ha="center")
+            ax.axis("off")
+
+    fig.suptitle("Figure 9. Representative binding and adsorption modes for KRAS-G12D therapeutics on 2D g-C$_3$N$_4$",
+                 fontsize=10.5, fontweight="bold", y=0.99)
     out_p = os.path.join(fig_dir, "fig9_kras_3d_spatial_binding_modes.png")
-    plt.savefig(out_p, bbox_inches='tight')
-    plt.close()
-    print(f"Generated Figure 9: {out_p}")
+    _pubstyle.save(fig, out_p, also_pdf=False)
+    print(f"Generated Figure 9 (real 3D): {out_p}")
 
 def _parse_vina_log_modes(log_path):
     """Read the real AutoDock Vina mode table (mode, affinity) from a docking log."""
@@ -396,53 +457,58 @@ def make_fig_redocking_final(base_dir, fig_dir):
     log_path = os.path.join(base_dir, "data", "figures_source_package",
                             "01_Figure3_Redocking", "MRTX1133_redocking_vina.log")
     modes = _parse_vina_log_modes(log_path)
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5.6), dpi=300)
-    plt.subplots_adjust(top=0.88, wspace=0.28, bottom=0.16)
+    S = _src(base_dir)
+    fig, axes = plt.subplots(1, 2, figsize=(10.6, 4.3),
+                             gridspec_kw={"width_ratios": [1.15, 1.0]})
+    fig.subplots_adjust(wspace=0.24, top=0.86, bottom=0.16, left=0.03, right=0.97)
 
-    ax0 = axes[0]
-    ax0.axis('off')
-    rect = patches.FancyBboxPatch((0.05, 0.08), 0.90, 0.84, boxstyle="round,pad=0.03",
-                                  facecolor='#E0F2F1', edgecolor='#00695C', lw=2.5, transform=ax0.transAxes)
-    ax0.add_patch(rect)
-    ax0.text(0.5, 0.86, "Crystallographic Pose-Recovery Validation", ha='center', va='center',
-             fontsize=13, fontweight='bold', color='#004D40', transform=ax0.transAxes)
-    ax0.text(0.5, 0.74, "Target: human KRAS-G12D (PDB ID: 7RPZ, 1.30 A)", ha='center', va='center',
-             fontsize=10.5, color='#00695C', transform=ax0.transAxes)
-    ax0.text(0.5, 0.64, "Co-crystal ligand: MRTX1133 (PDB chem. comp. 6IC)", ha='center', va='center',
-             fontsize=10.5, color='#212121', transform=ax0.transAxes)
-    badge = patches.FancyBboxPatch((0.18, 0.38), 0.64, 0.18, boxstyle="round,pad=0.02",
-                                   facecolor='#00695C', edgecolor='#004D40', lw=1.5, transform=ax0.transAxes)
-    ax0.add_patch(badge)
-    ax0.text(0.5, 0.47, "Heavy-atom RMSD = 1.419 A", ha='center', va='center',
-             fontsize=14, fontweight='bold', color='white', transform=ax0.transAxes)
-    ax0.text(0.5, 0.26, "Criterion: RMSD <= 2.0 A  ->  PASS", ha='center', va='center',
-             fontsize=10.5, fontweight='bold', color='#2E7D32', transform=ax0.transAxes)
-    ax0.text(0.5, 0.15, "AutoDock Vina v1.2.7, exhaustiveness 32", ha='center', va='center',
-             fontsize=9.0, color='#555555', transform=ax0.transAxes)
-    ax0.set_title("(a) Redocking Validation Summary", fontsize=11.5, fontweight='bold', pad=8)
+    # (a) crystallographic vs redocked pose superposition inside the pocket
+    try:
+        cs, cx = _mol3d.load(os.path.join(S, "01_Figure3_Redocking",
+                             "MRTX1133_crystal_pose_6IC.pdb"), atom=False, hetatm=True)
+        ds, dx = _mol3d.load(os.path.join(S, "01_Figure3_Redocking",
+                             "MRTX1133_redocked_best_pose.pdbqt"), model=1)
+        rs, rx = _mol3d.load(os.path.join(S, "01_Figure3_Redocking",
+                             "7RPZ_KRAS_G12D_receptor_apo.pdb"), atom=True, hetatm=False)
+        cen = cx.mean(0)
+        keep = np.linalg.norm(rx - cen, axis=1) < 12.0
+        rs2 = [rs[i] for i in range(len(rs)) if keep[i]]
+        _mol_ax(axes[0],
+                [{"sym": rs2, "xyz": rx[keep], "style": "none", "surface": True,
+                  "surf_color": "#c9d1de", "surf_opacity": 0.34},
+                 {"sym": cs, "xyz": cx, "carbon": "#1f9e5a", "ball": 0.30, "stick": 0.13},
+                 {"sym": ds, "xyz": dx, "carbon": "#e07a2c", "ball": 0.30, "stick": 0.13}],
+                title="(a)  Crystallographic (green) vs top redocked (orange) pose",
+                subtitle="PDB 7RPZ (1.30 A) · heavy-atom RMSD = 1.419 A (criterion ≤ 2.0 A)",
+                view="3q", zoom=1.55, size=(1500, 1300))
+    except Exception as exc:
+        axes[0].text(0.5, 0.5, f"[pose render failed: {exc}]", transform=axes[0].transAxes, ha="center")
+        axes[0].axis("off")
 
     ax1 = axes[1]
     if modes:
         xs = [m for m, _ in modes]
         ys = [a for _, a in modes]
-        bars = ax1.bar(xs, ys, color='#00695C', edgecolor='k', lw=1.2)
-        bars[0].set_color('#D84315')
+        bars = ax1.bar(xs, ys, color=_pubstyle.MUTED, edgecolor="#3a3f47", linewidth=0.6)
+        bars[0].set_color(_pubstyle.WARN)
         for b in bars:
             h = b.get_height()
-            ax1.text(b.get_x() + b.get_width() / 2, h - 0.05, f"{h:.2f}",
-                     ha='center', va='top', fontsize=9, fontweight='bold', color='white')
+            ax1.annotate(f"{h:.2f}", (b.get_x() + b.get_width() / 2, h),
+                         xytext=(0, -3), textcoords="offset points",
+                         ha="center", va="top", fontsize=7.5, color="white", fontweight="bold")
         ax1.set_xticks(xs)
-        ax1.set_ylim(min(ys) - 0.6, 0)
-    ax1.set_xlabel("AutoDock Vina output mode", fontsize=11, fontweight='bold')
-    ax1.set_ylabel("Vina score (kcal/mol)", fontsize=11, fontweight='bold')
-    ax1.set_title(f"(b) Real Vina Modes for the MRTX1133 Redocking Run (n={len(modes)})",
-                  fontsize=11.5, fontweight='bold', pad=10)
-    ax1.grid(True, axis='y', linestyle=':', alpha=0.6)
+        ax1.set_ylim(min(ys) - 0.7, 0)
+    ax1.set_xlabel("AutoDock Vina output mode")
+    ax1.set_ylabel("Vina score (kcal/mol)")
+    ax1.set_title(f"MRTX1133 redocking landscape (n = {len(modes)} modes)")
+    ax1.grid(True, axis="x", alpha=0)
+    _pubstyle.panel_label(ax1, "b")
 
+    fig.suptitle("Figure 1. Crystallographic pose-recovery validation of the docking protocol on KRAS-G12D",
+                 fontsize=10.5, fontweight="bold", y=0.99)
     out_p = os.path.join(fig_dir, "fig3_redocking_validation_final.jpg")
-    plt.savefig(out_p, bbox_inches='tight')
-    plt.close()
-    print(f"Generated Full-Q1 redocking figure (real modes): {out_p}")
+    _pubstyle.save(fig, out_p, also_pdf=False)
+    print(f"Generated Full-Q1 redocking figure (real 3D + real modes): {out_p}")
 
 
 def make_fig10_multiscale_final(base_dir, fig_dir):
@@ -471,43 +537,37 @@ def make_fig10_multiscale_final(base_dir, fig_dir):
             elif s == 'P' and qP is None:
                 qP = c
 
-    fig, axes = plt.subplots(1, 3, figsize=(18, 5.3), dpi=300)
-    plt.subplots_adjust(top=0.80, wspace=0.22, bottom=0.14)
+    S = _src(base_dir)
+    fig, axes = plt.subplots(1, 3, figsize=(11.4, 4.0))
+    fig.subplots_adjust(wspace=0.05, top=0.85, bottom=0.15, left=0.02, right=0.98)
 
-    cards = [
-        ("#00695C", "(a) KRAS-G12D Switch II pocket",
-         "MRTX1133 in the Switch II allosteric cleft\n(PDB ID: 7RPZ, 1.30 A)\n\n"
-         "Ionic salt-bridge to mutant Asp12: OD2 = 2.70 A\n"
-         "(from the crystallographic coordinates)"),
-        ("#004D40", "(b) Pristine g-C3N4 cluster",
-         "Finite planar C21N21H6 cluster (48 atoms)\n"
-         "Parallel pi-pi stacking, standardized start z = 3.35 A\n\n"
-         f"Real GFN2-xTB Delta_E_ads = {ap.Delta_E_ads_kcal_mol:.2f} kcal/mol\n"
-         f"Interfacial charge transfer Delta_Q = +{ap.Interfacial_Charge_Transfer_e:.2f} e"),
-        ("#D84315", "(c) B/P co-doped g-C3N4 cluster",
-         "C20B1N20P1H6 cluster (one B and one P dopant)\n"
-         + (f"Dopant partial charges: q(B) = {qB:+.2f} e, q(P) = {qP:+.2f} e\n" if qB is not None else "")
-         + f"\nReal GFN2-xTB Delta_E_ads = {ad.Delta_E_ads_kcal_mol:.2f} kcal/mol\n"
-         f"Interfacial charge transfer Delta_Q = +{ad.Interfacial_Charge_Transfer_e:.2f} e"),
+    panels = [
+        (axes[0], "gC3N4_pristine_optimized.xyz",
+         "(a)  Pristine g-C$_3$N$_4$ cluster (C$_{21}$N$_{21}$H$_6$)", "face",
+         f"real GFN2-xTB $\\Delta E_{{ads}}$ = {ap.Delta_E_ads_kcal_mol:.2f} kcal/mol · $\\Delta Q$ = +{ap.Interfacial_Charge_Transfer_e:.2f} e"),
+        (axes[1], "gC3N4_BP_doped_optimized.xyz",
+         "(b)  B/P co-doped cluster (C$_{20}$B$_1$N$_{20}$P$_1$H$_6$)", "face",
+         (f"q(B) = {qB:+.2f} e · q(P) = {qP:+.2f} e · " if qB is not None else "")
+         + f"$\\Delta E_{{ads}}$ = {ad.Delta_E_ads_kcal_mol:.2f} · $\\Delta Q$ = +{ad.Interfacial_Charge_Transfer_e:.2f} e"),
+        (axes[2], "MRTX1133_BP_complex_optimized.xyz",
+         "(c)  MRTX1133 / B/P-doped complex", "edge",
+         "GFN2-xTB optimised drug-carrier geometry"),
     ]
-    for ax, (col, title, body) in zip(axes, cards):
-        ax.axis('off')
-        r = patches.FancyBboxPatch((0.04, 0.05), 0.92, 0.90, boxstyle="round,pad=0.03",
-                                   facecolor='#FAFAFA', edgecolor=col, lw=2.5, transform=ax.transAxes)
-        ax.add_patch(r)
-        ax.text(0.5, 0.82, title, ha='center', va='center', fontsize=12, fontweight='bold',
-                color=col, transform=ax.transAxes)
-        ax.text(0.5, 0.46, body, ha='center', va='center', fontsize=9.5, color='#333333',
-                transform=ax.transAxes)
-        ax.text(0.5, 0.12, "[Schematic card - values are real GFN2-xTB output; not a rendered structure.]",
-                ha='center', va='center', fontsize=8.0, style='italic', color='#757575', transform=ax.transAxes)
+    for ax, xyzf, title, view, sub in panels:
+        try:
+            s, x = _mol3d.load(os.path.join(S, "03_Figure10_Atomistic_Structures", xyzf))
+            _mol_ax(ax, [{"sym": s, "xyz": x, "carbon": "#5b6470"}],
+                    title=title, subtitle=sub, view=view, zoom=1.4,
+                    size=(1400, 1150))
+        except Exception as exc:
+            ax.text(0.5, 0.5, f"[render failed: {exc}]", transform=ax.transAxes, ha="center")
+            ax.axis("off")
 
-    plt.suptitle("Multi-Scale Structural Context and Real GFN2-xTB Interfacial Energetics (schematic)",
-                 fontsize=13, fontweight='bold', y=0.95)
+    fig.suptitle("Figure 5. Multi-scale atomistic models and real GFN2-xTB interfacial energetics",
+                 fontsize=10.5, fontweight="bold", y=0.99)
     out_p = os.path.join(fig_dir, "fig10_atomistic_multiscale_final.jpg")
-    plt.savefig(out_p, bbox_inches='tight')
-    plt.close()
-    print(f"Generated Full-Q1 multiscale figure (real data): {out_p}")
+    _pubstyle.save(fig, out_p, also_pdf=False)
+    print(f"Generated Full-Q1 multiscale figure (real 3D): {out_p}")
 
 
 def generate_master_suite():

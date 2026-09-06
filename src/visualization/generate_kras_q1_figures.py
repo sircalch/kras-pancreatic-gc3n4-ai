@@ -4,15 +4,15 @@ Generates the complete 9-Figure Q1 Scientific Visual Suite for the KRAS-G12D & g
 """
 
 import os
+import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-sns.set_theme(style="ticks")
-plt.rcParams['font.family'] = 'DejaVu Sans'
-plt.rcParams['font.size'] = 9.5
-plt.rcParams['axes.linewidth'] = 1.0
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _pubstyle
+_pubstyle.apply()
 
 def generate_figure1_workflow(base_dir):
     fig, ax = plt.subplots(figsize=(14, 7), dpi=300)

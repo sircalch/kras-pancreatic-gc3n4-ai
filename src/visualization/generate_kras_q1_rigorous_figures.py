@@ -8,6 +8,7 @@ no simulated or hardcoded QSPR metrics.
 """
 
 import os
+import sys
 import json
 import numpy as np
 import pandas as pd
@@ -16,10 +17,9 @@ import matplotlib.patches as patches
 import seaborn as sns
 from scipy import stats
 
-sns.set_theme(style="ticks")
-plt.rcParams['font.family'] = 'DejaVu Sans'
-plt.rcParams['font.size'] = 9.5
-plt.rcParams['axes.linewidth'] = 1.0
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _pubstyle
+_pubstyle.apply()
 
 def get_dirs():
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
