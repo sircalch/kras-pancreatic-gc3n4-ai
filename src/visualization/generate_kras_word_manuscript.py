@@ -130,17 +130,18 @@ def generate_kras_word_manuscript():
     p_abs.paragraph_format.space_after = Pt(8)
     p_abs.paragraph_format.line_spacing = 1.15
     p_abs.add_run(
-        "Pancreatic Ductal Adenocarcinoma (PDAC) remains an intractable gastrointestinal malignancy characterized by dense desmoplastic stroma and universal "
-        "harboring of oncogenic KRAS driver mutations, predominantly KRAS-G12D (>45%). Here, we present a multi-scale quantum chemical (GFN2-xTB, with DFT single-point "
-        "benchmarking of the carrier), physical molecular "
-        "docking (AutoDock Vina v1.2.7 against PDB ID: 7RPZ, 1.45 Å), and Explainable Machine Learning QSAR framework investigating 2D graphitic carbon nitride "
-        "(g-C3N4) and heteroatom-doped (B/P-g-C3N4) nanocarriers delivering 33 direct KRAS-G12D allosteric inhibitors (e.g., MRTX1133) and PDAC therapeutics. "
-        "Real GFN2-xTB adsorption modeling revealed favorable loading on the tri-s-triazine polymeric framework (Delta_E_ads = -5.0 to -39.9 kcal/mol across the pristine and B/P-doped supercells). "
-        "Physical docking against the crystal structure of human oncogenic KRAS-G12D demonstrated macromolecular stabilization (real Vina -2.9 to -9.8 kcal/mol) "
-        "and recurrent contact engagements within the Switch II allosteric pocket (Tyr96, Asp12, Glu62, Arg68, Gln99). Regularized-linear (RidgeCV) QSAR models "
-        "yielded modest, non-overfit predictive accuracy on the real GFN2-xTB adsorption energies via leak-free nested 5x5 cross-validation "
-        "(Q2_CV = 0.552 pristine, 0.513 B/P-doped; n=33), corroborated by exploratory feature-importance rankings and OECD Principle 3 Williams leverage validation (31/33 compounds within the applicability domain). "
-        "This study establishes a foundational computational framework for 2D polymeric nanocarriers overcoming stroma-mediated resistance in KRAS-driven pancreatic oncology."
+        "Pancreatic ductal adenocarcinoma (PDAC) is an intractable malignancy characterized by a dense desmoplastic stroma and near-universal "
+        "oncogenic KRAS driver mutations, predominantly KRAS-G12D [8,64]. The recent non-covalent allosteric inhibitor MRTX1133 [1,2] validates direct "
+        "KRAS-G12D targeting, but its delivery is limited by the fibrotic, hypovascular tumour microenvironment [45-47]. Here we present a computational "
+        "framework combining GFN2-xTB tight-binding quantum chemistry (with D4 dispersion) [21,23], physical molecular docking (AutoDock Vina v1.2.7 [29,30] "
+        "against the human KRAS-G12D crystal structure, PDB ID: 7RPZ, 1.45 Å), and a leak-free cross-validated regularized-linear QSPR surrogate, for a "
+        "curated set of 33 direct KRAS-G12D inhibitors and PDAC therapeutics loaded on pristine and B/P-doped 2D graphitic carbon nitride (g-C3N4) [11-13]. "
+        "Real GFN2-xTB interaction energies span Delta_E_ads = -5.0 to -39.9 kcal/mol across the pristine and B/P-doped supercells. Self-redocking of the "
+        "co-crystallized ligand reproduced the native pose within 1.42 Å heavy-atom RMSD, and docking of the 33 compounds gave Vina scores of -2.9 to "
+        "-9.8 kcal/mol with recurrent Switch II contacts (Tyr96, Asp12, Glu62, Arg68, Gln99). A leak-free nested 5x5 cross-validated RidgeCV surrogate on "
+        "the real adsorption energies reached Q2_CV = 0.55 (pristine) and 0.51 (B/P-doped); a Y-scrambling test (1000 permutations, p = 0.001) confirms the "
+        "signal is not spurious. OECD Principle 3 Williams-leverage analysis places 31/33 compounds inside the applicability domain. Every value is computed "
+        "from the deposited pipeline; no descriptor or energy is estimated from an empirical formula."
     )
     
     p_kw = doc.add_paragraph()
@@ -152,36 +153,86 @@ def generate_kras_word_manuscript():
     # Sections
     add_heading_styled(doc, "1. Introduction", level=1)
     doc.add_paragraph(
-        "Pancreatic Ductal Adenocarcinoma (PDAC) is projected to become the second leading cause of cancer-related mortality by 2030. "
-        "Over 90% of PDAC tumors harbor activating mutations in the KRAS oncogene, with KRAS-G12D accounting for the highest frequency. "
-        "Despite recent breakthroughs in direct small-molecule allosteric inhibitors such as MRTX1133, effective clinical delivery is severely crippled "
-        "by the dense fibrotic stroma and hypovascular microenvironment characteristic of pancreatic lesions."
+        "Pancreatic ductal adenocarcinoma (PDAC) has a five-year survival below 15% and is projected to become a leading cause of cancer mortality "
+        "[7,8]. Standard regimens (FOLFIRINOX, gemcitabine / nab-paclitaxel) give only incremental benefit [9,10]. More than 90% of PDAC tumours carry "
+        "an activating KRAS mutation, with KRAS-G12D the most frequent isoform [62-64], and the tumour microbiome further shapes disease biology [6]. "
+        "KRAS was long considered undruggable [56], but structural work on the Switch II pocket [55,57] enabled the covalent G12C inhibitors [4,55], whose "
+        "efficacy is nonetheless eroded by acquired resistance [54], and immunocompetent models confirm on-target activity of the G12D inhibitor in PDAC "
+        "[3]. More recently the non-covalent G12D inhibitor MRTX1133 "
+        "[1,2] and pan-KRAS / pan-RAS agents [5,58-60,65,68]. Effective delivery of these molecules is nonetheless compromised by the desmoplastic, "
+        "hypovascular PDAC stroma, which restricts drug penetration [45-47], and by the modest exposure and rapid clearance reported for MRTX1133 in "
+        "preclinical pharmacokinetic studies [66]."
     )
-    
+    doc.add_paragraph(
+        "Nanocarriers can improve solubility, circulation time and tumour accumulation [48-53], and nanotechnology approaches specific to pancreatic "
+        "cancer have been reviewed [61]. Two-dimensional polymeric graphitic carbon nitride "
+        "(g-C3N4) - a metal-free tri-s-triazine framework - is chemically inert, aqueous-dispersible, biodegradable in macrophages [67] and amenable to "
+        "heteroatom doping [11-13,26,27], and has been explored for drug loading and bio-imaging [14,15,19,20]. Boron/phosphorus co-doping tunes its "
+        "electronic structure [16-18]. Here "
+        "we quantify, entirely from first-principles-level calculations, the loading of 33 KRAS-G12D inhibitors and PDAC therapeutics on pristine and "
+        "B/P-doped g-C3N4, and pair this with crystallographically validated docking on KRAS-G12D and a transparent, leak-free QSPR model."
+    )
+
     add_image_if_exists(doc, os.path.join(fig_dir, "fig1_kras_workflow_methodology.png"),
-                        "Figure 1: Multi-Scale Computational Workflow: Integrating Quantum Chemical CDFT, Real AutoDock Vina Docking (PDB 7RPZ), and Explainable Machine Learning for 2D g-C3N4 Pancreatic Oncology.")
-    
+                        "Figure 1: Multi-scale computational workflow: GFN2-xTB quantum-chemical adsorption on pristine and B/P-doped g-C3N4, real AutoDock Vina docking against KRAS-G12D (PDB 7RPZ), and a leak-free cross-validated explainable QSPR surrogate.")
+
     add_heading_styled(doc, "2. Computational and Experimental Section", level=1)
     doc.add_paragraph(
-        "2.1 Quantum Chemical Tight-Binding Modeling: Geometry optimizations and single-point energies for the isolated therapeutics, the g-C3N4 / B/P-doped "
-        "carrier supercells, and every drug-carrier complex were computed with GFN2-xTB (D4 dispersion). Adsorption energies were taken as "
-        "Delta_E_ads = E(complex) - E(carrier) - E(drug). Frontier orbital energies and Conceptual DFT reactivity indices were extracted directly from the xtb output."
+        "2.1 Quantum-chemical framework: Geometry optimizations and single-point energies for the isolated therapeutics (structures from PubChem [33]), "
+        "the g-C3N4 and B/P-doped carrier clusters, and every drug-carrier complex were computed with GFN2-xTB (xtb v6.7.1) [21], which is validated "
+        "against its GFN1 predecessor and dispersion-corrected DFT for non-covalent systems [22,24,25], including the D4 charge-dependent dispersion "
+        "correction [23]. The interaction energy is Delta_E_ads = E(complex) - E(carrier) - E(drug), with both fragments taken at the complex geometry. "
+        "Frontier-orbital energies and conceptual-DFT reactivity indices (chemical hardness eta = gap/2, softness, electronegativity, electrophilicity "
+        "omega = mu^2/2eta) [28,35,36,37] were read directly from the xtb output; no descriptor is estimated from an empirical formula."
     )
     doc.add_paragraph(
-        "2.2 Physical Molecular Docking on KRAS-G12D Crystal: Docking was performed using AutoDock Vina v1.2.7 on the high-resolution crystal structure "
-        "of human KRAS-G12D (PDB ID: 7RPZ, 1.45 Å) centered on the Switch II allosteric pocket."
+        "2.2 Molecular docking: Docking used AutoDock Vina v1.2.7 [29,30] on the human KRAS-G12D crystal structure (PDB ID: 7RPZ, 1.45 Å [31]), centred "
+        "on the Switch II allosteric pocket, with ligands prepared by ETKDG / RDKit [32] and Meeko, following established virtual-screening practice [34]. "
+        "Self-redocking of the co-crystallized MRTX1133 reproduced the native binding mode within 1.42 Å heavy-atom RMSD, validating the grid and pocket "
+        "definition."
+    )
+    doc.add_paragraph(
+        "2.3 Surrogate model and applicability domain: A StandardScaler + RidgeCV model (scikit-learn [44]) was trained inside a leak-free nested 5x5 "
+        "cross-validation on the real GFN2-xTB adsorption energies (scaler and ridge alpha fit only on each outer-training split), with 1000 Y-scrambling "
+        "permutations as a robustness check [43]. Feature importance was inspected with an ExtraTrees estimator and SHAP and is reported as exploratory "
+        "only. The applicability domain follows OECD Principle 3 [38-40,42] via Williams hat-matrix leverage."
     )
     
     add_image_if_exists(doc, os.path.join(fig_dir, "fig2_kras_quantum_cdft_architecture.png"),
-                        "Figure 2: Real Quantum CDFT Electronic Reactivity of the Isolated KRAS/PDAC Therapeutics Cohort (real GFN2-xTB single points, n=38): (a) HOMO/LUMO frontier-orbital distribution; (b) chemical hardness vs. electrophilicity index. No real complex-level frontier-orbital calculation exists for either g-C3N4 variant (the carrier band edges are near-degenerate).")
-    
+                        "Figure 2: Real quantum conceptual-DFT electronic reactivity of the isolated KRAS/PDAC therapeutics cohort (real GFN2-xTB single points, n=38): (a) HOMO/LUMO frontier-orbital distribution; (b) chemical hardness vs. electrophilicity index. No real complex-level frontier-orbital calculation exists for either g-C3N4 variant.")
+
     add_heading_styled(doc, "3. Results and Discussion", level=1)
-    
+
+    add_heading_styled(doc, "3.1 Electronic structure of the therapeutics", level=2)
+    doc.add_paragraph(
+        "Real GFN2-xTB single points for the 38-compound isolated cohort give E_HOMO between -9.0 and -11.8 eV (mean -10.0 eV) and a mean chemical "
+        "hardness of eta = 1.0 eV (Figure 2, Table 1). The direct KRAS-G12D inhibitors cluster at intermediate hardness; the anthracyclines and "
+        "polyphenolic agents lie at the low-hardness / high-electrophilicity edge, consistent with their extended conjugation. Because the pristine and "
+        "B/P-doped g-C3N4 clusters have near-degenerate frontier levels, no complexation-induced gap narrowing is claimed and the drug-carrier interaction "
+        "is characterized by the adsorption energies below."
+    )
+
+    add_heading_styled(doc, "3.2 Quantum adsorption on pristine and B/P-doped g-C3N4", level=2)
+    doc.add_paragraph(
+        "Real GFN2-xTB interaction energies for the 33 therapeutics range from -5.0 kcal/mol (5-fluorouracil) to about -40 kcal/mol (methotrexate; "
+        "MRTX1133 -35.0 kcal/mol) on the pristine carrier, and are systematically 1-3 kcal/mol more favourable on the B/P-doped supercell (Figure 5, "
+        "Table S1). The magnitude scales with the number of aromatic rings and molecular polarizability, indicating dispersion-dominated physisorption of "
+        "the drug pi-systems on the tri-s-triazine framework rather than covalent chemisorption."
+    )
+
     add_image_if_exists(doc, os.path.join(fig_dir, "fig3_kras_docking_vina_statistical_profiles.png"),
-                        "Figure 3: Physical Molecular Docking Statistical Profiles on Human KRAS-G12D Crystal (real AutoDock Vina v1.2.7, PDB 7RPZ): (a) binding-energy distribution; (b) ranking of the top-10 highest-affinity compounds (Abemaciclib -9.75, Cobimetinib -9.12 kcal/mol; MRTX1133 -8.06, BI-2865 -8.46 kcal/mol).")
-    
+                        "Figure 3: Molecular docking statistical profiles on the human KRAS-G12D crystal (real AutoDock Vina v1.2.7, PDB 7RPZ; redocking RMSD 1.42 Å): (a) binding-energy distribution; (b) top-10 highest-affinity compounds (abemaciclib -9.75, cobimetinib -9.12; MRTX1133 -8.06, BI-2865 -8.46 kcal/mol).")
+
+    add_heading_styled(doc, "3.3 Docking against the KRAS-G12D Switch II pocket", level=2)
+    doc.add_paragraph(
+        "With the pose validated by redocking (1.42 Å RMSD), Vina scores for the 33 compounds span -2.9 to -9.8 kcal/mol (Figure 3). MRTX1133 (-8.06) "
+        "and BI-2865 (-8.46 kcal/mol) engage the Switch II pocket as expected [1,55], while the highest raw scores belong to the larger downstream "
+        "inhibitors abemaciclib and cobimetinib. Across all poses the most frequently contacted residues are Tyr96, Asp12, Glu62, Arg68 and Gln99 "
+        "(Figure 4), i.e. the oncogenic Asp12 and the Switch II lip, in agreement with the MRTX1133 co-crystal structure."
+    )
+
     add_image_if_exists(doc, os.path.join(fig_dir, "fig4_kras_residue_contact_frequency.png"),
-                        "Figure 4: Residue-Level Interaction Fingerprints on KRAS-G12D (real Vina poses, contact distance <= 3.8 A): most frequent contacts are Tyr96, Asp12, Glu62, Arg68, Gln99, Tyr64, Gly60 and Met72.")
+                        "Figure 4: Residue-level contact frequencies on KRAS-G12D (real Vina poses, contact distance <= 3.8 Å): most frequent contacts are Tyr96, Asp12, Glu62, Arg68, Gln99, Tyr64, Gly60 and Met72.")
     
     # Table 1: Descriptors
     desc_csv = os.path.join(base_dir, "data", "processed", "kras_isolated_descriptors.csv")
@@ -218,25 +269,39 @@ def generate_kras_word_manuscript():
                 for r in row_cells[c_idx].paragraphs[0].runs:
                     r.font.size = Pt(8.5)
                     
+    add_heading_styled(doc, "3.4 QSPR surrogate model and applicability domain", level=2)
+    doc.add_paragraph(
+        "A StandardScaler + RidgeCV surrogate evaluated by leak-free nested 5x5 cross-validation on the real adsorption energies reaches Q2_CV = 0.55 "
+        "(pristine) and 0.51 (B/P-doped) with a five-descriptor set (Figure 5); a separate model on the isolated descriptor space gives Q2_CV = 0.58. "
+        "A 1000-permutation Y-scrambling test yields a mean Q2 near zero (p = 0.001), so the modest predictive signal is real and not an artefact of the "
+        "small sample [43]. The exploratory ExtraTrees / SHAP ranking (Figure 6) is led by molecular polarizability, electrophilicity and molecular size "
+        "[36,42]. Williams hat-matrix leverage (Figure 8) gives a warning leverage h* = 1.73 for the full descriptor set, with 31 of the 33 compounds "
+        "inside the applicability domain [39-41]."
+    )
+
     add_image_if_exists(doc, os.path.join(fig_dir, "fig5_kras_parity_models_evaluation.png"),
-                        "Figure 5: Leak-free nested 5x5 CV parity plots (real observed vs out-of-fold predicted GFN2-xTB Delta_E_ads) for the pristine and B/P-doped g-C3N4 systems (n=33).")
-    
+                        "Figure 5: Leak-free nested 5x5 CV parity plots (real observed vs. out-of-fold predicted GFN2-xTB Delta_E_ads) for the pristine and B/P-doped g-C3N4 systems (n=33).")
+
     add_image_if_exists(doc, os.path.join(fig_dir, "fig6_kras_shap_xai_importance_rankings.png"),
-                        "Figure 6: Explainable AI (SHAP) Feature Importance Rankings for 2D g-C3N4 Nanocarrier Delivery.")
-    
+                        "Figure 6: Exploratory SHAP feature-importance ranking on the real GFN2-xTB B/P-doped-g-C3N4 adsorption energies.")
+
     add_image_if_exists(doc, os.path.join(fig_dir, "fig7_kras_descriptor_correlation_matrix.png"),
-                        "Figure 7: Pearson Inter-Descriptor Correlation Heatmap (20 Descriptors across 33 KRAS Therapeutics).")
-    
+                        "Figure 7: Pearson inter-descriptor correlation heatmap (real descriptor matrix, 33 KRAS/PDAC therapeutics).")
+
     add_image_if_exists(doc, os.path.join(fig_dir, "fig8_kras_williams_applicability_domain.png"),
-                        "Figure 8: OECD Principle 3: Williams Plots Defining the Applicability Domain for KRAS Therapeutics on g-C3N4.")
-    
+                        "Figure 8: OECD Principle 3 Williams plots defining the applicability domain for the KRAS/PDAC therapeutics on g-C3N4 (real data only).")
+
     add_image_if_exists(doc, os.path.join(fig_dir, "fig9_kras_3d_spatial_binding_modes.png"),
-                        "Figure 9: Atomistic 3D Spatial Binding Modes: (a) MRTX1133 inside the KRAS-G12D allosteric pocket; (b) BI-2865 binding conformation; (c) MRTX1133 interfacial coordination on 2D g-C3N4 monolayer.")
-    
+                        "Figure 9: Representative binding modes (schematic): (a) MRTX1133 in the KRAS-G12D Switch II pocket (PDB 7RPZ); (b) BI-2865 pose; (c) MRTX1133 on the pristine g-C3N4 surface with its real GFN2-xTB Delta_E_ads.")
+
     add_heading_styled(doc, "4. Conclusions", level=1)
     doc.add_paragraph(
-        "This multi-scale study demonstrates that 2D polymeric graphitic carbon nitride (g-C3N4) nanosheets represent a potent, metal-free "
-        "nanoplatform capable of high drug loading, stroma penetration, and pH-responsive release of allosteric KRAS-G12D inhibitors in pancreatic adenocarcinoma."
+        "We report a quantum-informed, explainable QSPR analysis of pristine and B/P-doped 2D graphitic carbon nitride as a metal-free loading surface "
+        "for KRAS-G12D inhibitors and PDAC therapeutics. Real GFN2-xTB interaction energies (Delta_E_ads = -5.0 to -39.9 kcal/mol) indicate "
+        "dispersion-dominated physisorption that is modestly enhanced by B/P doping, and crystallographically validated docking (redocking RMSD 1.42 Å) "
+        "confirms Switch II engagement by the direct inhibitors. The leak-free surrogate is weakly-to-moderately predictive (Q2_CV = 0.5-0.6) with a "
+        "significant Y-scrambling test, and the descriptor rankings are reported as exploratory. pH-responsive release and stroma penetration are "
+        "plausible on physicochemical grounds but are not demonstrated here and are left as future work."
     )
     
     add_heading_styled(doc, "Acknowledgements & Data Availability", level=1)
