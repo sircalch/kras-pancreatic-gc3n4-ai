@@ -134,19 +134,23 @@ def load(path, **kw):
 
 
 # ----------------------------------------------------------------- geometry
-def bonds(sym, xyz, scale=1.12, hard_cap=2.05):
+_METALS = {"Ti", "Fe", "Zn", "Mg", "Na", "K", "Ca", "Mn", "Cu", "Co", "Ni"}
+
+
+def bonds(sym, xyz, scale=1.15):
     n = len(sym)
     r = np.array([COV.get(s, 0.77) for s in sym])
-    heavy_cap = {"H": 1.28}
     out = []
     for i in range(n):
         d = np.linalg.norm(xyz - xyz[i], axis=1)
-        cut = np.minimum(scale * (r + r[i]), hard_cap)
+        metal_i = sym[i] in _METALS
+        cap = np.array([2.75 if (metal_i or s in _METALS) else 1.95 for s in sym])
+        cut = np.minimum(scale * (r + r[i]), cap)
         for j in np.where((d > 0.4) & (d < cut))[0]:
             j = int(j)
             if j <= i:
                 continue
-            if "H" in (sym[i], sym[j]) and d[j] > 1.28:
+            if "H" in (sym[i], sym[j]) and d[j] > 1.30:
                 continue
             out.append((i, j))
     return out
@@ -343,8 +347,8 @@ def render(specs, out_path, **kw):
     return out_path
 
 
-def turntable(specs, out_mp4, size=(1000, 1000), n=120, zoom=1.2, fps=30,
-              bg="white"):
+def turntable(specs, out_mp4, size=(960, 960), n=120, zoom=1.25, fps=30,
+              bg="white", view="3q"):
     """Rotating-structure movie for the SI."""
     import imageio.v2 as imageio
     if pv is None:  # pragma: no cover
@@ -352,15 +356,22 @@ def turntable(specs, out_mp4, size=(1000, 1000), n=120, zoom=1.2, fps=30,
     frames = []
     pl = pv.Plotter(off_screen=True, window_size=size, lighting="none")
     pl.set_background(bg)
+    allxyz = []
     for sp in specs:
         sym, xyz = sp["sym"], np.asarray(sp["xyz"], float)
+        allxyz.append(xyz)
         if sp.get("surface"):
             _add_surface(pl, sym, xyz, color=sp.get("surf_color", "#c9d3e0"),
                          opacity=sp.get("surf_opacity", 0.42))
-        _add_ball_stick(pl, sym, xyz, ball=sp.get("ball", 0.34),
-                        stick=sp.get("stick", 0.12), carbon=sp.get("carbon"))
+        _add_ball_stick(pl, sym, xyz, ball=sp.get("ball", 0.30),
+                        stick=sp.get("stick", 0.105), carbon=sp.get("carbon"),
+                        bond_scale=sp.get("bond_scale", 1.15))
     _light_rig(pl)
-    pl.camera_position = "iso"
+    try:
+        pl.enable_ssao(radius=2.0, bias=0.5, kernel_size=64, blur=True)
+    except Exception:
+        pass
+    pl.camera_position = list(_auto_view(np.vstack(allxyz), view=view))
     pl.camera.zoom(zoom)
     try:
         pl.enable_anti_aliasing("msaa")
