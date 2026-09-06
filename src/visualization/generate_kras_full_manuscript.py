@@ -129,7 +129,7 @@ def generate_kras_full_manuscript():
     # Graphical Abstract (Front Matter)
     add_heading_styled(doc, "Graphical Abstract", level=1)
     add_image_if_exists(doc, os.path.join(fig_dir, "fig_graphical_abstract_final.jpg"),
-                        "Graphical Abstract: Multi-scale computational framework integrating quantum chemistry, OECD-aligned QSPR surrogate modeling, and virtual screening for KRAS-G12D inhibitor prioritization. (Left) Oncogenic KRAS-G12D target engagement in the Switch II allosteric pocket with key coordinating residues (Asp12 ionic salt-bridge, Tyr96 pi-stacking). (Center) Quantum electronic interaction modeling on the finite 48-atom C21N21H6 heptazine cluster model (Pristine: C21N21H6; B/P co-doped: C20B1N20P1H6); B/P co-doping induces localized interfacial charge redistribution (Delta_Q = +0.082 e) with comparable overall electronic interaction energetics (DeltaDelta E_int,std ≈ -0.01 kcal/mol). (Right) OECD-aligned nested Ridge QSPR surrogate screening across 350 oncology compounds with prospective GFN2-xTB quantum confirmation on prioritized clinical-stage leads (Futibatinib, Belumosudil).",
+                        "Graphical Abstract: Multi-scale computational framework integrating quantum chemistry, OECD-aligned QSPR surrogate modeling, and virtual screening for KRAS-G12D inhibitor prioritization. (Left) Oncogenic KRAS-G12D target engagement in the Switch II allosteric pocket with key coordinating residues (Asp12 ionic salt-bridge, Tyr96 pi-stacking). (Center) Quantum electronic interaction modeling on the finite 48-atom C21N21H6 heptazine cluster model (Pristine: C21N21H6; B/P co-doped: C20B1N20P1H6); B/P co-doping induces localized interfacial charge redistribution (Delta_Q = +0.19 e for MRTX1133) with comparable overall electronic interaction energetics (DeltaDelta E_int,std ≈ -0.01 kcal/mol). (Right) OECD-aligned nested Ridge QSPR surrogate screening across 350 oncology compounds with prospective GFN2-xTB quantum confirmation on prioritized clinical-stage leads (Futibatinib, Belumosudil).",
                         width=Inches(6.2))
     
     # Abstract
@@ -144,11 +144,9 @@ def generate_kras_full_manuscript():
         "Switch II pocket docking revealed descriptive differences consistent with state- and mechanism-dependent structural pharmacology (Group A median -7.68 kcal/mol; "
         "Group B median -5.86 kcal/mol; Group C median -7.82 kcal/mol; Group D median -6.84 kcal/mol; omnibus Kruskal-Wallis H = 5.763, p = 0.1237). "
         "Standardized GFN2-xTB tight-binding quantum calculations across the finite 48-atom C21N21H6 planar cluster model yielded favorable intermolecular electronic interaction energies "
-        "(Delta_E_int,std = -4.98 to -39.17 kcal/mol on pristine and -6.96 to -39.89 kcal/mol on B/P substituted templates at standardized z = 3.35 Å), governed by pi-pi stacking and localized interfacial charge transfer. "
+        "(Delta_E_int,std = -4.98 to -39.89 kcal/mol across pristine and B/P substituted templates at a standardized initial stacking separation z = 3.35 Å), governed by pi-pi stacking and localized interfacial charge transfer. "
         "Importantly, we show that Delta_E_int,std represents a standardized vertical electronic interaction descriptor, which is offset by intramolecular conformational deformation (Delta_E_def = +34.65 kcal/mol for MRTX1133), "
         "yielding a net relaxed adsorption energy Delta_E_ads,rel ≈ -0.38 kcal/mol. "
-        "A multi-level quantum benchmark against dispersion-corrected DFT single-point reference calculations (ORCA 6.1.1, B3LYP-D3BJ/def2-SVP, TightSCF) across eight representative oncology drugs "
-        "demonstrated strong rank preservation (Spearman rho = 0.96, p = 0.0001; MAE = 2.14 kcal/mol, RMSE = 2.68 kcal/mol; counterpoise/def2-TZVP convergence confirmed). "
         "A regularized Ridge surrogate QSPR model structured under OECD Principles 1-5, evaluated by a fully leak-free nested 5x5 cross-validation (StandardScaler fit inside the pipeline on outer-training folds only; Ridge alpha tuned by inner cross-validation), achieved robust out-of-fold predictive accuracy (nested Q²_CV = +0.584, per-fold Q² range: 0.05-0.78; RMSE = 5.11 kcal/mol, MAE = 4.33 kcal/mol), "
         "with Y-scrambling permutation testing supporting that predictive performance was unlikely to arise from chance correlation (1,000 permutations: mean Q²_scrambled = -0.12, empirical p = 0.001). "
         "Decoupled virtual screening of 350 DrugBank oncology candidates within the applicability domain (h* = 0.455) prioritized clinical-stage leads whose interaction stability was "
@@ -161,7 +159,7 @@ def generate_kras_full_manuscript():
     p_kw.paragraph_format.space_after = Pt(12)
     r_kwt = p_kw.add_run("Keywords: ")
     r_kwt.font.bold = True
-    p_kw.add_run("KRAS-G12D; MRTX1133; Molecular Diversity; QSPR Surrogate Modeling; GFN2-xTB Quantum Chemistry; DFT Benchmark; Virtual Screening; Supramolecular Interaction.")
+    p_kw.add_run("KRAS-G12D; MRTX1133; Molecular Diversity; QSPR Surrogate Modeling; GFN2-xTB Quantum Chemistry; Virtual Screening; Supramolecular Interaction.")
     
     # 1. Introduction
     add_heading_styled(doc, "1. Introduction", level=1)
@@ -198,7 +196,7 @@ def generate_kras_full_manuscript():
     doc.add_paragraph(
         "In this work, we present an integrated computational chemistry and molecular diversity framework investigating KRAS-G12D inhibitor loading and pocket engagement. "
         "We establish crystallographic pose-recovery validation against the 1.30 Å crystal structure of human KRAS-G12D (PDB ID: 7RPZ), evaluate binding energetics across structured pharmacological classes, "
-        "model standardized quantum interaction energies (GFN2-xTB), benchmark against dispersion-corrected DFT reference calculations [69-72], train a leak-free nested surrogate QSPR model "
+        "model standardized quantum interaction energies (GFN2-xTB), train a leak-free nested surrogate QSPR model "
         "structured under OECD guidelines, and execute decoupled virtual screening of an extended 350-compound oncology library with prospective quantum mechanical confirmation."
     )
     
@@ -226,30 +224,20 @@ def generate_kras_full_manuscript():
         "(C) Downstream MAPK and receptor tyrosine kinase inhibitors (n=8: Trametinib, Cobimetinib, Selumetinib, Binimetinib, Erlotinib, Larotrectinib, Abemaciclib, Palbociclib); and "
         "(D) Cytotoxic and antimetabolite oncology comparators (n=15: Gemcitabine, 5-Fluorouracil, Capecitabine, Irinotecan, Paclitaxel, Methotrexate, Etoposide, Doxorubicin, Topotecan, Dacarbazine, Hydroxyurea, Mitomycin C, Leucovorin, Pemetrexed, Trabectedin; note: Gemcitabine, 5-FU, Capecitabine, Irinotecan, and Paclitaxel are PDAC-relevant standard-of-care agents) [9, 10]. "
         "All structures were verified against PubChem PUG REST API for exact chemical formulas, molecular weights, and isomeric SMILES. "
-        "Individual dominant protonation states, tautomers, and formal charges at physiological pH 7.4 were assigned specifically for each compound using ChemAxon Calculator Plugin "
-        "(cxcalc pKa, version 23.18.0, MarvinBeans suite, macro- and micro-pKa mode with temperature T = 298.15 K, ionic strength I = 0.15 M, and physiological pH window 7.40 +/- 0.20) "
-        "and corroborated against experimental pKa literature (e.g., protonated +1 basic pyrrolopyrimidine on MRTX1133 enabling the key electrostatic salt-bridge with mutant Asp12, +2 on Abemaciclib, -2 on Methotrexate, and neutral canonical states for uncharged heterocycles; "
-        "see Supporting Information Table S2 for complete protonation states, formal charges, and SMILES mapping). Descriptors were calculated using RDKit [32]."
+        "Formal charges were assigned for each compound from the curated isomeric SMILES using RDKit (Chem.GetFormalCharge) at the dominant physiological protonation state "
+        "corroborated against experimental pKa literature (e.g., protonated +1 basic pyrrolopyrimidine on MRTX1133 enabling the key electrostatic salt-bridge with mutant Asp12, +2 on Abemaciclib, -2 on Methotrexate, and neutral canonical states for uncharged heterocycles; "
+        "see Supporting Information Table S2 for complete formal charges and SMILES mapping). Descriptors were calculated using RDKit [32]."
     )
     doc.add_paragraph(
-        "2.3 Standardized Quantum Interaction Modeling: GFN2-xTB Hamiltonian & Multilevel Benchmarking: "
-        "The 2D graphitic carbon nitride molecular interaction template was modeled as a finite planar cluster consisting of 48 atoms with stoichiometry C21N21H6 composed of three condensed tri-s-triazine (heptazine) cores with peripheral hydrogen edge passivation [11, 26, 27]. "
-        "While ideal infinite g-C3N4 exhibits a bulk N/C = 1.33 stoichiometry, finite molecular cluster models feature hydrogen-passivated peripheral carbon and nitrogen sites (yielding N/C = 1.0) "
-        "to avoid unphysical radical edge states while preserving the central sp2 conjugated heptazine electronic framework (see SI Section S1 for complete 48-atom XYZ coordinates and Mulliken charge distribution) [20, 26, 27]. "
-        "Heteroatom-substituted configurations were constructed by substitution: boron replacing carbon (C20B1N21H6, 2.1 at.% B), phosphorus replacing nitrogen (C21N20P1H6, 2.1 at.% P), "
-        "and B/P co-substituted configurations (C20B1N20P1H6). "
-        "Calculations were carried out using the second-generation Geometry, Frequency, Noncovalent, Extended Tight-Binding Hamiltonian (GFN2-xTB) developed by Bannwarth, Ehlert, and Grimme [21]. "
-        "GFN2-xTB incorporates anisotropic multi-pole electrostatics, second-order density matrix self-consistency, and D4 atom-in-molecule coordination-dependent dispersion [21, 23]. "
-        "Supramolecular drug-template complexes were constructed by positioning each drug molecule at a standardized unrelaxed vertical interplanar stacking distance (z = 3.35 Å) "
-        "parallel to the planar framework. The standardized electronic interaction energy (Delta_E_int,std) was evaluated rigidly across all compounds as: "
-        "Delta_E_int,std = E_complex - (E_template + E_drug,complex). This standardized fixed-distance protocol isolates the pure intermolecular electronic interaction without confounding intramolecular conformational strain penalties. "
-        "In illustrative fully relaxed geometry optimizations of planar aromatic systems, complexes relax to an equilibrium interplanar separation of d_pi-pi ≈ 3.25 Å. "
-        "To validate the semiempirical interaction trends, higher-level dispersion-corrected DFT single-point reference calculations were performed using ORCA 6.1.1 [69] with the B3LYP functional [70], "
-        "Grimme's D3 dispersion correction with Becke-Johnson damping (D3BJ) [71], and the def2-SVP basis set [72] with RIJCOSX acceleration and TightSCF convergence criteria on the exact same standardized geometries: "
-        "Delta_E_int,std_DFT = E_complex_DFT - E_sheet_DFT - E_drug,complex_DFT. "
-        "Basis set convergence and basis set superposition error (BSSE) were evaluated across representative systems using the triple-zeta def2-TZVP basis set and Boys–Bernardi counterpoise correction, "
-        "confirming that BSSE shifts interaction energies systematically (~1.8 kcal/mol) without altering the relative ranking (rho = 0.96 to 0.98; see Table S5). "
-        "In addition, the first-generation GFN1-xTB Hamiltonian [22] was evaluated as a semiempirical baseline reference."
+        "2.3 Quantum interaction modeling (GFN2-xTB): "
+        "The 2D graphitic carbon nitride interaction template was modeled as a finite planar 48-atom cluster, stoichiometry C21N21H6, of three condensed "
+        "tri-s-triazine (heptazine) cores with peripheral hydrogen edge passivation [11,26,27] (SI Section S1). Heteroatom-substituted configurations replace "
+        "one core carbon by boron and one bridging nitrogen by phosphorus (B/P co-doped: C20B1N20P1H6). Each isolated drug, the carrier clusters and every "
+        "drug-carrier complex were geometry-optimized and evaluated at single point with GFN2-xTB (xtb v6.7.1) [21], which includes anisotropic multipole "
+        "electrostatics, self-consistent density and the D4 charge-dependent dispersion correction [21,23]. The standardized interaction energy is "
+        "Delta_E_int,std = E_complex - E_template - E_drug,complex, with both fragments taken at the complex geometry; a fully relaxed adsorption energy "
+        "Delta_E_ads,rel (with the drug re-optimized in isolation) was additionally computed for a multi-start subset (Section 2.4). Interaction energies "
+        "were not cross-validated against DFT in this work; the GFN2-xTB level is used consistently throughout (Limitations, Section 3.4)."
     )
     doc.add_paragraph(
         "2.4 Multi-Start Protocol & Component Energy Decomposition: "
@@ -357,84 +345,26 @@ def generate_kras_full_manuscript():
             for r in row_cells[c_idx].paragraphs[0].runs:
                 r.font.size = Pt(8.5)
                 
-    add_heading_styled(doc, "3.3 Standardized Quantum Drug–Carrier Interaction Energetics and Multilevel Benchmarking", level=2)
+    add_heading_styled(doc, "3.3 Quantum drug-carrier interaction energetics", level=2)
     doc.add_paragraph(
-        "Tight-binding quantum chemistry calculations using the GFN2-xTB Hamiltonian [21] revealed that all 33 oncology therapeutics and 5 screening leads undergo energetically "
-        "favorable electronic interactions on the 2D g-C3N4 matrix. Standardized electronic interaction energies (Delta_E_int,std) on pristine g-C3N4 evaluated rigidly at z = 3.35 Å ranged from -4.98 kcal/mol (5-Fluorouracil) to "
-        "-39.17 kcal/mol (Methotrexate), with MRTX1133 exhibiting robust interaction (Delta_E_int,std = -35.03 kcal/mol; Delta_Q = +0.189 e). "
+        "Real GFN2-xTB single points [21] show that all 33 oncology therapeutics and 5 screening leads interact favorably with the 2D g-C3N4 cluster. "
+        "Standardized interaction energies (Delta_E_int,std) on pristine g-C3N4 range from -4.98 kcal/mol (5-Fluorouracil) to "
+        "-39.17 kcal/mol (Methotrexate), with MRTX1133 at Delta_E_int,std = -35.03 kcal/mol and an interfacial charge transfer of +0.19 e. "
         "Interaction stability was primarily governed by aromatic pi-pi stacking and non-covalent dispersion interactions across the planar heptazine framework. "
-        "Co-doping the carbon nitride framework with boron and phosphorus atoms (B/P-g-C3N4, C20B1N20P1H6) induced localized charge polarization (q_B = +0.3494 e, q_P = -0.1679 e), "
-        "primarily modifying interfacial polarization while producing modest, compound-dependent changes in interaction energy (Delta_E_int,std = -6.96 to -39.89 kcal/mol; "
-        "for MRTX1133: pristine -35.03 kcal/mol vs B/P-doped -35.04 kcal/mol, DeltaDelta E_int,std = -0.01 kcal/mol). "
-        "These results indicate that B/P co-doping primarily redistributes interfacial charge density (Delta_Q = +0.082 e for MRTX1133) rather than producing large energetic gains."
+        "B/P co-doping localizes charge on the dopants (q_B = +0.35 e, q_P = -0.17 e) and slightly redistributes interfacial charge density, but produces "
+        "only modest, compound-dependent changes in interaction energy (Delta_E_int,std = -6.96 to -39.89 kcal/mol; for MRTX1133, pristine -35.03 vs "
+        "B/P-doped -35.04 kcal/mol). Interaction stability is governed by aromatic pi-pi stacking and dispersion across the planar heptazine framework "
+        "rather than by covalent chemisorption."
     )
     doc.add_paragraph(
-        "To rigorously evaluate the sensitivity of interfacial interaction to initial spatial placement, a multi-start geometric protocol was conducted for representative therapeutics (5-Fluorouracil, Gemcitabine, MRTX1133) across three distinct orientations (0 deg parallel, +90 deg in-plane rotation, 180 deg inverted flip) under the identical quantum baseline. "
-        "For MRTX1133, the standardized rigid protocol yields a vertical electronic interaction energy of Delta_E_int,std = -35.03 kcal/mol (E_complex = -234.173301 Eh, E_sheet = -107.765351 Eh, E_drug,complex = -126.352121 Eh) at fixed parallel stacking (z = 3.35 Å). "
-        "When evaluated relative to the fully relaxed isolated drug in vacuum (E_drug,opt = -126.407348 Eh), an intramolecular conformational deformation penalty of Delta_E_def = +34.65 kcal/mol (+0.055227 Eh) is incurred, resulting in a net relative adsorption energy Delta_E_ads,rel = -0.38 kcal/mol across initial multi-start geometries (-0.38 to -4.99 kcal/mol; see Table S4 for complete raw component breakdown). "
-        "This demonstrates that isolating the standardized vertical electronic interaction energy (Delta_E_int,std) removes confounding intramolecular strain penalties and provides a chemically homogeneous electronic target for QSPR surrogate modeling, without directly conflating it with bulk solution adsorption free energy (Delta_G_ads)."
-    )
-    doc.add_paragraph(
-        "To assess the accuracy and Hamiltonian sensitivity of the calculated electronic interaction energies, multi-level quantum benchmarks were performed against both GFN1-xTB and dispersion-corrected DFT single-point reference calculations (ORCA 6.1.1, B3LYP-D3BJ / def2-SVP, TightSCF; Table 2, Table S5, Figure 3) [69-72]. "
-        "Comparison with DFT reference calculations across eight representative systems (5-FU, Gemcitabine, Erlotinib, Selumetinib, MRTX1719, Futibatinib, MRTX1133, Methotrexate) demonstrated strong rank preservation (Figure 3a,c; Spearman rank correlation rho = 0.96, p = 0.0001) and low mean absolute error (MAE = 2.14 kcal/mol, RMSE = 2.68 kcal/mol), confirming that GFN2-xTB reliably reproduces the relative electronic interaction trends of higher-level dispersion-corrected DFT. "
-        "Furthermore, evaluation of basis-set convergence with def2-TZVP and Boys–Bernardi counterpoise correction across representative compounds confirmed that BSSE introduces a uniform systematic offset (~1.8 kcal/mol) without disrupting relative rank ordering (rho = 0.96 to 0.98; Table S5). "
-        "In contrast, comparison between GFN2-xTB [21] and GFN1-xTB [22] revealed a systematic semiempirical offset (Table 2, Figure 3d; MSE = -12.82 kcal/mol, MAE = 12.82 kcal/mol, RMSE = 17.34 kcal/mol; R² = 0.254), reflecting multi-term Hamiltonian updates including second-order density matrix self-consistency, anisotropic multi-pole electrostatics, and coordination-dependent D4 dispersion."
+        "A multi-start geometric protocol (0 deg parallel, +90 deg in-plane rotation, 180 deg inverted flip) was run for 5-Fluorouracil, Gemcitabine and "
+        "MRTX1133. For MRTX1133 the single-point interaction energy at the complex geometry is Delta_E_int,std = -35.03 kcal/mol "
+        "(E_complex = -234.173301 Eh, E_sheet = -107.765351 Eh, E_drug,complex = -126.352121 Eh). Relative to the fully relaxed isolated drug "
+        "(E_drug,opt = -126.407348 Eh) an intramolecular deformation penalty Delta_E_def = +34.65 kcal/mol is incurred, giving a net relaxed adsorption "
+        "energy Delta_E_ads,rel of -0.38 to -4.99 kcal/mol across orientations (Table S4). The single-point Delta_E_int,std is therefore a chemically "
+        "homogeneous electronic target for the surrogate model but should not be read as a bulk adsorption free energy."
     )
     
-    # Table 2: 10-System Quantum Benchmark
-    doc.add_paragraph()
-    p_t2 = doc.add_paragraph()
-    r_t2 = p_t2.add_run("Table 2: 10-System Hamiltonian Sensitivity Analysis: GFN2-xTB vs GFN1-xTB on 2D g-C3N4 Standardized Drug–Carrier Interaction Energies (Delta_E_int,std) Across Diverse Chemical Classes.")
-    r_t2.font.bold = True
-    r_t2.font.size = Pt(10)
-    
-    table2 = doc.add_table(rows=1, cols=6)
-    table2.alignment = WD_TABLE_ALIGNMENT.CENTER
-    t2_hdrs = table2.rows[0].cells
-    t2_titles = ["Compound", "Structural Class", "MW (g/mol)", "Delta_E_int,std GFN2 (kcal/mol)", "Delta_E_int,std GFN1 (kcal/mol)", "|Delta| (kcal/mol)"]
-    for idx, title in enumerate(t2_titles):
-        t2_hdrs[idx].text = title
-        set_cell_background(t2_hdrs[idx], "004D40")
-        set_cell_margins(t2_hdrs[idx], 50, 50, 70, 70)
-        for r in t2_hdrs[idx].paragraphs[0].runs:
-            r.font.bold = True
-            r.font.color.rgb = RGBColor(255, 255, 255)
-            r.font.size = Pt(8.5)
-            
-    bm_csv = os.path.join(results_dir, "quantum_benchmark_10systems.csv")
-    if os.path.exists(bm_csv):
-        df_bm = pd.read_csv(bm_csv)
-        for _, r_row in df_bm.iterrows():
-            row_cells = table2.add_row().cells
-            row_cells[0].text = str(r_row['Compound'])
-            row_cells[1].text = str(r_row['Structural_Class'])
-            row_cells[2].text = f"{r_row['MW_g_mol']:.1f}"
-            row_cells[3].text = f"{r_row['E_ads_GFN2_xTB_kcal_mol']:.2f}"
-            row_cells[4].text = f"{r_row['E_ads_GFN1_Ref_kcal_mol']:.2f}"
-            row_cells[5].text = f"{r_row['Abs_Error_kcal_mol']:.2f}"
-            for c_idx in range(6):
-                set_cell_margins(row_cells[c_idx], 35, 35, 50, 50)
-                for r in row_cells[c_idx].paragraphs[0].runs:
-                    r.font.size = Pt(8.0)
-                    
-        mae_row = table2.add_row().cells
-        mae_row[0].text = "Summary Statistics"
-        mae_row[1].text = "n=10 systems"
-        mae_row[2].text = "-"
-        mae_row[3].text = "MSE = -12.82"
-        mae_row[4].text = "RMSE = 17.34"
-        mae_row[5].text = "MAE = 12.82"
-        for c_idx in range(6):
-            set_cell_background(mae_row[c_idx], "E0F2F1")
-            set_cell_margins(mae_row[c_idx], 35, 35, 50, 50)
-            for r in mae_row[c_idx].paragraphs[0].runs:
-                r.font.size = Pt(8.0)
-                r.font.bold = True
-
-    # Figure 3: Multilevel Quantum Benchmark (Placed in strict chronological sequence)
-    add_image_if_exists(doc, os.path.join(fig_dir, "fig6_multilevel_quantum_benchmark.jpg"),
-                        "Figure 3: Dedicated Multilevel Quantum Chemistry Benchmark: (a) Parity correlation between standardized GFN2-xTB interaction energies and dispersion-corrected DFT single-point reference calculations (ORCA 6.1.1, B3LYP-D3BJ/def2-SVP, TightSCF) across eight representative oncology therapeutics, demonstrating strong rank preservation (Spearman rank correlation rho = 0.96, p = 0.0001; MAE = 2.14 kcal/mol, RMSE = 2.68 kcal/mol); (b) Residual signed error distribution across diverse chemical scaffolds (antimetabolites, TKIs, sulfonamides, and folate antagonists); (c) Spearman rank ordering preservation comparison between DFT reference and GFN2-xTB; (d) Semiempirical Hamiltonian sensitivity comparison between GFN2-xTB and GFN1-xTB (MSE = -12.82 kcal/mol, MAE = 12.82 kcal/mol, RMSE = 17.34 kcal/mol; R2 = 0.254), illustrating multi-term Hamiltonian refinements.")
-                
     add_heading_styled(doc, "3.4 Leak-Free Nested Surrogate QSPR Modeling & OECD Validation", level=2)
     doc.add_paragraph(
         "To adhere strictly to OECD guidelines and eliminate information leakage on n=33 compounds, we pruned the descriptor space to p=4 prespecified physicochemical features "
@@ -442,16 +372,16 @@ def generate_kras_full_manuscript():
         "The regularized Ridge surrogate model trained to predict genuine standardized electronic interaction energy (Delta_E_int,std) was evaluated under a fully leak-free nested 5x5 cross-validation protocol "
         "(StandardScaler fit inside the modelling pipeline on outer-training folds only; Ridge alpha selected by inner cross-validation, final alpha = 3.0), "
         "achieving solid pooled predictive fidelity: nested Q²_CV = +0.584 (individual outer-fold Q² values: Fold 1 = 0.784, Fold 2 = 0.358, Fold 3 = 0.052, Fold 4 = 0.671, Fold 5 = 0.707; mean-of-folds Q² = 0.515 +/- 0.305), "
-        "RMSE = 5.11 kcal/mol (95% bootstrap CI: [4.19, 5.99]), and MAE = 4.33 kcal/mol (95% bootstrap CI: [3.42, 5.28]) (Figure 4a). "
-        "Y-scrambling permutation testing across 1,000 iterations (identical nested procedure on permuted labels) yielded a mean scrambled Q² of -0.12 (Figure 4c), with an empirical permutation p-value of 0.001, "
+        "RMSE = 5.11 kcal/mol (95% bootstrap CI: [4.19, 5.99]), and MAE = 4.33 kcal/mol (95% bootstrap CI: [3.42, 5.28]) (Figure 3a). "
+        "Y-scrambling permutation testing across 1,000 iterations (identical nested procedure on permuted labels) yielded a mean scrambled Q² of -0.12 (Figure 3c), with an empirical permutation p-value of 0.001, "
         "confirming that the observed predictive performance is unlikely to arise from chance correlation. "
-        "In the Williams plot (Figure 4b), 32 of 33 training compounds (97.0%) fell within the +/-3sigma standardized residual boundary, with a warning leverage limit h* = 0.455. "
+        "In the Williams plot (Figure 3b), 32 of 33 training compounds (97.0%) fell within the +/-3sigma standardized residual boundary, with a warning leverage limit h* = 0.455. "
         "Cobimetinib (hi = 0.200) and Paclitaxel (hi = 0.360) fell safely inside the applicability domain, supporting coverage of the training chemical space across diverse chemotypes."
     )
     
-    # Figure 4: QSPR 4-Panel Statistical Validation
+    # Figure 3: QSPR 4-Panel Statistical Validation
     add_image_if_exists(doc, os.path.join(fig_dir, "fig8_qspr_validation_final.jpg"),
-                        "Figure 4: Statistical Validation and Applicability Domain of the Regularized Ridge QSPR Surrogate Model (leak-free nested 5x5 CV): (a) Out-of-fold (OOF) observed vs predicted Delta_E_int,std parity plot (Q²_CV = +0.584, RMSE = 5.11 kcal/mol, MAE = 4.33 kcal/mol); (b) Williams plot defining the OECD Principle 3 applicability domain (p=4, n=33, warning leverage limit h* = 0.455, standardized residual boundaries +/-3sigma; 32/33 training compounds fully contained); (c) 1,000 Y-scrambling permutation distribution (mean Q²_scrambled = -0.12, empirical permutation p = 0.001); (d) Prospective GFN2-xTB quantum confirmation on prioritized screening leads (MAE = 3.82 kcal/mol, RMSE = 5.16 kcal/mol across five prioritized leads).")
+                        "Figure 3: Statistical Validation and Applicability Domain of the Regularized Ridge QSPR Surrogate Model (leak-free nested 5x5 CV): (a) Out-of-fold (OOF) observed vs predicted Delta_E_int,std parity plot (Q²_CV = +0.584, RMSE = 5.11 kcal/mol, MAE = 4.33 kcal/mol); (b) Williams plot defining the OECD Principle 3 applicability domain (p=4, n=33, warning leverage limit h* = 0.455, standardized residual boundaries +/-3sigma; 32/33 training compounds fully contained); (c) 1,000 Y-scrambling permutation distribution (mean Q²_scrambled = -0.12, empirical permutation p = 0.001); (d) Prospective GFN2-xTB quantum confirmation on prioritized screening leads (MAE = 3.82 kcal/mol, RMSE = 5.16 kcal/mol across five prioritized leads).")
     
     add_heading_styled(doc, "3.5 Confirmatory Virtual Screening & Prospective Quantum Confirmation of Prioritized Leads", level=2)
     doc.add_paragraph(
@@ -463,7 +393,7 @@ def generate_kras_full_manuscript():
         "Only candidates within the AD were retained for lead prioritization."
     )
     doc.add_paragraph(
-        "The top five prioritized clinical-stage leads were subjected to prospective GFN2-xTB quantum confirmation and confirmatory AutoDock Vina docking against PDB 7RPZ (Table 3, Figure 5). "
+        "The top five prioritized clinical-stage leads were subjected to prospective GFN2-xTB quantum confirmation and confirmatory AutoDock Vina docking against PDB 7RPZ (Table 2, Figure 4). "
         "Individual hat-matrix leverage values confirmed that all top leads fell well within the applicability domain (Avapritinib hi = 0.400, Futibatinib hi = 0.307, Belumosudil hi = 0.355, "
         "Capivasertib hi = 0.411, Pimicotinib hi = 0.327; all < h* = 0.455). "
         "Prospective quantum recalculations showed informative predictive performance (MAE = 3.82 kcal/mol, RMSE = 5.16 kcal/mol), with close agreement for three of five prioritized leads and larger deviations for Avapritinib and Capivasertib "
@@ -474,10 +404,10 @@ def generate_kras_full_manuscript():
         "size-normalized Ligand Efficiency (LE = 0.255 to 0.292 kcal/mol/atom)."
     )
     
-    # Table 3: Prospective Quantum Confirmation Table
+    # Table 2: Prospective Quantum Confirmation Table
     doc.add_paragraph()
     p_t3 = doc.add_paragraph()
-    r_t3 = p_t3.add_run("Table 3: Prospective Quantum Mechanical (GFN2-xTB) Confirmation, QSPR Prediction Error, Hat Leverage, and Target Engagement for Prioritized Screening Leads.")
+    r_t3 = p_t3.add_run("Table 2: Prospective Quantum Mechanical (GFN2-xTB) Confirmation, QSPR Prediction Error, Hat Leverage, and Target Engagement for Prioritized Screening Leads.")
     r_t3.font.bold = True
     r_t3.font.size = Pt(10)
     
@@ -511,13 +441,13 @@ def generate_kras_full_manuscript():
                 for r in row_cells[c_idx].paragraphs[0].runs:
                     r.font.size = Pt(8.0)
                     
-    # Virtual Screening Figure 5
+    # Virtual Screening Figure 4
     add_image_if_exists(doc, os.path.join(fig_dir, "fig9_kras_virtual_screening_distribution.png"),
-                        "Figure 5: Multi-Objective Evaluation of Prioritized Leads and Benchmark Controls from the 350-Compound Virtual Screen: (a) AutoDock Vina binding scores on PDB 7RPZ comparing prioritized leads against benchmark controls; (b) Size-normalized ligand-efficiency comparison across prioritized leads and controls.")
+                        "Figure 4: Multi-Objective Evaluation of Prioritized Leads and Benchmark Controls from the 350-Compound Virtual Screen: (a) AutoDock Vina binding scores on PDB 7RPZ comparing prioritized leads against benchmark controls; (b) Size-normalized ligand-efficiency comparison across prioritized leads and controls.")
     
-    # Figure 6: Multi-Scale Structural Architecture (EXACT 4 PANELS)
+    # Figure 5: Multi-Scale Structural Architecture (EXACT 4 PANELS)
     add_image_if_exists(doc, os.path.join(fig_dir, "fig10_atomistic_multiscale_final.jpg"),
-                        "Figure 6: Multi-Scale Atomistic Structural Architecture and 2D g-C3N4 Carrier Surface: (a) KRAS-G12D Switch II allosteric pocket with docked MRTX1133 (-9.16 kcal/mol); (b) Direct residue coordination network between MRTX1133 and surrounding residues with measured contact distances (ionic salt-bridge with mutant Asp12, H-bond with Arg68, and aromatic stacking with Tyr96); (c) Pristine 2D g-C3N4 finite planar cluster model (C21N21H6, 48 atoms) with MRTX1133 in standardized parallel stacking at z = 3.35 Angstroms (Delta_E_int,std = -35.03 kcal/mol); (d) B/P co-doped g-C3N4 planar cluster model (C20B1N20P1H6) displaying localized electrostatic charge polarization (Delta_Q = +0.082 e for MRTX1133) and heteroatom dopant sites.")
+                        "Figure 5: Multi-Scale Atomistic Structural Architecture and 2D g-C3N4 Carrier Surface: (a) KRAS-G12D Switch II allosteric pocket with docked MRTX1133 (-9.16 kcal/mol); (b) Direct residue coordination network between MRTX1133 and surrounding residues with measured contact distances (ionic salt-bridge with mutant Asp12, H-bond with Arg68, and aromatic stacking with Tyr96); (c) Pristine 2D g-C3N4 finite planar cluster model (C21N21H6, 48 atoms) with MRTX1133 in standardized parallel stacking at z = 3.35 Angstroms (Delta_E_int,std = -35.03 kcal/mol); (d) B/P co-doped g-C3N4 planar cluster model (C20B1N20P1H6) displaying localized electrostatic charge polarization (Delta_Q = +0.19 e for MRTX1133) and heteroatom dopant sites.")
     
     add_heading_styled(doc, "3.6 Structural Biology of KRAS-G12D and Drug Resistance Context", level=2)
     doc.add_paragraph(
@@ -526,7 +456,7 @@ def generate_kras_full_manuscript():
         "Switch II adopts a partially open topology that exposes a shallow hydrophobic groove flanked by Tyr96 (aromatic cap), His95 (histidine lining), and Glu62/Arg68 "
         "(ionic rim). The G12D mutation introduces a negatively charged carboxylate at position 12 that is not present in wild-type KRAS, creating a unique electrostatic "
         "anchor for non-covalent inhibitors bearing basic amine moieties—this is the fundamental pharmacophore exploited by MRTX1133 [1, 2]. "
-        "Critically, acquired resistance mutations at KRAS (e.g., Y96D, H95Q, R68S) directly disrupt the very residues that constitute the Switch II pocket architecture (Figure 6b), "
+        "Critically, acquired resistance mutations at KRAS (e.g., Y96D, H95Q, R68S) directly disrupt the very residues that constitute the Switch II pocket architecture (Figure 5b), "
         "underscoring the importance of understanding multi-residue coordination rather than single-point docking scores. Our structural interaction network "
         "identifies the complete interaction fingerprint, providing a structural basis for anticipating resistance-driven binding loss."
     )
@@ -538,7 +468,7 @@ def generate_kras_full_manuscript():
         "facilitating charge-transfer interactions with electron-rich aromatic drug scaffolds [16, 17]. "
         "Conversely, phosphorus substitution at nitrogen sites (q_P = -0.1679 e) introduces localized electron-donor regions that generate an interfacial electrostatic dipole gradient across the 2D surface. "
         "The synergistic combination of B (delta+) and P (delta-) dopants creates localized polarization "
-        "fields that modulate interfacial charge transfer (Delta_Q up to +0.655 e across the cohort; for MRTX1133 specifically: Delta_Q = +0.082 e). "
+        "fields that modulate interfacial charge transfer (Delta_Q up to +0.65 e across the cohort; for MRTX1133 specifically: Delta_Q = +0.19 e). "
         "Importantly, the overall interaction energetics are only modestly affected by B/P co-doping: for MRTX1133, Delta_E_int,std changes from -35.03 kcal/mol (pristine) to -35.04 kcal/mol (B/P co-doped, C20B1N20P1H6), "
         "indicating that B/P co-doping primarily redistributes interfacial polarization rather than producing large energetic enhancements. "
         "From an engineering perspective, the primary role of B/P co-doping appears to be modulating local charge density and surface wettability, "
@@ -573,9 +503,8 @@ def generate_kras_full_manuscript():
         "(2) Switch II allosteric pocket docking exhibits descriptive differences consistent with state- and mechanism-dependent structural pharmacology (omnibus Kruskal-Wallis H = 5.763, p = 0.1237), "
         "where tri-complex active-state inhibitors (RMC-6236) and covalent G12C compounds require distinct multi-protein contexts; "
         "(3) GFN2-xTB calculations across 38 molecules and 4 nanocarriers confirm favorable non-covalent interaction (Delta_E_int,std = -4.98 to -39.89 kcal/mol at standardized z = 3.35 Å), "
-        "with B/P co-doping (C20B1N20P1H6) primarily modifying interfacial charge polarization (Delta_Q = +0.082 e for MRTX1133) rather than substantially altering interaction energetics; "
-        "(4) Higher-level dispersion-corrected DFT single-point reference calculations (ORCA 6.1.1, B3LYP-D3BJ/def2-SVP) across eight representative oncology therapeutics confirm strong rank preservation (Spearman rho = 0.96, p = 0.0001; MAE = 2.14 kcal/mol; BSSE/def2-TZVP convergence verified); "
-        "(5) A leak-free nested 5x5 surrogate QSPR model structured under OECD Principles 1-5 (Table S3) and verified by 1,000 Y-scrambling permutations (nested Q²_CV = +0.584 vs Q²_scrambled = -0.12, p = 0.001) "
+        "with B/P co-doping (C20B1N20P1H6) primarily modifying interfacial charge polarization (Delta_Q = +0.19 e for MRTX1133) rather than substantially altering interaction energetics; "
+        "(4) A leak-free nested 5x5 surrogate QSPR model structured under OECD Principles 1-5 (Table S3) and verified by 1,000 Y-scrambling permutations (nested Q²_CV = +0.584 vs Q²_scrambled = -0.12, p = 0.001) "
         "successfully prioritizes clinical-stage DrugBank oncology leads; prospective quantum confirmation showed informative predictive performance (MAE = 3.82 kcal/mol) "
         "and favorable predicted Switch II pocket compatibility (LE = 0.255 to 0.292 kcal/mol/atom). "
         "This work provides an auditable theoretical foundation for exploring molecular diversity in mutant KRAS drug discovery."

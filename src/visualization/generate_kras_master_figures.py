@@ -34,7 +34,7 @@ def make_graphical_abstract(base_dir, fig_dir):
     
     panels = [
         ("A. 2D Polymeric g-C3N4\n(Pristine & B/P-Doped Nanolayers)\n- Metal-free high biocompatibility\n- Deep pancreatic stroma penetration\n- pH-responsive tumor drug release", 0.04, 0.12, 0.28, 0.70, "#E0F2F1", "#00695C"),
-        ("B. Physical Docking (AutoDock Vina)\nHuman KRAS-G12D (PDB: 7RPZ, 1.45 Å)\n- 33 PDAC & KRAS Drugs Screened\n- Real Vina scores -2.9 to -9.8 kcal/mol\n- Switch II: Tyr96, Asp12, Glu62, Arg68", 0.36, 0.12, 0.28, 0.70, "#E8F5E9", "#2E7D32"),
+        ("B. Physical Docking (AutoDock Vina)\nHuman KRAS-G12D (PDB: 7RPZ, 1.30 Å)\n- 33 PDAC & KRAS Drugs Screened\n- Real Vina scores -2.9 to -9.8 kcal/mol\n- Switch II: Tyr96, Asp12, Glu62, Arg68", 0.36, 0.12, 0.28, 0.70, "#E8F5E9", "#2E7D32"),
         ("C. Explainable AI & OECD QSAR\nLeak-free nested 5x5 Ridge CV\n- Q2_CV = 0.55 (pristine), 0.51 (doped)\n- Top feature: HBA / Electrophilicity omega\n- OECD Principle 3 Williams domain", 0.68, 0.12, 0.28, 0.70, "#FBE9E7", "#D84315")
     ]
     
@@ -67,7 +67,7 @@ def make_fig1_workflow(base_dir, fig_dir):
     boxes = [
         ("1. 2D Graphitic Carbon Nitride\n(Pristine & B/P-Doped g-C3N4)", 0.05, 0.55, 0.25, 0.35, "#E0F2F1", "#00695C"),
         ("2. Pancreatic Ductal Stroma\nEnhanced EPR & pH-Cleavage\n(Deep Fibrotic Tumor Infiltration)", 0.38, 0.55, 0.25, 0.35, "#E8F5E9", "#2E7D32"),
-        ("3. Oncogenic Target Crystal\nHuman KRAS-G12D Allosteric\n(PDB ID: 7RPZ, 1.45 Å)", 0.70, 0.55, 0.25, 0.35, "#FBE9E7", "#D84315"),
+        ("3. Oncogenic Target Crystal\nHuman KRAS-G12D Allosteric\n(PDB ID: 7RPZ, 1.30 Å)", 0.70, 0.55, 0.25, 0.35, "#FBE9E7", "#D84315"),
         (f"4. Quantum CDFT & Tight-Binding\nGFN2-xTB Adsorption Energies & FMO\n(Delta_E_ads = {a_hi:.1f} to {a_lo:.1f} kcal/mol)", 0.05, 0.10, 0.25, 0.35, "#E1F5FE", "#0277BD"),
         (f"5. Real Physical Docking\nAutoDock Vina v1.2.7 (Switch II)\n({n_drugs} therapeutics; Vina {v_hi:.1f} to {v_lo:.1f} kcal/mol)", 0.38, 0.10, 0.25, 0.35, "#EDE7F6", "#4527A0"),
         ("6. Explainable AI & OECD QSAR\nLeak-free nested 5x5 Ridge CV + SHAP\n(Q2_CV = 0.55 / 0.51; Williams Domain)", 0.70, 0.10, 0.25, 0.35, "#FCE4EC", "#C2185B"),

@@ -66,7 +66,7 @@ def create_kras_cover_letter(sub_dir):
     doc.add_paragraph(
         "The study integrates GFN2-xTB quantum-chemical adsorption modeling of pristine and B/P-doped 2D graphitic carbon "
         "nitride (g-C3N4), physical AutoDock Vina docking against the human KRAS-G12D crystal structure (PDB ID: 7RPZ, "
-        "1.45 Å; native MRTX1133 pose reproduced at 1.419 Å heavy-atom RMSD), and a leak-free nested cross-validated "
+        "1.30 Å; native MRTX1133 pose reproduced at 1.419 Å heavy-atom RMSD), and a leak-free nested cross-validated "
         "RidgeCV surrogate model, for a curated set of 33 KRAS-G12D allosteric inhibitors and PDAC therapeutics. "
         "All quantum, docking and machine-learning results in the manuscript are computed from the deposited pipeline; "
         "no descriptor or energy value is estimated from an empirical formula."
@@ -113,7 +113,7 @@ def create_kras_cover_letter_md(sub_dir):
         "g-C3N4, in line with the journal's scope in molecular design and structure–property relationships.")
     doc.add_paragraph("Real, pipeline-traceable results:").runs[0].font.bold = True
     for h in [
-        "Redocking on the human KRAS-G12D crystal structure (PDB ID: 7RPZ, 1.45 Å) reproduced the native "
+        "Redocking on the human KRAS-G12D crystal structure (PDB ID: 7RPZ, 1.30 Å) reproduced the native "
         "MRTX1133 pose at 1.419 Å heavy-atom RMSD (AutoDock Vina v1.2.7).",
         "GFN2-xTB single-point interaction energies for all 33 drugs on pristine and B/P-doped g-C3N4 clusters "
         "span Delta_E_ads = -5.0 to -39.9 kcal/mol; frontier-orbital and conceptual-DFT indices are taken "

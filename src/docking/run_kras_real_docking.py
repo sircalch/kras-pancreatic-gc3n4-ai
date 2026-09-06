@@ -1,7 +1,7 @@
 """
 run_kras_real_docking.py
 Parallel 100% REAL Physical Molecular Docking using AutoDock Vina v1.2.7 
-against the crystal structure of human oncogenic KRAS-G12D (PDB ID: 7RPZ, 1.45 Å).
+against the crystal structure of human oncogenic KRAS-G12D (PDB ID: 7RPZ, 1.30 Å).
 """
 
 import os

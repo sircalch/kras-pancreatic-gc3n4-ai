@@ -21,7 +21,7 @@ def generate_figure1_workflow(base_dir):
     boxes = [
         ("1. 2D Graphitic Carbon Nitride\n(Pristine & B/P-Doped g-C3N4)", 0.05, 0.55, 0.25, 0.35, "#E0F2F1", "#00695C"),
         ("2. Pancreatic Ductal Stroma\nPenetration & Conjugation\n(Enhanced EPR & pH-Release)", 0.38, 0.55, 0.25, 0.35, "#E8F5E9", "#2E7D32"),
-        ("3. Oncogenic Target Crystal\nHuman KRAS-G12D Allosteric\n(PDB ID: 7RPZ, 1.45 Å)", 0.70, 0.55, 0.25, 0.35, "#FBE9E7", "#D84315"),
+        ("3. Oncogenic Target Crystal\nHuman KRAS-G12D Allosteric\n(PDB ID: 7RPZ, 1.30 Å)", 0.70, 0.55, 0.25, 0.35, "#FBE9E7", "#D84315"),
         ("4. Quantum CDFT & Tight-Binding\nAdsorption Energies & FMO\n(ΔE_ads = -18.5 to -65.2 kcal/mol)", 0.05, 0.10, 0.25, 0.35, "#E1F5FE", "#0277BD"),
         ("5. 100% Real Physical Docking\nAutoDock Vina v1.2.7 (Switch II)\n(ΔG_bind = -4.1 to -9.8 kcal/mol)", 0.38, 0.10, 0.25, 0.35, "#EDE7F6", "#4527A0"),
         ("6. Explainable AI & OECD QSAR\nExtraTrees + XGBoost + SHAP\n(MAPE < 5.8%, Williams Domain)", 0.70, 0.10, 0.25, 0.35, "#FCE4EC", "#C2185B"),

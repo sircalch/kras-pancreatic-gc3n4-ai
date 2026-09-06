@@ -134,7 +134,7 @@ def generate_kras_word_manuscript():
         "oncogenic KRAS driver mutations, predominantly KRAS-G12D [8,64]. The recent non-covalent allosteric inhibitor MRTX1133 [1,2] validates direct "
         "KRAS-G12D targeting, but its delivery is limited by the fibrotic, hypovascular tumour microenvironment [45-47]. Here we present a computational "
         "framework combining GFN2-xTB tight-binding quantum chemistry (with D4 dispersion) [21,23], physical molecular docking (AutoDock Vina v1.2.7 [29,30] "
-        "against the human KRAS-G12D crystal structure, PDB ID: 7RPZ, 1.45 Å), and a leak-free cross-validated regularized-linear QSPR surrogate, for a "
+        "against the human KRAS-G12D crystal structure, PDB ID: 7RPZ, 1.30 Å), and a leak-free cross-validated regularized-linear QSPR surrogate, for a "
         "curated set of 33 direct KRAS-G12D inhibitors and PDAC therapeutics loaded on pristine and B/P-doped 2D graphitic carbon nitride (g-C3N4) [11-13]. "
         "Real GFN2-xTB interaction energies span Delta_E_ads = -5.0 to -39.9 kcal/mol across the pristine and B/P-doped supercells. Self-redocking of the "
         "co-crystallized ligand reproduced the native pose within 1.42 Å heavy-atom RMSD, and docking of the 33 compounds gave Vina scores of -2.9 to "
@@ -179,14 +179,14 @@ def generate_kras_word_manuscript():
     add_heading_styled(doc, "2. Computational and Experimental Section", level=1)
     doc.add_paragraph(
         "2.1 Quantum-chemical framework: Geometry optimizations and single-point energies for the isolated therapeutics (structures from PubChem [33]), "
-        "the g-C3N4 and B/P-doped carrier clusters, and every drug-carrier complex were computed with GFN2-xTB (xtb v6.7.1) [21], which is validated "
-        "against its GFN1 predecessor and dispersion-corrected DFT for non-covalent systems [22,24,25], including the D4 charge-dependent dispersion "
-        "correction [23]. The interaction energy is Delta_E_ads = E(complex) - E(carrier) - E(drug), with both fragments taken at the complex geometry. "
+        "the g-C3N4 and B/P-doped carrier clusters, and every drug-carrier complex were computed with GFN2-xTB (xtb v6.7.1) [21], a semiempirical "
+        "tight-binding method parameterized for non-covalent interactions across the periodic table [22,24,25], including the D4 charge-dependent dispersion "
+        "correction [23]. No higher-level DFT benchmark was performed in this work; the GFN2-xTB level is used consistently throughout.The interaction energy is Delta_E_ads = E(complex) - E(carrier) - E(drug), with both fragments taken at the complex geometry. "
         "Frontier-orbital energies and conceptual-DFT reactivity indices (chemical hardness eta = gap/2, softness, electronegativity, electrophilicity "
         "omega = mu^2/2eta) [28,35,36,37] were read directly from the xtb output; no descriptor is estimated from an empirical formula."
     )
     doc.add_paragraph(
-        "2.2 Molecular docking: Docking used AutoDock Vina v1.2.7 [29,30] on the human KRAS-G12D crystal structure (PDB ID: 7RPZ, 1.45 Å [31]), centred "
+        "2.2 Molecular docking: Docking used AutoDock Vina v1.2.7 [29,30] on the human KRAS-G12D crystal structure (PDB ID: 7RPZ, 1.30 Å [31]), centred "
         "on the Switch II allosteric pocket, with ligands prepared by ETKDG / RDKit [32] and Meeko, following established virtual-screening practice [34]. "
         "Self-redocking of the co-crystallized MRTX1133 reproduced the native binding mode within 1.42 Å heavy-atom RMSD, validating the grid and pocket "
         "definition."
