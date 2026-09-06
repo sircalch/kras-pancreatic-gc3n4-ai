@@ -349,81 +349,76 @@ def _src(base_dir):
     return os.path.join(base_dir, "data", "figures_source_package")
 
 
-def _mol_ax(ax, specs, title=None, subtitle=None, letter=None, **rkw):
-    """Render specs with _mol3d and place the image on a clean matplotlib axis."""
+try:
+    import _pymol
+except Exception:
+    _pymol = None
+
+
+def _pm_cache(fig_dir):
+    d = os.path.join(fig_dir, "_pm_cache")
+    os.makedirs(d, exist_ok=True)
+    return d
+
+
+def _pm_panel(ax, png, title=None, subtitle=None):
+    """Place a PyMOL-rendered PNG on a clean matplotlib axis with house typography."""
+    import matplotlib.image as mpimg
     ax.set_xticks([]); ax.set_yticks([])
     for s in ax.spines.values():
         s.set_visible(False)
-    if _mol3d is None:
-        ax.text(0.5, 0.5, "3D renderer unavailable", ha="center", va="center",
-                transform=ax.transAxes)
-        return
-    img = _mol3d.render_array(specs, **rkw)
-    ax.imshow(img)
+    if png and os.path.exists(png):
+        ax.imshow(mpimg.imread(png))
+    else:
+        ax.text(0.5, 0.5, "render unavailable", ha="center", va="center", transform=ax.transAxes)
     if title:
-        ax.set_title(title, fontsize=9.5, fontweight="bold", pad=6)
+        ax.set_title(title, fontsize=9.5, fontweight="bold", pad=5)
     if subtitle:
-        ax.text(0.5, -0.04, subtitle, ha="center", va="top", fontsize=8.0,
+        ax.text(0.5, -0.03, subtitle, ha="center", va="top", fontsize=8.0,
                 color=_pubstyle.MUTED, transform=ax.transAxes)
-    if letter:
-        _pubstyle.panel_label(ax, letter, dy=1.0)
 
 
 def make_fig9_3d_spatial(base_dir, fig_dir):
-    """Figure 9 - real 3D renders of the representative binding / adsorption modes."""
+    """Figure 9 - ray-traced PyMOL renders of the representative modes."""
     S = _src(base_dir)
+    C = _pm_cache(fig_dir)
     vina = pd.read_csv(os.path.join(base_dir, "results", "docking",
                        "real_vina_docking_summary.csv")).set_index("name")["Real_Vina_Score_kcal_mol"]
     ads = pd.read_csv(os.path.join(base_dir, "results", "quantum", "adsorption_qm_results.csv"))
     ap = ads[(ads.drug_name == "MRTX1133") & (ads.carrier_name == "pristine")].iloc[0]
     adp = ads[(ads.drug_name == "MRTX1133") & (ads.carrier_name == "BP_doped")].iloc[0]
 
-    fig, axes = plt.subplots(1, 3, figsize=(11.4, 4.2))
-    fig.subplots_adjust(wspace=0.06, top=0.86, bottom=0.14, left=0.02, right=0.98)
-
-    # (a) MRTX1133 in the KRAS-G12D Switch II pocket (surface + ligand)
-    try:
-        rs, rx = _mol3d.load(os.path.join(S, "00_Graphical_Abstract",
-                             "Scene1_KRAS_G12D_receptor_7RPZ.pdb"), atom=True, hetatm=False)
-        ls, lx = _mol3d.load(os.path.join(S, "00_Graphical_Abstract",
-                             "Scene1_MRTX1133_Switch_II_ligand.pdb"), atom=False, hetatm=True)
-        c = lx.mean(0)
-        keep = np.linalg.norm(rx - c, axis=1) < 10.0
-        rs2 = [rs[i] for i in range(len(rs)) if keep[i]]
-        _mol_ax(axes[0],
-                [{"sym": rs2, "xyz": rx[keep], "style": "none", "surface": True,
-                  "surf_color": "#c6cfdd", "surf_opacity": 0.34},
-                 {"sym": ls, "xyz": lx, "carbon": "#12a37a", "ball": 0.34, "stick": 0.14}],
-                title="(a)  MRTX1133 in the KRAS-G12D Switch II pocket",
-                subtitle=f"PDB 7RPZ (1.30 A) - real Vina {vina['MRTX1133']:.2f} kcal/mol",
-                view="3q", zoom=1.7, size=(1500, 1300))
-    except Exception as exc:
-        axes[0].text(0.5, 0.5, f"[pocket render failed: {exc}]", transform=axes[0].transAxes, ha="center")
-        axes[0].axis("off")
-
-    # (b) pristine g-C3N4 complex, (c) B/P-doped complex - edge-on stacking
-    for ax, xyzf, lab, e, q in [
-        (axes[1], "MRTX1133_pristine_complex_optimized.xyz",
-         "(b)  MRTX1133 on pristine g-C$_3$N$_4$",
-         ap.Delta_E_ads_kcal_mol, ap.Interfacial_Charge_Transfer_e),
-        (axes[2], "MRTX1133_BP_complex_optimized.xyz",
-         "(c)  MRTX1133 on B/P co-doped g-C$_3$N$_4$",
-         adp.Delta_E_ads_kcal_mol, adp.Interfacial_Charge_Transfer_e)]:
+    p_a = os.path.join(C, "fig9_a_pocket.png")
+    p_b = os.path.join(C, "fig9_b_pristine.png")
+    p_c = os.path.join(C, "fig9_c_doped.png")
+    if _pymol and _pymol.AVAILABLE:
         try:
-            s, x = _mol3d.load(os.path.join(S, "03_Figure10_Atomistic_Structures", xyzf))
-            _mol_ax(ax, [{"sym": s, "xyz": x, "carbon": "#5b6470"}],
-                    title=lab,
-                    subtitle=f"real GFN2-xTB $\\Delta E_{{ads}}$ = {e:.2f} kcal/mol · $\\Delta Q$ = +{q:.2f} e",
-                    view="edge", zoom=1.35, size=(1500, 1150))
+            _pymol.pocket_figure(
+                os.path.join(S, "00_Graphical_Abstract", "Scene1_KRAS_G12D_receptor_7RPZ.pdb"),
+                os.path.join(S, "00_Graphical_Abstract", "Scene1_MRTX1133_Switch_II_ligand.pdb"),
+                p_a, key_res=[12, 62, 68, 96], size=(1500, 1300))
+            _pymol.complex_figure(
+                os.path.join(S, "03_Figure10_Atomistic_Structures", "MRTX1133_pristine_complex_optimized.xyz"),
+                p_b, size=(1500, 1150), carbon="grey55", turn=(0, -20, 0))
+            _pymol.complex_figure(
+                os.path.join(S, "03_Figure10_Atomistic_Structures", "MRTX1133_BP_complex_optimized.xyz"),
+                p_c, size=(1500, 1150), carbon="grey55", turn=(0, -20, 0))
         except Exception as exc:
-            ax.text(0.5, 0.5, f"[render failed: {exc}]", transform=ax.transAxes, ha="center")
-            ax.axis("off")
+            print(f"[fig9 PyMOL] {exc}")
 
+    fig, axes = plt.subplots(1, 3, figsize=(11.4, 4.3))
+    fig.subplots_adjust(wspace=0.05, top=0.86, bottom=0.14, left=0.02, right=0.98)
+    _pm_panel(axes[0], p_a, "(a)  MRTX1133 in the KRAS-G12D Switch II pocket",
+              f"PDB 7RPZ (1.30 A) - real Vina {vina['MRTX1133']:.2f} kcal/mol")
+    _pm_panel(axes[1], p_b, "(b)  MRTX1133 on pristine g-C$_3$N$_4$",
+              f"real GFN2-xTB $\\Delta E_{{ads}}$ = {ap.Delta_E_ads_kcal_mol:.2f} kcal/mol · $\\Delta Q$ = +{ap.Interfacial_Charge_Transfer_e:.2f} e")
+    _pm_panel(axes[2], p_c, "(c)  MRTX1133 on B/P co-doped g-C$_3$N$_4$",
+              f"real GFN2-xTB $\\Delta E_{{ads}}$ = {adp.Delta_E_ads_kcal_mol:.2f} kcal/mol · $\\Delta Q$ = +{adp.Interfacial_Charge_Transfer_e:.2f} e")
     fig.suptitle("Figure 9. Representative binding and adsorption modes for KRAS-G12D therapeutics on 2D g-C$_3$N$_4$",
                  fontsize=10.5, fontweight="bold", y=0.99)
     out_p = os.path.join(fig_dir, "fig9_kras_3d_spatial_binding_modes.png")
     _pubstyle.save(fig, out_p, also_pdf=False)
-    print(f"Generated Figure 9 (real 3D): {out_p}")
+    print(f"Generated Figure 9 (PyMOL ray-traced): {out_p}")
 
 def _parse_vina_log_modes(log_path):
     """Read the real AutoDock Vina mode table (mode, affinity) from a docking log."""
@@ -458,32 +453,24 @@ def make_fig_redocking_final(base_dir, fig_dir):
                             "01_Figure3_Redocking", "MRTX1133_redocking_vina.log")
     modes = _parse_vina_log_modes(log_path)
     S = _src(base_dir)
+    C = _pm_cache(fig_dir)
+    p_a = os.path.join(C, "redock_super.png")
+    if _pymol and _pymol.AVAILABLE:
+        try:
+            _pymol.superpose_figure(
+                os.path.join(S, "01_Figure3_Redocking", "7RPZ_KRAS_G12D_receptor_apo.pdb"),
+                os.path.join(S, "01_Figure3_Redocking", "MRTX1133_crystal_pose_6IC.pdb"),
+                os.path.join(S, "01_Figure3_Redocking", "MRTX1133_redocked_best_pose.pdbqt"),
+                p_a, size=(1500, 1250))
+        except Exception as exc:
+            print(f"[redock PyMOL] {exc}")
+
     fig, axes = plt.subplots(1, 2, figsize=(10.6, 4.3),
                              gridspec_kw={"width_ratios": [1.15, 1.0]})
-    fig.subplots_adjust(wspace=0.24, top=0.86, bottom=0.16, left=0.03, right=0.97)
-
-    # (a) crystallographic vs redocked pose superposition inside the pocket
-    try:
-        cs, cx = _mol3d.load(os.path.join(S, "01_Figure3_Redocking",
-                             "MRTX1133_crystal_pose_6IC.pdb"), atom=False, hetatm=True)
-        ds, dx = _mol3d.load(os.path.join(S, "01_Figure3_Redocking",
-                             "MRTX1133_redocked_best_pose.pdbqt"), model=1)
-        rs, rx = _mol3d.load(os.path.join(S, "01_Figure3_Redocking",
-                             "7RPZ_KRAS_G12D_receptor_apo.pdb"), atom=True, hetatm=False)
-        cen = cx.mean(0)
-        keep = np.linalg.norm(rx - cen, axis=1) < 12.0
-        rs2 = [rs[i] for i in range(len(rs)) if keep[i]]
-        _mol_ax(axes[0],
-                [{"sym": rs2, "xyz": rx[keep], "style": "none", "surface": True,
-                  "surf_color": "#c9d1de", "surf_opacity": 0.34},
-                 {"sym": cs, "xyz": cx, "carbon": "#1f9e5a", "ball": 0.30, "stick": 0.13},
-                 {"sym": ds, "xyz": dx, "carbon": "#e07a2c", "ball": 0.30, "stick": 0.13}],
-                title="(a)  Crystallographic (green) vs top redocked (orange) pose",
-                subtitle="PDB 7RPZ (1.30 A) · heavy-atom RMSD = 1.419 A (criterion ≤ 2.0 A)",
-                view="3q", zoom=1.55, size=(1500, 1300))
-    except Exception as exc:
-        axes[0].text(0.5, 0.5, f"[pose render failed: {exc}]", transform=axes[0].transAxes, ha="center")
-        axes[0].axis("off")
+    fig.subplots_adjust(wspace=0.22, top=0.86, bottom=0.16, left=0.03, right=0.97)
+    _pm_panel(axes[0], p_a,
+              "(a)  Crystallographic (green) vs top redocked (orange) pose",
+              "PDB 7RPZ (1.30 A) · heavy-atom RMSD = 1.419 A (criterion $\\leq$ 2.0 A)")
 
     ax1 = axes[1]
     if modes:
@@ -538,31 +525,29 @@ def make_fig10_multiscale_final(base_dir, fig_dir):
                 qP = c
 
     S = _src(base_dir)
+    C = _pm_cache(fig_dir)
+    D = os.path.join(S, "03_Figure10_Atomistic_Structures")
+    files = [("gC3N4_pristine_optimized.xyz", "fig10_a.png", (0, 0, 0)),
+             ("gC3N4_BP_doped_optimized.xyz", "fig10_b.png", (0, 0, 0)),
+             ("MRTX1133_BP_complex_optimized.xyz", "fig10_c.png", (0, -25, 0))]
+    pngs = [os.path.join(C, f) for _, f, _ in files]
+    if _pymol and _pymol.AVAILABLE:
+        for (xyzf, _, turn), png in zip(files, pngs):
+            try:
+                _pymol.complex_figure(os.path.join(D, xyzf), png, size=(1400, 1150),
+                                      carbon="grey55", turn=turn, tilt=22)
+            except Exception as exc:
+                print(f"[fig10 PyMOL {xyzf}] {exc}")
+
     fig, axes = plt.subplots(1, 3, figsize=(11.4, 4.0))
     fig.subplots_adjust(wspace=0.05, top=0.85, bottom=0.15, left=0.02, right=0.98)
-
-    panels = [
-        (axes[0], "gC3N4_pristine_optimized.xyz",
-         "(a)  Pristine g-C$_3$N$_4$ cluster (C$_{21}$N$_{21}$H$_6$)", "face",
-         f"real GFN2-xTB $\\Delta E_{{ads}}$ = {ap.Delta_E_ads_kcal_mol:.2f} kcal/mol · $\\Delta Q$ = +{ap.Interfacial_Charge_Transfer_e:.2f} e"),
-        (axes[1], "gC3N4_BP_doped_optimized.xyz",
-         "(b)  B/P co-doped cluster (C$_{20}$B$_1$N$_{20}$P$_1$H$_6$)", "face",
-         (f"q(B) = {qB:+.2f} e · q(P) = {qP:+.2f} e · " if qB is not None else "")
-         + f"$\\Delta E_{{ads}}$ = {ad.Delta_E_ads_kcal_mol:.2f} · $\\Delta Q$ = +{ad.Interfacial_Charge_Transfer_e:.2f} e"),
-        (axes[2], "MRTX1133_BP_complex_optimized.xyz",
-         "(c)  MRTX1133 / B/P-doped complex", "edge",
-         "GFN2-xTB optimised drug-carrier geometry"),
-    ]
-    for ax, xyzf, title, view, sub in panels:
-        try:
-            s, x = _mol3d.load(os.path.join(S, "03_Figure10_Atomistic_Structures", xyzf))
-            _mol_ax(ax, [{"sym": s, "xyz": x, "carbon": "#5b6470"}],
-                    title=title, subtitle=sub, view=view, zoom=1.4,
-                    size=(1400, 1150))
-        except Exception as exc:
-            ax.text(0.5, 0.5, f"[render failed: {exc}]", transform=ax.transAxes, ha="center")
-            ax.axis("off")
-
+    _pm_panel(axes[0], pngs[0], "(a)  Pristine g-C$_3$N$_4$ cluster (C$_{21}$N$_{21}$H$_6$)",
+              f"real GFN2-xTB $\\Delta E_{{ads}}$ = {ap.Delta_E_ads_kcal_mol:.2f} kcal/mol · $\\Delta Q$ = +{ap.Interfacial_Charge_Transfer_e:.2f} e")
+    _pm_panel(axes[1], pngs[1], "(b)  B/P co-doped cluster (C$_{20}$B$_1$N$_{20}$P$_1$H$_6$)",
+              (f"q(B) = {qB:+.2f} e · q(P) = {qP:+.2f} e · " if qB is not None else "")
+              + f"$\\Delta E_{{ads}}$ = {ad.Delta_E_ads_kcal_mol:.2f} · $\\Delta Q$ = +{ad.Interfacial_Charge_Transfer_e:.2f} e")
+    _pm_panel(axes[2], pngs[2], "(c)  MRTX1133 / B/P-doped complex",
+              "GFN2-xTB optimised drug-carrier geometry")
     fig.suptitle("Figure 5. Multi-scale atomistic models and real GFN2-xTB interfacial energetics",
                  fontsize=10.5, fontweight="bold", y=0.99)
     out_p = os.path.join(fig_dir, "fig10_atomistic_multiscale_final.jpg")
