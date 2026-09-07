@@ -320,9 +320,16 @@ def generate_kras_word_manuscript():
         "plausible on physicochemical grounds but are not demonstrated here and are left as future work."
     )
     
-    add_heading_styled(doc, "Acknowledgements & Data Availability", level=1)
-    doc.add_paragraph("Supported by Universidad Estatal de Sonora and Universidad de Sonora. Full code and docking PDBQT files are available in the repository.")
-    
+    add_heading_styled(doc, "Data Availability", level=1)
+    doc.add_paragraph("All code, the curated dataset, the real GFN2-xTB and AutoDock Vina outputs, the leak-free cross-validation predictions and the "
+                      "figure/manuscript generators are in the public repository https://github.com/sircalch/kras-pancreatic-gc3n4-ai and the Zenodo "
+                      "deposit 10.5281/zenodo.22187819. run_entire_kras_study.py reproduces every value and figure.")
+
+    import _backmatter
+    _backmatter.append(doc, add_heading_styled,
+                       "KRAS_gC3N4_Supporting_Information_Table_S1.docx",
+                       "curated dataset (N = 33), formal charges, OECD checklist, multistart energetics and per-residue contact frequencies")
+
     add_heading_styled(doc, "References", level=1)
     import sys as _sys
     _sys.path.insert(0, os.path.join(base_dir, "src", "curation"))
