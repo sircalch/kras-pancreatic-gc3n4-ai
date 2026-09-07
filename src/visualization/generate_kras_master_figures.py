@@ -555,6 +555,30 @@ def make_fig10_multiscale_final(base_dir, fig_dir):
     print(f"Generated Full-Q1 multiscale figure (real 3D): {out_p}")
 
 
+def make_fig11_deltarho(base_dir, fig_dir):
+    """Figure 11 - charge-density difference for the MRTX1133 / B,P-doped
+    g-C3N4 hero complex (real GFN2-xTB densities). Delta-rho cube ships in
+    results/quantum/drho/; see that folder's README + build_deltarho.py."""
+    try:
+        import _drho_fig
+    except Exception as exc:
+        print(f"[fig11 drho] helper unavailable: {exc}")
+        return
+    drho_dir = os.path.join(base_dir, "results", "quantum", "drho")
+    ads = pd.read_csv(os.path.join(base_dir, "results", "quantum", "adsorption_qm_results.csv"))
+    ad = ads[(ads.drug_name == "MRTX1133") & (ads.carrier_name == "BP_doped")].iloc[0]
+    render = os.path.join(drho_dir, "kras_deltarho_render.png")
+    render = _drho_fig.render_isosurface(drho_dir, "kras", render, level=0.003,
+                                         turn=(-20, 30, 0))
+    out_p = os.path.join(fig_dir, "fig11_kras_charge_density_difference.png")
+    _drho_fig.compose(out_p, render, 11,
+                      "Interfacial charge redistribution on the B/P co-doped g-C$_3$N$_4$ carrier",
+                      "MRTX1133", "B/P-doped g-C$_3$N$_4$", 0.003,
+                      dEint_kcal=float(ad.Delta_E_ads_kcal_mol),
+                      dq_e=float(ad.Interfacial_Charge_Transfer_e))
+    print(f"Generated Figure 11 (charge-density difference): {out_p}")
+
+
 def generate_master_suite():
     base_dir, fig_dir = get_dirs()
     make_graphical_abstract(base_dir, fig_dir)
@@ -567,6 +591,7 @@ def generate_master_suite():
     make_fig9_3d_spatial(base_dir, fig_dir)
     make_fig_redocking_final(base_dir, fig_dir)
     make_fig10_multiscale_final(base_dir, fig_dir)
+    make_fig11_deltarho(base_dir, fig_dir)
     print("Master figure suite for Article 3 (KRAS) generated successfully at 300+ DPI!")
 
 if __name__ == "__main__":

@@ -294,6 +294,22 @@ def generate_kras_word_manuscript():
     add_image_if_exists(doc, os.path.join(fig_dir, "fig9_kras_3d_spatial_binding_modes.png"),
                         "Figure 9: Representative binding modes (schematic): (a) MRTX1133 in the KRAS-G12D Switch II pocket (PDB 7RPZ); (b) BI-2865 pose; (c) MRTX1133 on the pristine g-C3N4 surface with its real GFN2-xTB Delta_E_ads.")
 
+    add_heading_styled(doc, "3.5 Interfacial charge redistribution", level=2)
+    doc.add_paragraph(
+        "To visualise the electronic reorganisation that accompanies adsorption, the charge-density difference "
+        "Delta_rho = rho(complex) - rho(carrier) - rho(drug) was evaluated from the real GFN2-xTB densities of the MRTX1133 / "
+        "B,P-co-doped g-C3N4 complex, all three fragments taken at the bound geometry on a common grid (Figure 11). Electron "
+        "accumulation (yellow) and depletion (blue) lobes are localised at the drug-carrier contact and, most prominently, around "
+        "the phosphorus dopant, consistent with the doped surface acting as the charge-transfer hot-spot. The integrated interfacial "
+        "charge transfer is small (Delta_Q = +0.15 e) and the interaction energy (Delta_E_ads = -35.0 kcal/mol) is dominated by "
+        "dispersion, in agreement with the physisorption picture from the energetic analysis. The Delta_rho cube and the script "
+        "that regenerates it from the fragment geometries are provided in results/quantum/drho/."
+    )
+    add_image_if_exists(doc, os.path.join(fig_dir, "fig11_kras_charge_density_difference.png"),
+                        "Figure 11: Charge-density difference (real GFN2-xTB densities) for the MRTX1133 / B,P-co-doped g-C3N4 complex. "
+                        "Isovalue +/-0.003 e bohr^-3; yellow = electron accumulation, blue = electron depletion. "
+                        "Delta_E_ads = -35.0 kcal/mol, Delta_Q = +0.15 e.")
+
     add_heading_styled(doc, "4. Conclusions", level=1)
     doc.add_paragraph(
         "We report a quantum-informed, explainable QSPR analysis of pristine and B/P-doped 2D graphitic carbon nitride as a metal-free loading surface "
