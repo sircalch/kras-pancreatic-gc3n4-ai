@@ -176,34 +176,9 @@ def generate_kras_word_manuscript():
     add_image_if_exists(doc, os.path.join(fig_dir, "fig1_kras_workflow_methodology.png"),
                         "Figure 1: Multi-scale computational workflow: GFN2-xTB quantum-chemical adsorption on pristine and B/P-doped g-C3N4, real AutoDock Vina docking against KRAS-G12D (PDB 7RPZ), and a leak-free cross-validated explainable QSPR surrogate.")
 
-    add_heading_styled(doc, "2. Computational and Experimental Section", level=1)
-    doc.add_paragraph(
-        "2.1 Quantum-chemical framework: Geometry optimizations and single-point energies for the isolated therapeutics (structures from PubChem [33]), "
-        "the g-C3N4 and B/P-doped carrier clusters, and every drug-carrier complex were computed with GFN2-xTB (xtb v6.7.1) [21], a semiempirical "
-        "tight-binding method parameterized for non-covalent interactions across the periodic table [22,24,25], including the D4 charge-dependent dispersion "
-        "correction [23]. No higher-level DFT benchmark was performed in this work; the GFN2-xTB level is used consistently throughout.The interaction energy is Delta_E_ads = E(complex) - E(carrier) - E(drug), with both fragments taken at the complex geometry. "
-        "Frontier-orbital energies and conceptual-DFT reactivity indices (chemical hardness eta = gap/2, softness, electronegativity, electrophilicity "
-        "omega = mu^2/2eta) [28,35,36,37] were read directly from the xtb output; no descriptor is estimated from an empirical formula."
-    )
-    doc.add_paragraph(
-        "2.2 Molecular docking: Docking used AutoDock Vina v1.2.7 [29,30] on the human KRAS-G12D crystal structure (PDB ID: 7RPZ, 1.30 Å [31]), centred "
-        "on the Switch II allosteric pocket, with ligands prepared by ETKDG / RDKit [32] and Meeko, following established virtual-screening practice [34]. "
-        "Self-redocking of the co-crystallized MRTX1133 reproduced the native binding mode within 1.42 Å heavy-atom RMSD, validating the grid and pocket "
-        "definition."
-    )
-    doc.add_paragraph(
-        "2.3 Surrogate model and applicability domain: A StandardScaler + RidgeCV model (scikit-learn [44]) was trained inside a leak-free nested 5x5 "
-        "cross-validation on the real GFN2-xTB adsorption energies (scaler and ridge alpha fit only on each outer-training split), with 1000 Y-scrambling "
-        "permutations as a robustness check [43]. Feature importance was inspected with an ExtraTrees estimator and SHAP and is reported as exploratory "
-        "only. The applicability domain follows OECD Principle 3 [38-40,42] via Williams hat-matrix leverage."
-    )
-    
-    add_image_if_exists(doc, os.path.join(fig_dir, "fig2_kras_quantum_cdft_architecture.png"),
-                        "Figure 2: Real quantum conceptual-DFT electronic reactivity of the isolated KRAS/PDAC therapeutics cohort (real GFN2-xTB single points, n=38): (a) HOMO/LUMO frontier-orbital distribution; (b) chemical hardness vs. electrophilicity index. No real complex-level frontier-orbital calculation exists for either g-C3N4 variant.")
+    add_heading_styled(doc, "2. Results and Discussion", level=1)
 
-    add_heading_styled(doc, "3. Results and Discussion", level=1)
-
-    add_heading_styled(doc, "3.1 Electronic structure of the therapeutics", level=2)
+    add_heading_styled(doc, "2.1 Electronic structure of the therapeutics", level=2)
     doc.add_paragraph(
         "Real GFN2-xTB single points for the 38-compound isolated cohort give E_HOMO between -9.0 and -11.8 eV (mean -10.0 eV) and a mean chemical "
         "hardness of eta = 1.0 eV (Figure 2, Table 1). The direct KRAS-G12D inhibitors cluster at intermediate hardness; the anthracyclines and "
@@ -212,7 +187,12 @@ def generate_kras_word_manuscript():
         "is characterized by the adsorption energies below."
     )
 
-    add_heading_styled(doc, "3.2 Quantum adsorption on pristine and B/P-doped g-C3N4", level=2)
+    
+    add_image_if_exists(doc, os.path.join(fig_dir, "fig2_kras_quantum_cdft_architecture.png"),
+                        "Figure 2: Real quantum conceptual-DFT electronic reactivity of the isolated KRAS/PDAC therapeutics cohort (real GFN2-xTB single points, n=38): (a) HOMO/LUMO frontier-orbital distribution; (b) chemical hardness vs. electrophilicity index. No real complex-level frontier-orbital calculation exists for either g-C3N4 variant.")
+
+
+    add_heading_styled(doc, "2.2 Quantum adsorption on pristine and B/P-doped g-C3N4", level=2)
     doc.add_paragraph(
         "Real GFN2-xTB interaction energies for the 33 therapeutics range from -5.0 kcal/mol (5-fluorouracil) to about -40 kcal/mol (methotrexate; "
         "MRTX1133 -35.0 kcal/mol) on the pristine carrier, and are systematically 1-3 kcal/mol more favourable on the B/P-doped supercell (Figure 5, "
@@ -223,7 +203,7 @@ def generate_kras_word_manuscript():
     add_image_if_exists(doc, os.path.join(fig_dir, "fig3_kras_docking_vina_statistical_profiles.png"),
                         "Figure 3: Molecular docking statistical profiles on the human KRAS-G12D crystal (real AutoDock Vina v1.2.7, PDB 7RPZ; redocking RMSD 1.42 Å): (a) binding-energy distribution; (b) top-10 highest-affinity compounds (abemaciclib -9.75, cobimetinib -9.12; MRTX1133 -8.06, BI-2865 -8.46 kcal/mol).")
 
-    add_heading_styled(doc, "3.3 Docking against the KRAS-G12D Switch II pocket", level=2)
+    add_heading_styled(doc, "2.3 Docking against the KRAS-G12D Switch II pocket", level=2)
     doc.add_paragraph(
         "With the pose validated by redocking (1.42 Å RMSD), Vina scores for the 33 compounds span -2.9 to -9.8 kcal/mol (Figure 3). MRTX1133 (-8.06) "
         "and BI-2865 (-8.46 kcal/mol) engage the Switch II pocket as expected [1,55], while the highest raw scores belong to the larger downstream "
@@ -269,7 +249,7 @@ def generate_kras_word_manuscript():
                 for r in row_cells[c_idx].paragraphs[0].runs:
                     r.font.size = Pt(8.5)
                     
-    add_heading_styled(doc, "3.4 QSPR surrogate model and applicability domain", level=2)
+    add_heading_styled(doc, "2.4 QSPR surrogate model and applicability domain", level=2)
     doc.add_paragraph(
         "A StandardScaler + RidgeCV surrogate evaluated by leak-free nested 5x5 cross-validation on the real adsorption energies reaches Q2_CV = 0.55 "
         "(pristine) and 0.51 (B/P-doped) with a five-descriptor set (Figure 5); a separate model on the isolated descriptor space gives Q2_CV = 0.58. "
@@ -294,7 +274,7 @@ def generate_kras_word_manuscript():
     add_image_if_exists(doc, os.path.join(fig_dir, "fig9_kras_3d_spatial_binding_modes.png"),
                         "Figure 9: Representative binding modes (schematic): (a) MRTX1133 in the KRAS-G12D Switch II pocket (PDB 7RPZ); (b) BI-2865 pose; (c) MRTX1133 on the pristine g-C3N4 surface with its real GFN2-xTB Delta_E_ads.")
 
-    add_heading_styled(doc, "3.5 Interfacial charge redistribution", level=2)
+    add_heading_styled(doc, "2.5 Interfacial charge redistribution", level=2)
     doc.add_paragraph(
         "To visualise the electronic reorganisation that accompanies adsorption, the charge-density difference "
         "Delta_rho = rho(complex) - rho(carrier) - rho(drug) was evaluated from the real GFN2-xTB densities of the MRTX1133 / "
@@ -310,7 +290,7 @@ def generate_kras_word_manuscript():
                         "Isovalue +/-0.003 e bohr^-3; yellow = electron accumulation, blue = electron depletion. "
                         "Delta_E_ads = -35.0 kcal/mol, Delta_Q = +0.15 e.")
 
-    add_heading_styled(doc, "4. Conclusions", level=1)
+    add_heading_styled(doc, "3. Conclusions", level=1)
     doc.add_paragraph(
         "We report a quantum-informed, explainable QSPR analysis of pristine and B/P-doped 2D graphitic carbon nitride as a metal-free loading surface "
         "for KRAS-G12D inhibitors and PDAC therapeutics. Real GFN2-xTB interaction energies (Delta_E_ads = -5.0 to -39.9 kcal/mol) indicate "
@@ -320,6 +300,29 @@ def generate_kras_word_manuscript():
         "plausible on physicochemical grounds but are not demonstrated here and are left as future work."
     )
     
+    add_heading_styled(doc, "4. Experimental", level=1)
+    doc.add_paragraph(
+        "4.1 Quantum-chemical framework: Geometry optimizations and single-point energies for the isolated therapeutics (structures from PubChem [33]), "
+        "the g-C3N4 and B/P-doped carrier clusters, and every drug-carrier complex were computed with GFN2-xTB (xtb v6.7.1) [21], a semiempirical "
+        "tight-binding method parameterized for non-covalent interactions across the periodic table [22,24,25], including the D4 charge-dependent dispersion "
+        "correction [23]. No higher-level DFT benchmark was performed in this work; the GFN2-xTB level is used consistently throughout.The interaction energy is Delta_E_ads = E(complex) - E(carrier) - E(drug), with both fragments taken at the complex geometry. "
+        "Frontier-orbital energies and conceptual-DFT reactivity indices (chemical hardness eta = gap/2, softness, electronegativity, electrophilicity "
+        "omega = mu^2/2eta) [28,35,36,37] were read directly from the xtb output; no descriptor is estimated from an empirical formula."
+    )
+    doc.add_paragraph(
+        "4.2 Molecular docking: Docking used AutoDock Vina v1.2.7 [29,30] on the human KRAS-G12D crystal structure (PDB ID: 7RPZ, 1.30 Å [31]), centred "
+        "on the Switch II allosteric pocket, with ligands prepared by ETKDG / RDKit [32] and Meeko, following established virtual-screening practice [34]. "
+        "Self-redocking of the co-crystallized MRTX1133 reproduced the native binding mode within 1.42 Å heavy-atom RMSD, validating the grid and pocket "
+        "definition."
+    )
+    doc.add_paragraph(
+        "4.3 Surrogate model and applicability domain: A StandardScaler + RidgeCV model (scikit-learn [44]) was trained inside a leak-free nested 5x5 "
+        "cross-validation on the real GFN2-xTB adsorption energies (scaler and ridge alpha fit only on each outer-training split), with 1000 Y-scrambling "
+        "permutations as a robustness check [43]. Feature importance was inspected with an ExtraTrees estimator and SHAP and is reported as exploratory "
+        "only. The applicability domain follows OECD Principle 3 [38-40,42] via Williams hat-matrix leverage."
+    )
+
+    # ---- methods now last (Beilstein order) ----
     add_heading_styled(doc, "Data Availability", level=1)
     doc.add_paragraph("All code, the curated dataset, the real GFN2-xTB and AutoDock Vina outputs, the leak-free cross-validation predictions and the "
                       "figure/manuscript generators are in the public repository https://github.com/sircalch/kras-pancreatic-gc3n4-ai and the Zenodo "
