@@ -7,6 +7,16 @@ Quantum CDFT descriptors for 3 systems:
 3. Drug + B/P-Doped g-C3N4 Nanosheet
 """
 
+import sys
+raise SystemExit(
+    "DEPRECATED (2026-09-08): wrote a FABRICATED Delta_E_ads / Target_DeltaG_bind "
+    "(empirical formula over RDKit descriptors) + an XGBoost benchmark into "
+    "dataset_drug_gC3N4_pristine/doped.csv, which nothing reads. The real KRAS "
+    "adsorption endpoint is results/quantum/adsorption_qm_results.csv; the leak-free "
+    "nested CV lives in generate_kras_master_figures.py and "
+    "compute_kras_oecd_applicability_domain.py."
+)
+
 import os
 import json
 import numpy as np

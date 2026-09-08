@@ -1,55 +1,50 @@
 """
 run_entire_kras_study.py
-Master End-to-End Pipeline Runner for 100% Reproducibility of Article 3:
-KRAS-G12D Allosteric Inhibitors & 2D g-C3N4 Nanocarriers.
+Master end-to-end pipeline for Article 3 (KRAS-G12D / 2D g-C3N4, PDAC).
+Reproduces every real number and figure in the manuscript from raw inputs.
 """
-
 import os
 import sys
 import time
 
-def run_step(step_num, title, script_rel_path):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    script_path = os.path.join(base_dir, script_rel_path)
-    print(f"\n=======================================================")
-    print(f"  [Step {step_num}/8] {title}")
-    print(f"=======================================================")
+BASE = os.path.dirname(os.path.abspath(__file__))
+
+
+def run_step(n, total, title, rel_path, args=""):
+    script = os.path.join(BASE, rel_path)
+    print(f"\n{'='*70}\n  [Step {n}/{total}] {title}\n{'='*70}")
     t0 = time.time()
-    ret = os.system(f'python "{script_path}"')
-    t_elapsed = time.time() - t0
+    ret = os.system(f'python "{script}" {args}')
     if ret != 0:
-        print(f"[ERROR] Step {step_num}: {title} (Exit Code: {ret})")
+        print(f"[ERROR] Step {n}: {title} (exit {ret})")
         return False
-    print(f"[OK] Step {step_num} completed in {t_elapsed:.2f} seconds.")
+    print(f"[OK] Step {n} in {time.time()-t0:.1f}s")
     return True
 
+
 def main():
-    print("=" * 65)
-    print("  KRAS-PANCREATIC-GC3N4-AI: MASTER REPRODUCIBILITY PIPELINE")
-    print("  Authors: Andrés Monreal Hernández et al.")
-    print("=" * 65)
-    
+    print("=" * 70)
+    print("  KRAS-G12D / g-C3N4 : MASTER REPRODUCIBILITY PIPELINE")
+    print("=" * 70)
     steps = [
-        (1, "KRAS Drug Library Curation", "src/descriptors/curate_kras_dataset.py"),
-        (2, "20-Descriptor RDKit & Quantum Calculation", "src/descriptors/compute_kras_descriptors.py"),
-        (3, "Parallel Real AutoDock Vina Docking (PDB 7RPZ)", "src/docking/run_kras_real_docking.py"),
-        (4, "Residue-Level Contact Analysis", "src/docking/analyze_kras_interactions.py"),
-        (5, "Machine Learning Training & SHAP XAI", "src/ml_models/train_kras_qsar_models.py"),
-        (6, "OECD Applicability Domain (Williams Plot)", "src/ml_models/compute_kras_oecd_applicability_domain.py"),
-        (7, "Publication-Grade Figures Suite (300+ DPI)", "src/visualization/generate_kras_q1_figures.py"),
-        (8, "Word Manuscript Compilation & Submission Packaging", "src/visualization/generate_kras_word_manuscript.py")
+        ("Drug-library curation", "src/descriptors/curate_kras_dataset.py"),
+        ("RDKit + GFN2-xTB descriptors", "src/descriptors/compute_kras_descriptors.py"),
+        ("Real AutoDock Vina docking (KRAS-G12D, PDB 7RPZ)", "src/docking/run_kras_real_docking.py"),
+        ("Residue-level contact analysis", "src/docking/analyze_kras_interactions.py"),
+        ("GFN2-xTB adsorption on pristine + B/P-doped g-C3N4", "src/quantum/run_adsorption_qm.py"),
+        ("OECD applicability domain (Williams)", "src/ml_models/compute_kras_oecd_applicability_domain.py"),
+        ("Master figure suite", "src/visualization/generate_kras_master_figures.py"),
+        ("Word manuscript", "src/visualization/generate_kras_word_manuscript.py"),
+        ("Supporting information", "src/visualization/generate_supporting_information.py"),
     ]
-    
-    for s_num, title, path in steps:
-        success = run_step(s_num, title, path)
-        if not success:
+    for i, (title, path) in enumerate(steps, 1):
+        if not run_step(i, len(steps), title, path):
             sys.exit(1)
-            
-    print("\n" + "=" * 65)
-    print(">>> FULL REPRODUCIBILITY PIPELINE EXECUTED SUCCESSFULLY! <<<")
-    print("  Manuscript Word File: manuscript/Beilstein_Manuscript_KRAS_gC3N4_Monreal_Hernandez_et_al.docx")
-    print("  Submission ZIP File:  kras-pancreatic-gC3N4-ai-FINAL-SUBMISSION-READY.zip")
-    print("=" * 65)
+    print("\n" + "=" * 70)
+    print(">>> PIPELINE COMPLETE <<<")
+    print("  manuscript/Beilstein_Manuscript_KRAS_gC3N4_Monreal_Hernandez_et_al.docx")
+    print("=" * 70)
+
 
 if __name__ == "__main__":
     main()
