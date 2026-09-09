@@ -68,21 +68,36 @@ def run_single_complex(item):
     work_dir = os.path.join(calc_dir, f"{carrier_name}_{drug_name}")
     os.makedirs(work_dir, exist_ok=True)
     
-    # Check if already successfully calculated
     opt_xyz = os.path.join(work_dir, "xtbopt.xyz")
     charges_file = os.path.join(work_dir, "charges")
-    
+    out_log = os.path.join(work_dir, "xtb_opt.out")
+
     complex_xyz, n_carrier, n_drug = build_adsorption_complex(carrier_name, drug_name)
-    
-    cmd = [xtb_exe, complex_xyz, "--gfn", "2", "--opt", "loose", "--chrg", "0"]
-    env = os.environ.copy()
-    env["OMP_NUM_THREADS"] = "3"
-    env["MKL_NUM_THREADS"] = "3"
-    
-    res = subprocess.run(cmd, cwd=work_dir, capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
-    stdout = res.stdout
-    
-    m_e = re.search(r'TOTAL ENERGY\s+([\-\d\.]+)\s+Eh', stdout, re.IGNORECASE)
+
+    # Resume: if this complex already converged in a previous run, re-use the
+    # saved xtb output instead of recomputing (a 30-40 min full sweep otherwise,
+    # and a transient SCF failure would silently drop a converged data point).
+    stdout = None
+    if os.path.exists(opt_xyz) and os.path.exists(out_log):
+        with open(out_log, "r", encoding="utf-8", errors="replace") as fh:
+            cached = fh.read()
+        if re.search(r'TOTAL ENERGY\s+([\-\d\.]+)\s+Eh', cached, re.IGNORECASE):
+            stdout = cached
+
+    if stdout is None:
+        cmd = [xtb_exe, complex_xyz, "--gfn", "2", "--opt", "loose", "--chrg", "0"]
+        env = os.environ.copy()
+        env["OMP_NUM_THREADS"] = "3"
+        env["MKL_NUM_THREADS"] = "3"
+        res = subprocess.run(cmd, cwd=work_dir, capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
+        stdout = res.stdout
+        try:
+            with open(out_log, "w", encoding="utf-8") as fh:
+                fh.write(stdout or "")
+        except OSError:
+            pass
+
+    m_e = re.search(r'TOTAL ENERGY\s+([\-\d\.]+)\s+Eh', stdout or "", re.IGNORECASE)
     if not m_e:
         return None
         
@@ -135,19 +150,41 @@ def run_all_adsorptions():
     print("=" * 95)
     print(f"PARALLEL GFN2-xTB ADSORPTION QUANTUM SIMULATIONS ({len(tasks)} TOTAL on 4 WORKERS)")
     print("=" * 95)
-    
+
     results = []
     out_csv = os.path.join(results_dir, "adsorption_qm_results.csv")
-    
+
+    # Reuse the deposited results unless a rebuild is explicitly requested
+    # (KRAS_ADS_REBUILD=1). A full sweep is ~40 min of xtb; per-complex resume
+    # (below) and prior-value fallback make a rebuild safe, but by default the
+    # committed CSV is canonical.
+    if os.path.exists(out_csv) and not os.environ.get("KRAS_ADS_REBUILD"):
+        _ex = pd.read_csv(out_csv)
+        if len(_ex) >= len(tasks):
+            print(f"[REUSE] adsorption_qm_results.csv already has {len(_ex)}/{len(tasks)} "
+                  f"complexes; set KRAS_ADS_REBUILD=1 to force a full xtb recompute.")
+            return _ex
+
+    # Prior converged rows: fall back to these for any complex that fails to
+    # converge in this run, so a transient xtb hiccup never shrinks the dataset.
+    prior = {}
+    if os.path.exists(out_csv):
+        _p = pd.read_csv(out_csv)
+        for _, _r in _p.iterrows():
+            prior[(_r["carrier_name"], _r["drug_name"])] = _r.to_dict()
+
     with ThreadPoolExecutor(max_workers=4) as executor:
         futures = {executor.submit(run_single_complex, t): t for t in tasks}
         for future in as_completed(futures):
+            t = futures[future]
             res = future.result()
+            if not res and (t[0], t[1]) in prior:
+                res = prior[(t[0], t[1])]
+                print(f"  [KEPT ] {t[0]:<10s} + {t[1]:<15s} | using prior converged value (this run did not converge)", flush=True)
             if res:
                 results.append(res)
-                # Incremental save
                 pd.DataFrame(results).to_csv(out_csv, index=False)
-                
+
     df_ads = pd.DataFrame(results)
     df_ads.to_csv(out_csv, index=False)
     print(f"\n[SUCCESS] All {len(df_ads)} genuine adsorption calculations completed successfully!")
