@@ -1,0 +1,39 @@
+{
+  "title": "Atomistic Modeling and QSPR-Guided Screening of 2D Graphitic Carbon Nitride Nanocarriers for KRAS-G12D Inhibitor Loading and Target Engagement",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "MIT",
+  "publication_date": "2026-09-10",
+  "version": "2.0.0",
+  "description": "<p>Fully reproducible computational pipeline and data archive for the study of pristine and B/P-doped 2D graphitic carbon nitride (g-C3N4) as a loading scaffold for KRAS-G12D inhibitors. Includes: GFN2-xTB relaxed drug/carrier adsorption energetics (per-complex resume, prior-value fallback), a single seeded AutoDock Vina v1.2.7 docking run against KRAS-G12D (PDB 7RPZ) written directly into the master table, a leak-free nested 5x5 cross-validated RidgeCV surrogate with OECD Principle 3 applicability domain, and an end-to-end master script (run_entire_kras_study.py). Every value in the manuscript is computed from this pipeline; no descriptor or energy is estimated from an empirical formula. v2.0.0 unifies the docking source, seeds all stochastic steps, and adds resume guards to the quantum-chemistry step.</p>",
+  "keywords": [
+    "nano-QSAR", "QSPR", "graphitic carbon nitride", "g-C3N4", "KRAS-G12D",
+    "pancreatic ductal adenocarcinoma", "GFN2-xTB", "AutoDock Vina",
+    "molecular docking", "explainable AI", "SHAP", "OECD validation",
+    "2D nanomaterials", "drug delivery", "reproducible research"
+  ],
+  "creators": [
+    {
+      "name": "Monreal Hernández, Andrés",
+      "orcid": "0009-0009-1207-8597",
+      "affiliation": "Universidad Estatal de Sonora, Hermosillo, Sonora, Mexico"
+    },
+    {
+      "name": "Franco Amaya, Sara Lizbeth",
+      "orcid": "0009-0005-0272-0241",
+      "affiliation": "Doctorado en Nanotecnología, Universidad de Sonora, Hermosillo, Sonora, Mexico"
+    },
+    {
+      "name": "Martínez Osorio, Carlos Ivanhoe",
+      "orcid": "0009-0003-7872-4965",
+      "affiliation": "Doctorado en Ciencia de Materiales, Universidad de Sonora, Hermosillo, Sonora, Mexico"
+    }
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/sircalch/kras-pancreatic-gc3n4-ai",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}
