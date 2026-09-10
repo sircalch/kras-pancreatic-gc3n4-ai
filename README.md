@@ -1,6 +1,7 @@
 # Atomistic Modeling and QSPR-Guided Screening of 2D Graphitic Carbon Nitride Nanocarriers for KRAS-G12D Inhibitor Loading and Target Engagement
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22187819.svg)](https://doi.org/10.5281/zenodo.22187819)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/sircalch/kras-pancreatic-gc3n4-ai/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
 [![xTB GFN2](https://img.shields.io/badge/Quantum%20Engine-GFN2--xTB-004D40.svg)](https://github.com/grimme-lab/xtb)
@@ -107,6 +108,20 @@ python src/visualization/generate_supporting_information.py
 
 ---
 
+## 🗓️ v2.0.0 (2026-09-10)
+
+- **Docking made reproducible**: `run_kras_real_docking.py` docks the exact
+  master-table cohort against KRAS-G12D (PDB 7RPZ) with a fixed seed and writes
+  `Real_Vina_Score_kcal_mol` straight into `MASTER_COMPOUNDS_CURATED.csv`. The
+  deposited docking column and the pipeline output are now identical.
+- **Quantum step hardened**: `src/quantum/run_adsorption_qm.py` gained a
+  per-complex resume, a prior-value fallback so a transient SCF failure never
+  drops a converged data point, and a `KRAS_ADS_REBUILD` guard.
+- `run_entire_kras_study.py` verified end-to-end (9/9 steps).
+- All manuscript docking statistics are computed from the CSV, not hardcoded.
+
+---
+
 ## 📜 Citation
 
 ```bibtex
@@ -115,6 +130,7 @@ python src/visualization/generate_supporting_information.py
   author={Monreal Hern{\'a}ndez, Andr{\'e}s and Franco Amaya, Sara Lizbeth and Mart{\'i}nez Osorio, Carlos Ivanhoe},
   journal={ChemRxiv / Preprints},
   year={2026},
+  version={2.0.0},
   doi={10.5281/zenodo.22187819},
   url={https://github.com/sircalch/kras-pancreatic-gc3n4-ai}
 }
