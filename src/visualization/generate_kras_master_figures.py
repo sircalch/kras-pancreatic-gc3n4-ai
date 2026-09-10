@@ -29,44 +29,10 @@ def get_dirs():
     return base_dir, fig_dir
 
 def make_graphical_abstract(base_dir, fig_dir):
-    fig, ax = plt.subplots(figsize=(12, 6.5), dpi=300)
-    ax.axis('off')
-    
-    ax.fill_between([0, 1], [0.88, 0.88], [1.0, 1.0], color='#004D40', transform=ax.transAxes)
-    ax.text(0.5, 0.94, "GRAPHICAL ABSTRACT: 2D g-C3N4 NANOSTRUCTURES TARGETING KRAS-G12D", 
-            ha='center', va='center', fontsize=13, fontweight='bold', color='white', transform=ax.transAxes)
-    
-    panels = [
-        ("A. 2D Polymeric g-C3N4\n\n"
-         "Pristine and B/P co-doped\nfinite cluster models\n"
-         "Real GFN2-xTB interaction\nenergetics\n"
-         "Metal-free, all-organic\ncarrier surface", 0.03, 0.12, 0.29, 0.70, "#E0F2F1", "#00695C"),
-        ("B. Physical Docking\n(AutoDock Vina v1.2.7)\n\n"
-         "Human KRAS-G12D\n(PDB ID: 7RPZ, 1.30 A)\n"
-         "33 PDAC / KRAS drugs\n"
-         "Real Vina scores\n-2.9 to -9.8 kcal/mol\n"
-         "Switch II: Tyr96, Asp12,\nGlu62, Arg68", 0.355, 0.12, 0.29, 0.70, "#E8F5E9", "#2E7D32"),
-        ("C. Explainable AI & OECD QSAR\n\n"
-         "Leak-free nested 5x5\nRidge CV\n"
-         "Q2_CV = 0.55 (pristine),\n0.51 (B/P-doped)\n"
-         "Top feature: HBA /\nelectrophilicity omega\n"
-         "OECD Principle 3\nWilliams domain", 0.68, 0.12, 0.29, 0.70, "#FBE9E7", "#D84315"),
-    ]
+    """Composed graphical abstract -> figures/fig1_graphical_abstract.png."""
+    import graphical_abstract
+    graphical_abstract.build()
 
-    for text, x, y, w, h, bg_c, border_c in panels:
-        rect = patches.FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.02",
-                                      facecolor=bg_c, edgecolor=border_c, lw=2.0, transform=ax.transAxes)
-        ax.add_patch(rect)
-        ax.text(x + w/2, y + h/2, text, ha='center', va='center', fontsize=8.5, fontweight='bold', color='#004D40', transform=ax.transAxes)
-
-    arrow_props = dict(facecolor='#004D40', edgecolor='#004D40', width=3.0, headwidth=10, shrink=0.05)
-    ax.annotate('', xy=(0.352, 0.47), xytext=(0.322, 0.47), xycoords='axes fraction', arrowprops=arrow_props)
-    ax.annotate('', xy=(0.678, 0.47), xytext=(0.648, 0.47), xycoords='axes fraction', arrowprops=arrow_props)
-    
-    out_p = os.path.join(fig_dir, "fig1_graphical_abstract.png")
-    plt.savefig(out_p, bbox_inches='tight')
-    plt.close()
-    print(f"Generated KRAS Graphical Abstract: {out_p}")
 
 def make_fig1_workflow(base_dir, fig_dir):
     # Real ranges pulled from the actual result files (no hardcoded numbers).
