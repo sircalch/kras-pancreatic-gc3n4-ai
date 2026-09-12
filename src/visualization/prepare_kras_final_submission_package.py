@@ -73,9 +73,14 @@ def create_kras_cover_letter(sub_dir):
     )
     
     doc.add_paragraph(
+        "The complete open-source pipeline, curated dataset and figure generators are archived at "
+        "Zenodo (DOI: 10.5281/zenodo.22187819), fully reproducing every value and figure in the manuscript."
+    )
+
+    doc.add_paragraph(
         "All authors have approved the manuscript and confirm no competing interests."
     )
-    
+
     p_sign = doc.add_paragraph()
     p_sign.paragraph_format.space_before = Pt(14)
     p_sign.add_run(
@@ -84,7 +89,7 @@ def create_kras_cover_letter(sub_dir):
         "Universidad Estatal de Sonora, Mexico\n"
         "Email: andres.monreal@ues.mx"
     )
-    
+
     out_docx = os.path.join(sub_dir, "01_Cover_Letter_Beilstein_KRAS.docx")
     doc.save(out_docx)
     print(f"Generated KRAS Cover Letter: {out_docx}")
