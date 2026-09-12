@@ -138,6 +138,70 @@ def create_kras_cover_letter_md(sub_dir):
     print(f"Generated KRAS Molecular Diversity Cover Letter: {out_docx}")
 
 
+def create_kras_cover_letter_jmm(sub_dir):
+    """Journal of Molecular Modeling (Springer) edition, 2026-09-12.
+
+    Chosen as the primary submission target: Q3 (Scimago SJR), no-APC
+    subscription route available (OA optional, not mandatory), and a strong
+    topical fit for a quantum-chemistry + QSPR computational paper -- see
+    [[feedback_prioritize_q3_no_apc_journals]]. This is the only one of the 4
+    nano-QSAR papers with a genuinely predictive QSPR surrogate (Q2_CV=0.584)
+    and a validated redocking (7RPZ RMSD 1.419 A), so it goes first.
+    """
+    doc = Document()
+    for s in doc.sections:
+        s.top_margin = s.bottom_margin = Inches(1.0)
+        s.left_margin = s.right_margin = Inches(1.0)
+    f = doc.styles['Normal'].font
+    f.name = 'Times New Roman'; f.size = Pt(11); f.color.rgb = RGBColor(33, 33, 33)
+
+    doc.add_paragraph("Andrés Monreal Hernández, Ph.D.\nUniversidad Estatal de Sonora, Hermosillo, Sonora, Mexico\n"
+                      "Email: andres.monreal@ues.mx | ORCID: 0009-0009-1207-8597").runs[0].font.bold = True
+    doc.add_paragraph("To: The Editor-in-Chief, Journal of Molecular Modeling (Springer Nature)")
+    doc.add_paragraph("Subject: Submission of Original Research Article for Peer Review").runs[0].font.bold = True
+    doc.add_paragraph("Dear Editor,")
+    doc.add_paragraph(
+        "On behalf of my co-authors (Sara Lizbeth Franco Amaya, Carlos Ivanhoe Martínez Osorio, and myself), "
+        "I am pleased to submit our original research manuscript for consideration as a Full Research Article "
+        "in the Journal of Molecular Modeling:"
+    )
+    r = doc.add_paragraph().add_run(
+        "“Quantum-Validated QSPR and Molecular Screening of KRAS-G12D Inhibitors across "
+        "Graphitic Carbon Nitride Interaction Space”"
+    )
+    r.font.bold = True; r.font.color.rgb = RGBColor(0, 105, 92)
+    doc.add_paragraph(
+        "The study integrates GFN2-xTB quantum-chemical interaction modeling of pristine and B/P-doped 2D "
+        "graphitic carbon nitride (g-C3N4), AutoDock Vina docking against the human KRAS-G12D crystal structure "
+        "(PDB ID: 7RPZ, 1.30 Å), and a leak-free nested cross-validated QSPR surrogate model, for a curated set "
+        "of 33 KRAS-G12D allosteric inhibitors and PDAC therapeutics -- squarely within the journal's scope in "
+        "computational and theoretical chemistry."
+    )
+    doc.add_paragraph("Real, pipeline-traceable results:").runs[0].font.bold = True
+    for h in [
+        "Redocking on the human KRAS-G12D crystal structure (PDB ID: 7RPZ, 1.30 Å) reproduced the native "
+        "MRTX1133 pose at 1.419 Å heavy-atom RMSD (AutoDock Vina v1.2.7).",
+        "GFN2-xTB single-point interaction energies for all 33 drugs on pristine and B/P-doped g-C3N4 clusters "
+        "span Delta_E_ads = -5.0 to -39.9 kcal/mol, computed directly from the xtb output.",
+        "Leak-free nested 5x5 cross-validated RidgeCV surrogate on the real GFN2-xTB adsorption energies: "
+        "Q2_CV = +0.584 (1000 Y-scrambling permutations, empirical p = 0.001) -- this is the only one of our "
+        "4-paper computational series with a genuinely predictive (not merely descriptive) QSPR surrogate.",
+        "OECD Principle 3 applicability domain by Williams leverage (h* = 0.455); prospective virtual screening "
+        "of 350 DrugBank oncology compounds with quantum-confirmed top hits (Futibatinib, Belumosudil).",
+        "Full open-source pipeline and data archive (Zenodo DOI 10.5281/zenodo.22187819), reproducing every "
+        "value and figure in the manuscript.",
+    ]:
+        p = doc.add_paragraph(h); p.paragraph_format.left_indent = Inches(0.3)
+    doc.add_paragraph(
+        "The manuscript is original, not under consideration elsewhere, and all authors approve the submission "
+        "and declare no competing interests."
+    )
+    doc.add_paragraph("Sincerely,\nAndrés Monreal Hernández, Ph.D. (Corresponding Author)\nUniversidad Estatal de Sonora, Mexico")
+    out_docx = os.path.join(sub_dir, "01_Cover_Letter_JMM.docx")
+    doc.save(out_docx)
+    print(f"Generated KRAS Journal of Molecular Modeling Cover Letter: {out_docx}")
+
+
 def build_kras_submission_bundle():
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     sub_dir = os.path.join(base_dir, "manuscript", "submission_ready")
@@ -145,6 +209,13 @@ def build_kras_submission_bundle():
     
     create_kras_cover_letter(sub_dir)
     create_kras_cover_letter_md(sub_dir)
+    create_kras_cover_letter_jmm(sub_dir)
+
+    # JMM manuscript is built separately (post-processes the Full_Q1 docx into
+    # the structured-abstract edition) -- run it here so the bundle always
+    # picks up a fresh copy.
+    import generate_kras_jmm_manuscript
+    generate_kras_jmm_manuscript.generate_kras_jmm_manuscript()
 
     manuscripts = {
         os.path.join(base_dir, "manuscript", "KRAS_gC3N4_Full_Q1_Research_Paper_Monreal_Hernandez_et_al.docx"): "02_Manuscript_KRAS_gC3N4_Full_Q1_Research_Paper.docx",
