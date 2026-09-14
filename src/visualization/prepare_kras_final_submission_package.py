@@ -184,8 +184,8 @@ def create_kras_cover_letter_jmm(sub_dir):
         "GFN2-xTB single-point interaction energies for all 33 drugs on pristine and B/P-doped g-C3N4 clusters "
         "span Delta_E_ads = -5.0 to -39.9 kcal/mol, computed directly from the xtb output.",
         "Leak-free nested 5x5 cross-validated RidgeCV surrogate on the real GFN2-xTB adsorption energies: "
-        "Q2_CV = +0.584 (1000 Y-scrambling permutations, empirical p = 0.001) -- this is the only one of our "
-        "4-paper computational series with a genuinely predictive (not merely descriptive) QSPR surrogate.",
+        "Q2_CV = +0.584 (1000 Y-scrambling permutations, empirical p = 0.001), a genuinely predictive "
+        "(not merely descriptive) surrogate.",
         "OECD Principle 3 applicability domain by Williams leverage (h* = 0.455); prospective virtual screening "
         "of 350 DrugBank oncology compounds with quantum-confirmed top hits (Futibatinib, Belumosudil).",
         "Full open-source pipeline and data archive (Zenodo DOI 10.5281/zenodo.22187819), reproducing every "

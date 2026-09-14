@@ -113,6 +113,13 @@ def generate_kras_jmm_manuscript():
     keywords_para.runs[0].font.bold = True
     keywords_para.add_run(JMM_KEYWORDS)
 
+    # --- Rename "4. Conclusions" -> "4. Summary" (JMM's own naming; also matches
+    # the GBM/Tau/TNBC JMM editions for consistency across the series) ---
+    for p in doc.paragraphs:
+        if p.style.name.startswith("Heading") and p.text.strip() == "4. Conclusions" and p.runs:
+            p.runs[0].text = "4. Summary"
+            break
+
     out_dir = os.path.join(base_dir, "manuscript", "submission_ready")
     out_path = os.path.join(out_dir, "02_Manuscript_KRAS_gC3N4_JMM_Submission.docx")
     doc.save(out_path)
