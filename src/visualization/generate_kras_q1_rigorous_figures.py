@@ -162,7 +162,9 @@ def make_fig4_group_discrimination(base_dir, fig_dir):
     
     ax.set_xlabel("Pharmacological Classification", fontsize=11, fontweight='bold')
     ax.set_ylabel("AutoDock Vina Score in Switch II Pocket (kcal/mol)", fontsize=11, fontweight='bold')
-    ax.set_title("Figure 4: Structural Discrimination of KRAS-G12D Switch II Pocket across Drug Classes (N=33)", fontsize=12.5, fontweight='bold', pad=12)
+    # NOTE: renumbered 2026-09-13 -- this image is embedded as "Figure 2" in
+    # the current manuscript, not "Figure 4" as an earlier draft numbering had it.
+    ax.set_title("Figure 2: Structural Discrimination of KRAS-G12D Switch II Pocket across Drug Classes (N=33)", fontsize=12.5, fontweight='bold', pad=12)
     ax.grid(True, linestyle=':', alpha=0.6)
     
     # Kruskal-Wallis Annotation
@@ -188,7 +190,7 @@ def make_fig4_group_discrimination(base_dir, fig_dir):
     out_p = os.path.join(fig_dir, "fig4_kras_group_discrimination.png")
     plt.savefig(out_p, bbox_inches='tight')
     plt.close()
-    print(f"Generated Figure 4: {out_p}")
+    print(f"Generated Figure 2: {out_p}")
 
 def _load_qspr_artifacts(base_dir):
     qdir = os.path.join(base_dir, "results", "qspr")
@@ -320,11 +322,15 @@ def make_fig9_virtual_screening(base_dir, fig_dir):
     ax1.grid(True, linestyle=':', alpha=0.6)
     ax1.legend(loc='upper right')
     
-    plt.suptitle("Figure 9: Decoupled Multi-Objective Screening Validation across Top Candidates & Controls", fontsize=13, fontweight='bold', y=0.98)
+    # NOTE: baked-in title renumbered 2026-09-13 -- this image is embedded as
+    # "Figure 4" in the current manuscript (generate_kras_full_manuscript.py),
+    # not "Figure 9" as an earlier draft numbering had it; the mismatch was
+    # visible to any reader opening the image directly.
+    plt.suptitle("Figure 4: Decoupled Multi-Objective Screening Validation across Top Candidates & Controls", fontsize=13, fontweight='bold', y=0.98)
     out_p = os.path.join(fig_dir, "fig9_kras_virtual_screening_distribution.png")
     plt.savefig(out_p, bbox_inches='tight')
     plt.close()
-    print(f"Generated Figure 9: {out_p}")
+    print(f"Generated Figure 4: {out_p}")
 
 def generate_all_rigorous_figures():
     base_dir, fig_dir = get_dirs()
