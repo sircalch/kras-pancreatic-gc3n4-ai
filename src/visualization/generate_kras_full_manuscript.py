@@ -159,7 +159,7 @@ def generate_kras_full_manuscript():
     p_kw.paragraph_format.space_after = Pt(12)
     r_kwt = p_kw.add_run("Keywords: ")
     r_kwt.font.bold = True
-    p_kw.add_run("KRAS-G12D; MRTX1133; Molecular Diversity; QSPR Surrogate Modeling; GFN2-xTB Quantum Chemistry; Virtual Screening; Supramolecular Interaction.")
+    p_kw.add_run("KRAS-G12D; MRTX1133; Graphitic Carbon Nitride; QSPR Surrogate Modeling; GFN2-xTB Quantum Chemistry; Virtual Screening; Supramolecular Interaction.")
     
     # 1. Introduction
     add_heading_styled(doc, "1. Introduction", level=1)
