@@ -163,7 +163,7 @@ def generate_supporting_information():
     # ---- Table S3 : OECD checklist, real numbers ----
     add_heading_styled(doc, "Table S3: OECD Principles 1–5 Checklist.")
     hstar, inside, n = _williams(
-        m, ["MW", "LogP", "PSA", "E_HOMO", "Electrophilicity_omega"], "Delta_E_ads_Pristine_kcal_mol")
+        m, ["MW", "PSA", "Polarizability_alpha", "Electrophilicity_omega"], "Delta_E_ads_Pristine_kcal_mol")
     s3 = [
         ("1. Defined endpoint",
          "GFN2-xTB single-point interaction energy Delta_E_ads (kcal/mol) of each drug on the "
@@ -172,8 +172,10 @@ def generate_supporting_information():
          "StandardScaler + RidgeCV inside a leak-free nested 5x5 cross-validation "
          "(src/ml_models/train_real_qspr_model.py)."),
         ("3. Applicability domain",
-         f"Williams hat-matrix leverage, 5 descriptors, n={n}: warning leverage h* = {hstar:.3f}; "
-         f"{inside}/{n} compounds inside the domain (h <= h* and |std. residual| <= 3)."),
+         f"Williams hat-matrix leverage, 4 descriptors (MW, PSA, Polarizability_alpha, "
+         f"Electrophilicity_omega, matching the primary surrogate model), n={n}: warning "
+         f"leverage h* = {hstar:.3f}; {inside}/{n} compounds inside the domain "
+         f"(h <= h* and |std. residual| <= 3)."),
         ("4. Goodness-of-fit / robustness",
          "Leak-free nested 5x5 CV Q2_CV = +0.584; 1000 Y-scrambling permutations, p = 0.001."),
         ("5. Mechanistic interpretation",
