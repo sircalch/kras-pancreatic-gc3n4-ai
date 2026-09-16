@@ -522,9 +522,14 @@ def make_fig10_multiscale_final(base_dir, fig_dir):
 
 
 def make_fig11_deltarho(base_dir, fig_dir):
-    """Figure 11 - charge-density difference for the MRTX1133 / B,P-doped
-    g-C3N4 hero complex (real GFN2-xTB densities). Delta-rho cube ships in
-    results/quantum/drho/; see that folder's README + build_deltarho.py."""
+    """Figure 10 (Beilstein numbering) - charge-density difference for the
+    MRTX1133 / B,P-doped g-C3N4 hero complex (real GFN2-xTB densities).
+    Delta-rho cube ships in results/quantum/drho/; see that folder's
+    README + build_deltarho.py. NOTE: the output filename keeps the
+    historical "fig11_" prefix (referenced by generator scripts and the
+    integrity manifest), but the baked-in caption number is 10 to stay
+    sequential with the rest of the Beilstein-edition manuscript, which
+    has no separate Figure 10 of its own."""
     try:
         import _drho_fig
     except Exception as exc:
@@ -537,12 +542,12 @@ def make_fig11_deltarho(base_dir, fig_dir):
     render = _drho_fig.render_isosurface(drho_dir, "kras", render, level=0.003,
                                          turn=(-20, 30, 0))
     out_p = os.path.join(fig_dir, "fig11_kras_charge_density_difference.png")
-    _drho_fig.compose(out_p, render, 11,
+    _drho_fig.compose(out_p, render, 10,
                       "Interfacial charge redistribution on the B/P co-doped g-C$_3$N$_4$ carrier",
                       "MRTX1133", "B/P-doped g-C$_3$N$_4$", 0.003,
                       dEint_kcal=float(ad.Delta_E_ads_kcal_mol),
                       dq_e=float(ad.Interfacial_Charge_Transfer_e))
-    print(f"Generated Figure 11 (charge-density difference): {out_p}")
+    print(f"Generated Figure 10 (charge-density difference): {out_p}")
 
 
 def generate_master_suite():

@@ -278,7 +278,7 @@ def generate_kras_word_manuscript():
     doc.add_paragraph(
         "To visualise the electronic reorganisation that accompanies adsorption, the charge-density difference "
         "Delta_rho = rho(complex) - rho(carrier) - rho(drug) was evaluated from the real GFN2-xTB densities of the MRTX1133 / "
-        "B,P-co-doped g-C3N4 complex, all three fragments taken at the bound geometry on a common grid (Figure 11). Electron "
+        "B,P-co-doped g-C3N4 complex, all three fragments taken at the bound geometry on a common grid (Figure 10). Electron "
         "accumulation (yellow) and depletion (blue) lobes are localised at the drug-carrier contact and, most prominently, around "
         "the phosphorus dopant, consistent with the doped surface acting as the charge-transfer hot-spot. The integrated interfacial "
         "charge transfer is small (Delta_Q = +0.15 e) and the interaction energy (Delta_E_ads = -35.0 kcal/mol) is dominated by "
@@ -286,7 +286,7 @@ def generate_kras_word_manuscript():
         "that regenerates it from the fragment geometries are provided in results/quantum/drho/."
     )
     add_image_if_exists(doc, os.path.join(fig_dir, "fig11_kras_charge_density_difference.png"),
-                        "Figure 11: Charge-density difference (real GFN2-xTB densities) for the MRTX1133 / B,P-co-doped g-C3N4 complex. "
+                        "Figure 10: Charge-density difference (real GFN2-xTB densities) for the MRTX1133 / B,P-co-doped g-C3N4 complex. "
                         "Isovalue +/-0.003 e bohr^-3; yellow = electron accumulation, blue = electron depletion. "
                         "Delta_E_ads = -35.0 kcal/mol, Delta_Q = +0.15 e.")
 
