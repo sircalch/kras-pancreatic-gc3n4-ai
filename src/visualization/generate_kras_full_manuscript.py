@@ -129,7 +129,7 @@ def generate_kras_full_manuscript():
     # Graphical Abstract (Front Matter)
     add_heading_styled(doc, "Graphical Abstract", level=1)
     add_image_if_exists(doc, os.path.join(fig_dir, "fig_graphical_abstract_final.jpg"),
-                        "Graphical Abstract: Multi-scale computational framework integrating quantum chemistry, OECD-aligned QSPR surrogate modeling, and virtual screening for KRAS-G12D inhibitor prioritization. (Left) Oncogenic KRAS-G12D target engagement in the Switch II allosteric pocket with key coordinating residues (Asp12 ionic salt-bridge, Tyr96 pi-stacking). (Center) Quantum electronic interaction modeling on the finite 48-atom C21N21H6 heptazine cluster model (Pristine: C21N21H6; B/P co-doped: C20B1N20P1H6); B/P co-doping induces localized interfacial charge redistribution (Delta_Q = +0.19 e for MRTX1133) with comparable overall electronic interaction energetics (DeltaDelta E_int,std ≈ -0.01 kcal/mol). (Right) OECD-aligned nested Ridge QSPR surrogate screening across 350 oncology compounds with prospective GFN2-xTB quantum confirmation on prioritized clinical-stage leads (Futibatinib, Belumosudil).",
+                        "Graphical Abstract: Multi-scale computational framework integrating quantum chemistry, OECD-aligned QSPR surrogate modeling, and virtual screening for KRAS-G12D inhibitor prioritization. (Left) Oncogenic KRAS-G12D target engagement in the Switch II allosteric pocket with key coordinating residues (Asp12 ionic salt-bridge, Tyr96 pi-stacking). (Center) Quantum electronic interaction modeling on the finite 48-atom C21N21H6 heptazine cluster model (Pristine: C21N21H6; B/P co-doped: C20B1N20P1H6); B/P co-doping induces localized interfacial charge redistribution (Delta_Q = +0.15 e for MRTX1133) with comparable overall electronic interaction energetics (DeltaDelta E_int,std ≈ -0.01 kcal/mol). (Right) OECD-aligned nested Ridge QSPR surrogate screening across 350 oncology compounds with prospective GFN2-xTB quantum confirmation on prioritized clinical-stage leads (Futibatinib, Belumosudil).",
                         width=Inches(6.2))
     
     # Abstract
@@ -334,8 +334,8 @@ def generate_kras_full_manuscript():
     t1_data = [
         ("Group A: KRAS Mechanistic Probes", "5", "MRTX1133, BI-2865, RMC-6236", "-7.68", "-7.03", "0.183"),
         ("Group B: Pan-RAS / G12C Inhibitors", "5", "Sotorasib, Adagrasib, BI-2852", "-5.86", "-6.42", "0.161"),
-        ("Group C: Downstream MAPK / TKIs", "8", "Cobimetinib, Selumetinib, Erlotinib", "-7.82", "-7.87", "0.228"),
-        ("Group D: Cytotoxic & Antimetabolite Comparators", "15", "Gemcitabine, 5-FU, Paclitaxel", "-6.84", "-6.27", "0.231"),
+        ("Group C: Downstream MAPK / TKIs", "8", "Cobimetinib, Selumetinib, Erlotinib", "-7.82", "-7.87", "0.262"),
+        ("Group D: Cytotoxic & Antimetabolite Comparators", "15", "Gemcitabine, 5-FU, Paclitaxel", "-6.84", "-6.27", "0.246"),
     ]
     for vals in t1_data:
         row_cells = t1_table.add_row().cells
@@ -375,8 +375,9 @@ def generate_kras_full_manuscript():
         "RMSE = 5.11 kcal/mol (95% bootstrap CI: [4.19, 5.99]), and MAE = 4.33 kcal/mol (95% bootstrap CI: [3.42, 5.28]) (Figure 3a). "
         "Y-scrambling permutation testing across 1,000 iterations (identical nested procedure on permuted labels) yielded a mean scrambled Q² of -0.12 (Figure 3c), with an empirical permutation p-value of 0.001, "
         "confirming that the observed predictive performance is unlikely to arise from chance correlation. "
-        "In the Williams plot (Figure 3b), 32 of 33 training compounds (97.0%) fell within the +/-3sigma standardized residual boundary, with a warning leverage limit h* = 0.455. "
-        "Cobimetinib (hi = 0.200) and Paclitaxel (hi = 0.360) fell safely inside the applicability domain, supporting coverage of the training chemical space across diverse chemotypes."
+        "In the Williams plot (Figure 3b), all 33 of 33 training compounds fell within the +/-3sigma standardized residual boundary; against the separate warning leverage limit h* = 0.455, "
+        "32 of 33 compounds (97.0%) fell inside the domain, with only Methotrexate (hi = 0.481) exceeding it. "
+        "Cobimetinib (hi = 0.155) and Paclitaxel (hi = 0.234) fell safely inside the applicability domain, supporting coverage of the training chemical space across diverse chemotypes."
     )
     
     # Figure 3: QSPR 4-Panel Statistical Validation
@@ -468,7 +469,7 @@ def generate_kras_full_manuscript():
         "facilitating charge-transfer interactions with electron-rich aromatic drug scaffolds [16, 17]. "
         "Conversely, phosphorus substitution at nitrogen sites (q_P = -0.1679 e) introduces localized electron-donor regions that generate an interfacial electrostatic dipole gradient across the 2D surface. "
         "The synergistic combination of B (delta+) and P (delta-) dopants creates localized polarization "
-        "fields that modulate interfacial charge transfer (Delta_Q up to +0.65 e across the cohort; for MRTX1133 specifically: Delta_Q = +0.19 e). "
+        "fields that modulate interfacial charge transfer (Delta_Q up to +0.65 e across the cohort; for MRTX1133 specifically: Delta_Q = +0.15 e, vs. +0.19 e on the pristine carrier). "
         "Importantly, the overall interaction energetics are only modestly affected by B/P co-doping: for MRTX1133, Delta_E_int,std changes from -35.03 kcal/mol (pristine) to -35.04 kcal/mol (B/P co-doped, C20B1N20P1H6), "
         "indicating that B/P co-doping primarily redistributes interfacial polarization rather than producing large energetic enhancements. "
         "From an engineering perspective, the primary role of B/P co-doping appears to be modulating local charge density and surface wettability, "
@@ -503,7 +504,7 @@ def generate_kras_full_manuscript():
         "(2) Switch II allosteric pocket docking exhibits descriptive differences consistent with state- and mechanism-dependent structural pharmacology (omnibus Kruskal-Wallis H = 5.763, p = 0.1237), "
         "where tri-complex active-state inhibitors (RMC-6236) and covalent G12C compounds require distinct multi-protein contexts; "
         "(3) GFN2-xTB calculations across 38 molecules and 4 nanocarriers confirm favorable non-covalent interaction (Delta_E_int,std = -4.98 to -39.89 kcal/mol at standardized z = 3.35 Å), "
-        "with B/P co-doping (C20B1N20P1H6) primarily modifying interfacial charge polarization (Delta_Q = +0.19 e for MRTX1133) rather than substantially altering interaction energetics; "
+        "with B/P co-doping (C20B1N20P1H6) primarily modifying interfacial charge polarization (Delta_Q = +0.15 e for MRTX1133, vs. +0.19 e on the pristine carrier) rather than substantially altering interaction energetics; "
         "(4) A leak-free nested 5x5 surrogate QSPR model structured under OECD Principles 1-5 (Table S3) and verified by 1,000 Y-scrambling permutations (nested Q²_CV = +0.584 vs Q²_scrambled = -0.12, p = 0.001) "
         "successfully prioritizes clinical-stage DrugBank oncology leads; prospective quantum confirmation showed informative predictive performance (MAE = 3.82 kcal/mol) "
         "and favorable predicted Switch II pocket compatibility (LE = 0.255 to 0.292 kcal/mol/atom). "
