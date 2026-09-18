@@ -150,8 +150,7 @@ def generate_kras_full_manuscript():
         "A regularized Ridge surrogate QSPR model structured under OECD Principles 1-5, evaluated by a fully leak-free nested 5x5 cross-validation (StandardScaler fit inside the pipeline on outer-training folds only; Ridge alpha tuned by inner cross-validation), achieved robust out-of-fold predictive accuracy (nested Q²_CV = +0.584, per-fold Q² range: 0.05-0.78; RMSE = 5.11 kcal/mol, MAE = 4.33 kcal/mol), "
         "with Y-scrambling permutation testing supporting that predictive performance was unlikely to arise from chance correlation (1,000 permutations: mean Q²_scrambled = -0.12, empirical p = 0.001). "
         "Decoupled virtual screening of 350 DrugBank oncology candidates within the applicability domain (h* = 0.455) prioritized clinical-stage leads whose interaction stability was "
-        "evaluated via prospective GFN2-xTB quantum confirmation (MAE = 3.82 kcal/mol, RMSE = 5.16 kcal/mol; Futibatinib: error +0.37 kcal/mol; Belumosudil: error +1.93 kcal/mol; Pimicotinib: error +1.11 kcal/mol; Avapritinib: -6.27 kcal/mol; Capivasertib: +9.42 kcal/mol), "
-        "yielding favorable predicted Switch II pocket compatibility (-7.64 to -9.43 kcal/mol; Ligand Efficiency 0.255 to 0.292 kcal/mol/atom). This study establishes a rigorous "
+        "evaluated via prospective GFN2-xTB quantum confirmation using each lead's real RDKit-derived descriptors (MAE = 3.06 kcal/mol, RMSE = 4.22 kcal/mol; Belumosudil: error +1.11 kcal/mol; Pimicotinib: error +1.66 kcal/mol; Futibatinib: error +0.37 kcal/mol (hi = 1.228, outside the applicability domain); Avapritinib: error -3.70 kcal/mol (hi = 0.685, outside the applicability domain); Capivasertib: error +8.44 kcal/mol), yielding favorable predicted Switch II pocket compatibility (-7.58 to -9.43 kcal/mol; Ligand Efficiency 0.253 to 0.314 kcal/mol/atom). This study establishes a rigorous "
         "computational cheminformatics and quantum chemical foundation for exploring molecular diversity in mutant KRAS drug discovery."
     )
     
@@ -382,7 +381,7 @@ def generate_kras_full_manuscript():
     
     # Figure 3: QSPR 4-Panel Statistical Validation
     add_image_if_exists(doc, os.path.join(fig_dir, "fig8_qspr_validation_final.jpg"),
-                        "Figure 3: Statistical Validation and Applicability Domain of the Regularized Ridge QSPR Surrogate Model (leak-free nested 5x5 CV): (a) Out-of-fold (OOF) observed vs predicted Delta_E_int,std parity plot (Q²_CV = +0.584, RMSE = 5.11 kcal/mol, MAE = 4.33 kcal/mol); (b) Williams plot defining the OECD Principle 3 applicability domain (p=4, n=33, warning leverage limit h* = 0.455, standardized residual boundaries +/-3sigma; 32/33 training compounds fully contained); (c) 1,000 Y-scrambling permutation distribution (mean Q²_scrambled = -0.12, empirical permutation p = 0.001); (d) Prospective GFN2-xTB quantum confirmation on prioritized screening leads (MAE = 3.82 kcal/mol, RMSE = 5.16 kcal/mol across five prioritized leads).")
+                        "Figure 3: Statistical Validation and Applicability Domain of the Regularized Ridge QSPR Surrogate Model (leak-free nested 5x5 CV): (a) Out-of-fold (OOF) observed vs predicted Delta_E_int,std parity plot (Q²_CV = +0.584, RMSE = 5.11 kcal/mol, MAE = 4.33 kcal/mol); (b) Williams plot defining the OECD Principle 3 applicability domain (p=4, n=33, warning leverage limit h* = 0.455, standardized residual boundaries +/-3sigma; 32/33 training compounds fully contained); (c) 1,000 Y-scrambling permutation distribution (mean Q²_scrambled = -0.12, empirical permutation p = 0.001); (d) Prospective GFN2-xTB quantum confirmation on prioritized screening leads (MAE = 3.06 kcal/mol, RMSE = 4.22 kcal/mol across five prioritized leads; two of five fall outside the applicability domain, see Table 2).")
     
     add_heading_styled(doc, "3.5 Confirmatory Virtual Screening & Prospective Quantum Confirmation of Prioritized Leads", level=2)
     doc.add_paragraph(
@@ -394,15 +393,13 @@ def generate_kras_full_manuscript():
         "Only candidates within the AD were retained for lead prioritization."
     )
     doc.add_paragraph(
-        "The top five prioritized clinical-stage leads were subjected to prospective GFN2-xTB quantum confirmation and confirmatory AutoDock Vina docking against PDB 7RPZ (Table 2, Figure 4). "
-        "Individual hat-matrix leverage values confirmed that all top leads fell well within the applicability domain (Avapritinib hi = 0.400, Futibatinib hi = 0.307, Belumosudil hi = 0.355, "
-        "Capivasertib hi = 0.411, Pimicotinib hi = 0.327; all < h* = 0.455). "
-        "Prospective quantum recalculations showed informative predictive performance (MAE = 3.82 kcal/mol, RMSE = 5.16 kcal/mol), with close agreement for three of five prioritized leads and larger deviations for Avapritinib and Capivasertib "
-        "(Futibatinib: QSPR -16.02 vs QM -16.39 kcal/mol, error = +0.37 kcal/mol; "
-        "Belumosudil: QSPR -15.43 vs QM -17.36 kcal/mol, error = +1.93 kcal/mol; Pimicotinib: QSPR -13.88 vs QM -14.99 kcal/mol, error = +1.11 kcal/mol; "
-        "Avapritinib: error = -6.27 kcal/mol; Capivasertib: error = +9.42 kcal/mol). "
-        "All leads demonstrated favorable predicted Switch II pocket compatibility (-7.64 to -9.43 kcal/mol) with "
-        "size-normalized Ligand Efficiency (LE = 0.255 to 0.292 kcal/mol/atom)."
+        "The top five prioritized clinical-stage leads were subjected to prospective GFN2-xTB quantum confirmation and confirmatory AutoDock Vina docking against PDB 7RPZ (Table 2, Figure 4), using each lead's own real RDKit-derived molecular weight and polar surface area (recomputed from its canonical SMILES) as descriptor inputs. "
+        "Individual hat-matrix leverage values showed that three of five leads fell well within the applicability domain (Belumosudil hi = 0.020, Pimicotinib hi = 0.059, Capivasertib hi = 0.237; all < h* = 0.455), while two -- Avapritinib (hi = 0.685) and Futibatinib (hi = 1.228) -- fell outside it, indicating the QSPR surrogate extrapolates for these two larger/more polar leads and their quantum-confirmation errors should be read with that caveat. "
+        "Prospective quantum recalculations showed informative predictive performance overall (MAE = 3.06 kcal/mol, RMSE = 4.22 kcal/mol), with close agreement for three of five prioritized leads and larger deviations for Capivasertib and Avapritinib (Futibatinib: QSPR -16.02 vs QM -16.39 kcal/mol, error = +0.37 kcal/mol; "
+        "Belumosudil: QSPR -16.25 vs QM -17.36 kcal/mol, error = +1.11 kcal/mol; Pimicotinib: QSPR -13.33 vs QM -14.99 kcal/mol, error = +1.66 kcal/mol; "
+        "Avapritinib: QSPR -16.83 vs QM -13.13 kcal/mol, error = -3.70 kcal/mol; Capivasertib: QSPR -12.99 vs QM -21.43 kcal/mol, error = +8.44 kcal/mol). "
+        "All leads demonstrated favorable predicted Switch II pocket compatibility (-7.58 to -9.43 kcal/mol) with "
+        "size-normalized Ligand Efficiency (LE = 0.253 to 0.314 kcal/mol/atom, recomputed from each lead's real heavy-atom count)."
     )
     
     # Table 2: Prospective Quantum Confirmation Table
@@ -506,8 +503,8 @@ def generate_kras_full_manuscript():
         "(3) GFN2-xTB calculations across 38 molecules and 4 nanocarriers confirm favorable non-covalent interaction (Delta_E_int,std = -4.98 to -39.89 kcal/mol at standardized z = 3.35 Å), "
         "with B/P co-doping (C20B1N20P1H6) primarily modifying interfacial charge polarization (Delta_Q = +0.15 e for MRTX1133, vs. +0.19 e on the pristine carrier) rather than substantially altering interaction energetics; "
         "(4) A leak-free nested 5x5 surrogate QSPR model structured under OECD Principles 1-5 (Table S3) and verified by 1,000 Y-scrambling permutations (nested Q²_CV = +0.584 vs Q²_scrambled = -0.12, p = 0.001) "
-        "successfully prioritizes clinical-stage DrugBank oncology leads; prospective quantum confirmation showed informative predictive performance (MAE = 3.82 kcal/mol) "
-        "and favorable predicted Switch II pocket compatibility (LE = 0.255 to 0.292 kcal/mol/atom). "
+        "successfully prioritizes clinical-stage DrugBank oncology leads; prospective quantum confirmation showed informative predictive performance (MAE = 3.06 kcal/mol) "
+        "and favorable predicted Switch II pocket compatibility (LE = 0.253 to 0.314 kcal/mol/atom). "
         "This work provides an auditable theoretical foundation for exploring molecular diversity in mutant KRAS drug discovery."
     )
     

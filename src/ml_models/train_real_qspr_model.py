@@ -186,12 +186,28 @@ def train_and_validate_qspr():
     scr_df.to_csv(scr_csv, index=False)
     
     # 5. External QM Validation on 5 Leads (Table 3)
+    # heavy/MW/PSA recomputed with RDKit from each lead's real SMILES (same
+    # method as MASTER_COMPOUNDS_CURATED.csv's own PSA column, verified to
+    # match RDKit CalcTPSA exactly for MRTX1133 -- 86.64 both). The prior
+    # hardcoded values did not match: e.g. Avapritinib heavy=37/MW=498.54
+    # here vs the real 30/408.53, up to +23% inflation of Ligand Efficiency
+    # downstream. Confirmed against confirmatory_docking_results.csv (real
+    # RDKit-computed MW/N_HeavyAtoms) for the 4 leads with a matching
+    # confirmatory-docking record (all agree to 2 decimal places); Pimicotinib
+    # has no confirmatory-docking record so its heavy/MW/PSA are computed
+    # directly from its own real SMILES (from build_structures.py) instead.
+    # Capivasertib's Vina also corrected: -7.82 (source unclear, no matching
+    # record anywhere) -> -7.58, its own real confirmatory re-docking score.
+    # alpha/omega left unchanged -- independently verified as real GFN2-xTB
+    # output (omega matches isolated_drugs_qm_results.csv's
+    # Electrophilicity_omega_eV column exactly, e.g. Avapritinib 46.79 vs
+    # 46.7913).
     leads_info = [
-        {"name": "Avapritinib", "Vina": -9.43, "heavy": 37, "MW": 498.54, "PSA": 89.2, "alpha": 142.1, "omega": 46.79},
-        {"name": "Futibatinib", "Vina": -9.04, "heavy": 31, "MW": 418.45, "PSA": 81.3, "alpha": 119.3, "omega": 39.16},
-        {"name": "Belumosudil", "Vina": -8.99, "heavy": 34, "MW": 452.55, "PSA": 78.4, "alpha": 128.9, "omega": 32.57},
-        {"name": "Capivasertib", "Vina": -7.82, "heavy": 29, "MW": 428.92, "PSA": 56.7, "alpha": 122.2, "omega": 21.00},
-        {"name": "Pimicotinib", "Vina": -7.64, "heavy": 28, "MW": 388.35, "PSA": 64.9, "alpha": 110.7, "omega": 34.35}
+        {"name": "Avapritinib", "Vina": -9.43, "heavy": 30, "MW": 408.53, "PSA": 49.2, "alpha": 142.1, "omega": 46.79},
+        {"name": "Futibatinib", "Vina": -9.04, "heavy": 33, "MW": 451.48, "PSA": 71.2, "alpha": 119.3, "omega": 39.16},
+        {"name": "Belumosudil", "Vina": -8.99, "heavy": 32, "MW": 427.51, "PSA": 107.6, "alpha": 128.9, "omega": 32.57},
+        {"name": "Capivasertib", "Vina": -7.58, "heavy": 30, "MW": 423.95, "PSA": 84.1, "alpha": 122.2, "omega": 21.00},
+        {"name": "Pimicotinib", "Vina": -7.64, "heavy": 25, "MW": 352.36, "PSA": 61.3, "alpha": 110.7, "omega": 34.35}
     ]
     
     # Load lead QM results

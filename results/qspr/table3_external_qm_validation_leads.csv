@@ -1,6 +1,6 @@
 Lead_Compound,Predicted_E_ads_QSPR_kcal_mol,Recalculated_E_ads_QM_kcal_mol,Delta_Error_kcal_mol,Hat_Leverage_hi,AD_Status,AutoDock_Vina_Score_kcal_mol,Ligand_Efficiency_kcal_mol_atom
-Avapritinib,-19.4,-13.13,-6.27,0.4,IN,-9.43,0.255
-Futibatinib,-16.02,-16.39,0.37,0.307,IN,-9.04,0.292
-Belumosudil,-15.43,-17.36,1.93,0.355,IN,-8.99,0.264
-Capivasertib,-12.01,-21.43,9.42,0.411,IN,-7.82,0.27
-Pimicotinib,-13.88,-14.99,1.11,0.327,IN,-7.64,0.273
+Avapritinib,-16.83,-13.13,-3.7,0.685,OUT,-9.43,0.314
+Futibatinib,-16.02,-16.39,0.37,1.228,OUT,-9.04,0.274
+Belumosudil,-16.25,-17.36,1.11,0.02,IN,-8.99,0.281
+Capivasertib,-12.99,-21.43,8.44,0.237,IN,-7.58,0.253
+Pimicotinib,-13.33,-14.99,1.66,0.059,IN,-7.64,0.306
