@@ -129,7 +129,7 @@ def generate_kras_full_manuscript():
     # Graphical Abstract (Front Matter)
     add_heading_styled(doc, "Graphical Abstract", level=1)
     add_image_if_exists(doc, os.path.join(fig_dir, "fig_graphical_abstract_final.jpg"),
-                        "Graphical Abstract: Multi-scale computational framework integrating quantum chemistry, OECD-aligned QSPR surrogate modeling, and virtual screening for KRAS-G12D inhibitor prioritization. (Left) Oncogenic KRAS-G12D target engagement in the Switch II allosteric pocket with key coordinating residues (Asp12 ionic salt-bridge, Tyr96 pi-stacking). (Center) Quantum electronic interaction modeling on the finite 48-atom C21N21H6 heptazine cluster model (Pristine: C21N21H6; B/P co-doped: C20B1N20P1H6); B/P co-doping induces localized interfacial charge redistribution (Delta_Q = +0.15 e for MRTX1133) with comparable overall electronic interaction energetics (DeltaDelta E_int,std ≈ -0.01 kcal/mol). (Right) OECD-aligned nested Ridge QSPR surrogate screening across 350 oncology compounds with prospective GFN2-xTB quantum confirmation on prioritized clinical-stage leads (Futibatinib, Belumosudil).",
+                        "Graphical Abstract: Multi-scale computational framework integrating quantum chemistry, OECD-aligned QSPR surrogate modeling, and virtual screening for KRAS-G12D inhibitor prioritization. (Left) Oncogenic KRAS-G12D target engagement in the Switch II allosteric pocket with key coordinating residues (Asp12 ionic salt-bridge, Tyr96 pi-stacking). (Center) Quantum electronic interaction modeling on the finite 48-atom C21N21H6 heptazine cluster model (Pristine: C21N21H6; B/P co-doped: C20B1N20P1H6); B/P co-doping induces localized interfacial charge redistribution (Delta_Q = +0.15 e for MRTX1133) with comparable overall electronic interaction energetics (DeltaDelta E_int,std ≈ -0.01 kcal/mol). (Right) OECD-aligned nested Ridge QSPR surrogate domain-coverage testing across a 350-candidate combinatorial virtual library, alongside prospective GFN2-xTB quantum confirmation on independently prioritized clinical-stage leads (Futibatinib, Belumosudil).",
                         width=Inches(6.2))
     
     # Abstract
@@ -149,7 +149,7 @@ def generate_kras_full_manuscript():
         "yielding a net relaxed adsorption energy Delta_E_ads,rel ≈ -0.38 kcal/mol. "
         "A regularized Ridge surrogate QSPR model structured under OECD Principles 1-5, evaluated by a fully leak-free nested 5x5 cross-validation (StandardScaler fit inside the pipeline on outer-training folds only; Ridge alpha tuned by inner cross-validation), achieved robust out-of-fold predictive accuracy (nested Q²_CV = +0.584, per-fold Q² range: 0.05-0.78; RMSE = 5.11 kcal/mol, MAE = 4.33 kcal/mol), "
         "with Y-scrambling permutation testing supporting that predictive performance was unlikely to arise from chance correlation (1,000 permutations: mean Q²_scrambled = -0.12, empirical p = 0.001). "
-        "Decoupled virtual screening of 350 DrugBank oncology candidates within the applicability domain (h* = 0.455) prioritized clinical-stage leads whose interaction stability was "
+        "Five independently curated clinical-stage KRAS-pathway-relevant leads, cross-checked for applicability-domain leverage (h* = 0.455) alongside a combinatorially enumerated 350-candidate virtual library used to stress-test the model's domain coverage, had their interaction stability "
         "evaluated via prospective GFN2-xTB quantum confirmation using each lead's real RDKit-derived descriptors (MAE = 3.06 kcal/mol, RMSE = 4.22 kcal/mol; Belumosudil: error +1.11 kcal/mol; Pimicotinib: error +1.66 kcal/mol; Futibatinib: error +0.37 kcal/mol (hi = 1.228, outside the applicability domain); Avapritinib: error -3.70 kcal/mol (hi = 0.685, outside the applicability domain); Capivasertib: error +8.44 kcal/mol), yielding favorable predicted Switch II pocket compatibility (-7.58 to -9.43 kcal/mol; Ligand Efficiency 0.253 to 0.314 kcal/mol/atom). This study establishes a rigorous "
         "computational cheminformatics and quantum chemical foundation for exploring molecular diversity in mutant KRAS drug discovery."
     )
@@ -196,7 +196,7 @@ def generate_kras_full_manuscript():
         "In this work, we present an integrated computational chemistry and molecular diversity framework investigating KRAS-G12D inhibitor loading and pocket engagement. "
         "We establish crystallographic pose-recovery validation against the 1.30 Å crystal structure of human KRAS-G12D (PDB ID: 7RPZ), evaluate binding energetics across structured pharmacological classes, "
         "model standardized quantum interaction energies (GFN2-xTB), train a leak-free nested surrogate QSPR model "
-        "structured under OECD guidelines, and execute decoupled virtual screening of an extended 350-compound oncology library with prospective quantum mechanical confirmation."
+        "structured under OECD guidelines, stress-test its applicability-domain coverage on a 350-candidate combinatorial virtual library, and prospectively confirm independently curated clinical-stage leads by quantum mechanical recalculation."
     )
     
     # 2. Computational Methods
@@ -261,11 +261,12 @@ def generate_kras_full_manuscript():
         "The domain of applicability was established according to OECD Principle 3 via hat-matrix leverage analysis with a warning threshold h* = 3(p+1)/n = 0.455 [38, 41]."
     )
     doc.add_paragraph(
-        "2.6 Decoupled Virtual Screening and Prospective Quantum Confirmation: "
-        "The calibrated surrogate QSPR model was deployed across an extended library of 350 DrugBank oncology candidates following a strictly decoupled pipeline: "
-        "(i) QSPR-predicted Delta_E_int,std ranking → (ii) applicability domain (AD) leverage filtering (h* = 0.455) → (iii) prospective GFN2-xTB quantum mechanical recalculation "
-        "on top clinical leads → (iv) confirmatory AutoDock Vina docking on PDB 7RPZ. "
-        "Authentic Ligand Efficiency (LE = |S_dock| / N_heavy) was calculated using exact heavy atom counts to evaluate size-normalized target engagement [34]."
+        "2.6 Applicability-Domain Coverage Testing and Prospective Quantum Confirmation: "
+        "To probe the trained QSPR surrogate's domain of applicability beyond the 33-compound training set, a combinatorially enumerated 350-candidate virtual library (parent scaffolds expanded with the same four prespecified descriptors) was scored for hat-matrix leverage against the h* = 0.455 threshold. "
+        "Separately, five clinical-stage KRAS-pathway-relevant leads were curated and evaluated through a decoupled pipeline: "
+        "(i) QSPR-predicted Delta_E_int,std → (ii) applicability-domain leverage check (h* = 0.455) → (iii) prospective GFN2-xTB quantum mechanical recalculation "
+        "→ (iv) confirmatory AutoDock Vina docking on PDB 7RPZ. "
+        "Authentic Ligand Efficiency (LE = |S_dock| / N_heavy) was calculated using each lead's real RDKit-derived heavy atom count to evaluate size-normalized target engagement [34]."
     )
     
     # 3. Results and Discussion
@@ -385,12 +386,9 @@ def generate_kras_full_manuscript():
     
     add_heading_styled(doc, "3.5 Confirmatory Virtual Screening & Prospective Quantum Confirmation of Prioritized Leads", level=2)
     doc.add_paragraph(
-        "The calibrated surrogate QSPR model was deployed across an extended library of 350 DrugBank oncology candidates following a strictly decoupled "
-        "screening pipeline: (i) QSPR-predicted Delta_E_int,std ranking → (ii) applicability domain (AD) filtering → (iii) prospective GFN2-xTB quantum mechanical "
-        "recalculation on top leads → (iv) confirmatory AutoDock Vina docking on PDB 7RPZ. "
-        "Applicability domain analysis of the 350 screening candidates against the hat-matrix leverage threshold h* = 0.455 revealed that "
-        "328 of 350 candidates (93.7%) fell within the training domain, while 22 candidates (6.3%) exceeded the leverage threshold and were flagged as extrapolations. "
-        "Only candidates within the AD were retained for lead prioritization."
+        "A combinatorially enumerated 350-candidate virtual library (scaffold-expanded, not individual named DrugBank entries) was used to stress-test the calibrated surrogate QSPR model's applicability-domain coverage against the hat-matrix leverage threshold h* = 0.455: "
+        "258 of 350 candidates (73.7%) fell within the training domain, while 92 candidates (26.3%) exceeded the leverage threshold and were flagged as extrapolations, indicating the QSPR surrogate's domain of reliable applicability covers roughly three-quarters of this broad combinatorial space. "
+        "Independently of this domain-coverage exercise, five clinical-stage KRAS-pathway-relevant leads were curated and screened through the decoupled pipeline (i)-(iv) described in Section 2.6."
     )
     doc.add_paragraph(
         "The top five prioritized clinical-stage leads were subjected to prospective GFN2-xTB quantum confirmation and confirmatory AutoDock Vina docking against PDB 7RPZ (Table 2, Figure 4), using each lead's own real RDKit-derived molecular weight and polar surface area (recomputed from its canonical SMILES) as descriptor inputs. "
@@ -441,7 +439,7 @@ def generate_kras_full_manuscript():
                     
     # Virtual Screening Figure 4
     add_image_if_exists(doc, os.path.join(fig_dir, "fig9_kras_virtual_screening_distribution.png"),
-                        "Figure 4: Multi-Objective Evaluation of Prioritized Leads and Benchmark Controls from the 350-Compound Virtual Screen: (a) AutoDock Vina binding scores on PDB 7RPZ comparing prioritized leads against benchmark controls; (b) Size-normalized ligand-efficiency comparison across prioritized leads and controls.")
+                        "Figure 4: Multi-Objective Evaluation of Prioritized Leads and Benchmark Controls: (a) AutoDock Vina binding scores on PDB 7RPZ comparing independently curated prioritized leads against benchmark controls; (b) Size-normalized ligand-efficiency comparison across prioritized leads and controls.")
     
     # Figure 5: Multi-Scale Structural Context (schematic; real GFN2-xTB energetics)
     add_image_if_exists(doc, os.path.join(fig_dir, "fig10_atomistic_multiscale_final.jpg"),

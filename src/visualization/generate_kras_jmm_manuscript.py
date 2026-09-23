@@ -36,9 +36,10 @@ JMM_CONTEXT = (
     "pristine and B/P co-doped g-C3N4 templates, benchmark a docking protocol via crystallographic pose-"
     "recovery (1.419 Å heavy-atom RMSD against the 1.30 Å human KRAS-G12D structure, PDB 7RPZ), and train "
     "a leak-free nested cross-validated QSPR surrogate. The surrogate achieves genuinely predictive out-of-fold "
-    "accuracy (nested Q²_CV = 0.584; 1,000-permutation Y-scrambling p = 0.001) and prioritizes clinical-stage "
-    "oncology leads (Futibatinib, Belumosudil) from a 350-compound DrugBank screen, subsequently confirmed by "
-    "prospective quantum calculations."
+    "accuracy (nested Q²_CV = 0.584; 1,000-permutation Y-scrambling p = 0.001); its applicability-domain "
+    "coverage was stress-tested on a combinatorially enumerated 350-candidate virtual library (73.7% inside "
+    "domain), and five independently curated clinical-stage oncology leads (Futibatinib, Belumosudil) were "
+    "confirmed by prospective quantum calculations."
 )
 
 JMM_METHODS = (
@@ -48,9 +49,10 @@ JMM_METHODS = (
     "AutoDock Vina docking against the KRAS-G12D Switch II pocket (PDB 7RPZ) was validated by redocking the "
     "native MRTX1133 pose. A Ridge-regression QSPR surrogate, structured under OECD Principles 1-5, was fit "
     "inside a nested 5×5 cross-validation (StandardScaler and Ridge-alpha tuning confined to outer-training "
-    "folds only) and validated by 1,000-permutation Y-scrambling. Applicability-domain screening (leverage "
-    "h* = 0.455) of 350 DrugBank oncology compounds was followed by prospective GFN2-xTB single-point quantum "
-    "confirmation of the top-ranked leads."
+    "folds only) and validated by 1,000-permutation Y-scrambling. Applicability-domain leverage (h* = 0.455) "
+    "was stress-tested on a combinatorially enumerated 350-candidate virtual library, and separately, "
+    "independently curated clinical-stage leads were evaluated by prospective GFN2-xTB single-point quantum "
+    "confirmation."
 )
 
 JMM_KEYWORDS = (
